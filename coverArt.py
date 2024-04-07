@@ -6,7 +6,7 @@ def main33():
     search_results = ytmusic.search(sys.argv[2])
     videoId = ""
     for result in search_results:
-        if result.get("category") != "Top result":
+        if result.get("resultType") == "song":
             videoId = result.get("videoId")
             break
     print(videoId)
