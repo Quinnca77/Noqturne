@@ -116,7 +116,7 @@ public class Tagger {
         // Encode the song name for URL
         String encodedSongName = URLEncoder.encode(songName, StandardCharsets.UTF_8);
 
-        HttpRequest request = HttpRequest.newBuilder(new URI(baseUrl + endpoint + "?query=recording:" + encodedSongName + "%20AND%20artistname:" + artistName + "%20AND%20status:official%20AND%20primarytype:album&inc=releases" + "&limit=3&fmt=json"))
+        HttpRequest request = HttpRequest.newBuilder(new URI(baseUrl + endpoint + "?query=recording:" + encodedSongName + "%20AND%20artistname:" + artistName + "%20AND%20status:official%20AND%20primarytype:album&inc=releases&limit=3&fmt=json"))
                 .GET()
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -160,7 +160,7 @@ public class Tagger {
         if (!individual) {
             String encodedSongName = URLEncoder.encode(songName, StandardCharsets.UTF_8);
             HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder(new URI("https://www.googleapis.com/youtube/v3/search?key=***REMOVED***&part=snippet&maxResults=2&q=" + encodedSongName))
+            HttpRequest request = HttpRequest.newBuilder(new URI("https://www.googleapis.com/youtube/v3/search?key=***REMOVED***&part=snippet&maxResults=2&topicId=/m/04rlf&q=" + encodedSongName))
                     .GET()
                     .build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
