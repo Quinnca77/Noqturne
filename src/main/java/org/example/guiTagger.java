@@ -5,8 +5,6 @@ import com.mpatric.mp3agic.NotSupportedException;
 import com.mpatric.mp3agic.UnsupportedTagException;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
@@ -24,33 +22,29 @@ public class guiTagger extends JFrame {
         setSize(700, 500);
         setLocationRelativeTo(null);
         setVisible(true);
-        tagAllFilesInButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    Tagger.tagAllFiles();
-                    JOptionPane.showMessageDialog(guiTagger.this, "Tagging successful!");
-                } catch (InvalidDataException | UnsupportedTagException | IOException | URISyntaxException |
-                         InterruptedException | NotSupportedException ex) {
-                    JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, sowwy");
-                    throw new RuntimeException(ex);
-                }
+        tagAllFilesInButton.addActionListener(e -> {
+            try {
+                Tagger.tagAllFiles();
+                JOptionPane.showMessageDialog(guiTagger.this, "Tagging successful!");
+            } catch (InvalidDataException | UnsupportedTagException | IOException | URISyntaxException |
+                     InterruptedException | NotSupportedException ex) {
+                JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, sowwy");
+                throw new RuntimeException(ex);
+            } catch (NoSongFoundException exc) {
+                JOptionPane.showMessageDialog(guiTagger.this, "No songs found in Downloads folder!");
             }
         });
 
-        addCoverForIndividualButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String filePath = filePathSong.getText();
-                String vID = vIDThumbnail.getText();
-                try {
-                    Tagger.tagFile(filePath, true, vID);
-                    JOptionPane.showMessageDialog(guiTagger.this, "Tagging successful!");
-                } catch (InvalidDataException | UnsupportedTagException | IOException | URISyntaxException |
-                         InterruptedException | NotSupportedException ex) {
-                    JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, sowwy");
-                    throw new RuntimeException(ex);
-                }
+        addCoverForIndividualButton.addActionListener(e -> {
+            String filePath = filePathSong.getText();
+            String vID = vIDThumbnail.getText();
+            try {
+                Tagger.tagFile(filePath, true, vID);
+                JOptionPane.showMessageDialog(guiTagger.this, "Tagging successful!");
+            } catch (InvalidDataException | UnsupportedTagException | IOException | URISyntaxException |
+                     InterruptedException | NotSupportedException ex) {
+                JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, sowwy");
+                throw new RuntimeException(ex);
             }
         });
     }

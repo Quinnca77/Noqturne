@@ -24,22 +24,22 @@ import java.util.Arrays;
 
 public class Tagger {
 
-    // TODO: retrieve cover art from youtube music instead
     static int MODE = 2;
     
     public static void main(String[] args) {
         new guiTagger();
     }
 
-    public static void tagAllFiles() throws InvalidDataException, UnsupportedTagException, IOException, URISyntaxException, InterruptedException, NotSupportedException {
+    public static void tagAllFiles() throws InvalidDataException, UnsupportedTagException, IOException, URISyntaxException, InterruptedException, NotSupportedException, NoSongFoundException {
         File file = new File("C:\\Users\\harry\\Downloads\\");
         File[] songs = file.listFiles(filter);
-        if (songs != null) {
+        if (songs != null && songs.length != 0) {
             for (File mp3 : songs) {
                 tagFile(mp3.getAbsolutePath(), false, null);
             }
         } else {
             System.out.println("There are no songs in your downloads folder!");
+            throw new NoSongFoundException();
         }
     }
 
