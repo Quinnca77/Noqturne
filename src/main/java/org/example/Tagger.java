@@ -6,13 +6,11 @@ import com.mpatric.mp3agic.*;
 import io.restassured.path.json.JsonPath;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.text.similarity.LevenshteinDistance;
+import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -25,8 +23,9 @@ import java.nio.file.Files;
 import java.util.Arrays;
 
 public class Tagger {
-    
-    static int MODE = 1;
+
+    // TODO: retrieve cover art from youtube music instead
+    static int MODE = 2;
     
     public static void main(String[] args) {
         new guiTagger();
@@ -71,6 +70,12 @@ public class Tagger {
                 img = getCoverArtNew(songName, false);
             } else {
                 img = getCoverArtNew(vID, true);
+            }
+        } else if (MODE == 2) {
+            if (!individual) {
+                img = getCoverArtNewest(songName, false);
+            } else {
+                img = getCoverArtNewest(vID, true);
             }
         } else {
             System.out.println("Unidentified mode variable used!");
@@ -177,6 +182,29 @@ public class Tagger {
             vID = songName;
         }
         System.out.println(vID);
+        return getCroppedImageFromVID(vID);
+    }
+
+    public static File getCoverArtNewest(String songName, boolean individual) throws IOException, InterruptedException {
+        String filePath = "C:\\Users\\harry\\Downloads\\Tools\\Auto-tagger\\coverArt.py";
+        ProcessBuilder pb = new ProcessBuilder()
+                .command("python", "-u", filePath, "main33", songName);
+        Process p = pb.start();
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(p.getInputStream()));
+        StringBuilder buffer = new StringBuilder();
+        String line = null;
+        while ((line = in.readLine()) != null){
+            buffer.append(line);
+        }
+        int exitCode = p.waitFor();
+        System.out.println("Value is: "+buffer.toString());
+        String vID = buffer.toString();
+        in.close();
+        return getCroppedImageFromVID(vID);
+    }
+
+    private static @NotNull File getCroppedImageFromVID(String vID) throws IOException {
         URL url = new URL("https://i.ytimg.com/vi/" + vID + "/maxresdefault.jpg");
         File img = new File("img.jpg");
         try {
