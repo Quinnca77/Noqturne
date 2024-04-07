@@ -44,7 +44,7 @@ public class Tagger {
     }
 
     public static void tagFile(String filePath, boolean individual, String vID) throws InvalidDataException, UnsupportedTagException, IOException, URISyntaxException, InterruptedException, NotSupportedException {
-        ID3v2 id3v2Tag = null;
+        ID3v2 id3v2Tag;
         String prefixToRemove = "C:\\Users\\harry\\Downloads\\";
         Mp3File mp3file = new Mp3File(filePath);
         String songName = mp3file.getFilename().substring(prefixToRemove.length(), mp3file.getFilename().length() - 4);
@@ -65,18 +65,14 @@ public class Tagger {
         if (MODE == 0) {
             String mbid = getMbid(splitSong[1], splitSong[0]);
             img = getCoverArt(mbid);
-        } else if (MODE == 1) {
+        } else if (MODE == 1 || individual) {
             if (!individual) {
                 img = getCoverArtNew(songName, false);
             } else {
                 img = getCoverArtNew(vID, true);
             }
         } else if (MODE == 2) {
-            if (!individual) {
-                img = getCoverArtNewest(songName, false);
-            } else {
-                img = getCoverArtNewest(vID, true);
-            }
+            img = getCoverArtNewest(songName);
         } else {
             System.out.println("Unidentified mode variable used!");
             return;
@@ -185,7 +181,7 @@ public class Tagger {
         return getCroppedImageFromVID(vID);
     }
 
-    public static File getCoverArtNewest(String songName, boolean individual) throws IOException, InterruptedException {
+    public static File getCoverArtNewest(String songName) throws IOException, InterruptedException {
         String filePath = "C:\\Users\\harry\\Downloads\\Tools\\Auto-tagger\\coverArt.py";
         ProcessBuilder pb = new ProcessBuilder()
                 .command("python", "-u", filePath, "main33", songName);
@@ -193,12 +189,12 @@ public class Tagger {
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(p.getInputStream()));
         StringBuilder buffer = new StringBuilder();
-        String line = null;
+        String line;
         while ((line = in.readLine()) != null){
             buffer.append(line);
         }
-        int exitCode = p.waitFor();
-        System.out.println("Value is: "+buffer.toString());
+        p.waitFor();
+        System.out.println("Value is: " + buffer);
         String vID = buffer.toString();
         in.close();
         return getCroppedImageFromVID(vID);
