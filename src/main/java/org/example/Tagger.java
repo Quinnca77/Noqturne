@@ -25,6 +25,7 @@ import java.util.Arrays;
 public class Tagger {
 
     // TODO: make filepath individual tag work with quotation marks
+    // TODO: and make build
     public static final String PATH_TO_SONGS = "C:\\Users\\harry\\Downloads\\";
     static int MODE = 2;
     // file filter for sort mp3 files

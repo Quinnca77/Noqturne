@@ -63,7 +63,7 @@ public class guiTagger extends JFrame {
         });
 
         addCoverForIndividualButton.addActionListener(e -> {
-            String filePath = filePathSong.getText();
+            String filePath = filePathSong.getText().replaceAll("\"", "");
             String vID = vIDThumbnail.getText();
             if (fileRename.isSelected()) {
                 File song = new File(filePath);
@@ -72,7 +72,8 @@ public class guiTagger extends JFrame {
                 int result = JOptionPane.showConfirmDialog(guiTagger.this, fields, "Rename file", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
                 switch (result) {
                     case JOptionPane.OK_OPTION:
-                        song.renameTo(new File(PATH_TO_SONGS + artistNameInput.getText() + " - " + songNameInput.getText() + ".mp3"));
+                        filePath = PATH_TO_SONGS + artistNameInput.getText() + " - " + songNameInput.getText() + ".mp3";
+                        song.renameTo(new File(filePath));
                         break;
 
                     case JOptionPane.CANCEL_OPTION:
