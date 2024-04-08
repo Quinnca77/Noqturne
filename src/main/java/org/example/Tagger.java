@@ -24,14 +24,23 @@ import java.util.Arrays;
 
 public class Tagger {
 
+    // TODO: make filepath individual tag work with quotation marks
+    public static final String PATH_TO_SONGS = "C:\\Users\\harry\\Downloads\\";
     static int MODE = 2;
+    // file filter for sort mp3 files
+    static FileFilter filter = file -> file.getName().endsWith(".mp3");
     
     public static void main(String[] args) {
         new guiTagger();
     }
 
-    public static void tagAllFiles() throws InvalidDataException, UnsupportedTagException, IOException, URISyntaxException, InterruptedException, NotSupportedException, NoSongFoundException {
-        File file = new File("C:\\Users\\harry\\Downloads\\");
+    public static File[] getAllFiles() {
+        File file = new File(PATH_TO_SONGS);
+        return file.listFiles(filter);
+    }
+
+    public static void tagAllFiles() throws InvalidDataException, UnsupportedTagException, IOException, URISyntaxException, InterruptedException, NotSupportedException, NoSongFoundException, VideoIdEmptyException {
+        File file = new File(PATH_TO_SONGS);
         File[] songs = file.listFiles(filter);
         if (songs != null && songs.length != 0) {
             for (File mp3 : songs) {
@@ -43,11 +52,10 @@ public class Tagger {
         }
     }
 
-    public static void tagFile(String filePath, boolean individual, String vID) throws InvalidDataException, UnsupportedTagException, IOException, URISyntaxException, InterruptedException, NotSupportedException {
+    public static void tagFile(String filePath, boolean individual, String vID) throws InvalidDataException, UnsupportedTagException, IOException, URISyntaxException, InterruptedException, NotSupportedException, VideoIdEmptyException {
         ID3v2 id3v2Tag;
-        String prefixToRemove = "C:\\Users\\harry\\Downloads\\";
         Mp3File mp3file = new Mp3File(filePath);
-        String songName = mp3file.getFilename().substring(prefixToRemove.length(), mp3file.getFilename().length() - 4);
+        String songName = mp3file.getFilename().substring(PATH_TO_SONGS.length(), mp3file.getFilename().length() - 4);
         System.out.println(songName);
         String[] splitSong = songName.split(" - ");
         System.out.println(Arrays.toString(splitSong));
@@ -181,7 +189,7 @@ public class Tagger {
         return getCroppedImageFromVID(vID);
     }
 
-    public static File getCoverArtNewest(String songName) throws IOException, InterruptedException {
+    public static File getCoverArtNewest(String songName) throws IOException, InterruptedException, VideoIdEmptyException {
         String filePath = "C:\\Users\\harry\\Downloads\\Tools\\Auto-tagger\\coverArt.py";
         ProcessBuilder pb = new ProcessBuilder()
                 .command("python", "-u", filePath, "main33", songName);
@@ -196,6 +204,9 @@ public class Tagger {
         p.waitFor();
         System.out.println("Value is: " + buffer);
         String vID = buffer.toString();
+        if (vID.isEmpty()) {
+            throw new VideoIdEmptyException();
+        }
         in.close();
         return getCroppedImageFromVID(vID);
     }
@@ -222,7 +233,4 @@ public class Tagger {
         ImageIO.write(croppedImage, "jpg", outputFile);
         return outputFile;
     }
-
-    // file filter for sort mp3 files
-    static FileFilter filter = file -> file.getName().endsWith(".mp3");
 }
