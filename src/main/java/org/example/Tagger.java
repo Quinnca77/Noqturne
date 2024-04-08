@@ -24,7 +24,7 @@ import java.util.Arrays;
 
 public class Tagger {
 
-    public static final String PATH_TO_SONGS = "C:\\Users\\harry\\Downloads\\";
+    public static final String PATH_TO_SONGS = "C:\\Users\\" + System.getProperty("user.name") + "\\Downloads\\";
     static int MODE = 2;
     // file filter for sort mp3 files
     static FileFilter filter = file -> file.getName().endsWith(".mp3");
@@ -189,7 +189,7 @@ public class Tagger {
     }
 
     public static File getCoverArtNewest(String songName) throws IOException, InterruptedException, VideoIdEmptyException {
-        String filePath = "C:\\Users\\harry\\Downloads\\Tools\\Auto-tagger\\coverArt.py";
+        String filePath = "coverArt.py";
         ProcessBuilder pb = new ProcessBuilder()
                 .command("python", "-u", filePath, "main33", songName);
         Process p = pb.start();
