@@ -35,6 +35,7 @@ public class GuiTagger extends JFrame {
     protected JButton openFileButton;
     protected JTextField filePathSong;
     private JScrollPane filePathScrollPane;
+    private JSplitPane splitPane;
     protected JTextField artistNameInput = new JTextField();
     protected JTextField songNameInput = new JTextField();
     protected final Logger logger;
@@ -67,7 +68,7 @@ public class GuiTagger extends JFrame {
         setContentPane(MainPanel);
         setTitle("Auto-Tagger by Quinn Caris");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(700, 500);
+        setSize(800, 600);
         setLocationRelativeTo(null);
 
         URL iconURL = getClass().getResource("/icon.png");
@@ -93,6 +94,7 @@ public class GuiTagger extends JFrame {
                 filePathSong.setText(chooser.getSelectedFile().getAbsolutePath());
             }
         });
+        splitPane.setDividerLocation(0.5); // Ensure the split is down the middle at start-up
 
         // This line is used to hide the scrollbar since it overlays the text and looked ugly
         filePathScrollPane.getHorizontalScrollBar().setPreferredSize(new Dimension(0,0));
