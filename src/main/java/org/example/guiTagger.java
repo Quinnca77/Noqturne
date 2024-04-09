@@ -40,7 +40,9 @@ public class guiTagger extends JFrame {
                     int result = JOptionPane.showConfirmDialog(guiTagger.this, fields, "Rename file", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
                     switch (result) {
                         case JOptionPane.OK_OPTION:
-                            song.renameTo(new File(PATH_TO_SONGS + artistNameInput.getText() + " - " + songNameInput.getText() + ".mp3"));
+                            if (!(artistNameInput.getText().isEmpty() && songNameInput.getText().isEmpty())) {
+                                song.renameTo(new File(PATH_TO_SONGS + artistNameInput.getText() + " - " + songNameInput.getText() + ".mp3"));
+                            }
                             break;
 
                         case JOptionPane.CANCEL_OPTION:
@@ -72,8 +74,10 @@ public class guiTagger extends JFrame {
                 int result = JOptionPane.showConfirmDialog(guiTagger.this, fields, "Rename file", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
                 switch (result) {
                     case JOptionPane.OK_OPTION:
-                        filePath = PATH_TO_SONGS + artistNameInput.getText() + " - " + songNameInput.getText() + ".mp3";
-                        song.renameTo(new File(filePath));
+                        if (!(artistNameInput.getText().isEmpty() && songNameInput.getText().isEmpty())) {
+                            filePath = PATH_TO_SONGS + artistNameInput.getText() + " - " + songNameInput.getText() + ".mp3";
+                            song.renameTo(new File(filePath));
+                        }
                         break;
 
                     case JOptionPane.CANCEL_OPTION:
