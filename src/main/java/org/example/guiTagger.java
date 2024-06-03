@@ -66,6 +66,9 @@ public class guiTagger extends JFrame {
 
         addCoverForIndividualButton.addActionListener(e -> {
             String filePath = filePathSong.getText().replaceAll("\"", "");
+            if (filePath.isEmpty()) {
+                JOptionPane.showMessageDialog(guiTagger.this, "Please put in a file path when using this option");
+            }
             String vID = vIDThumbnail.getText();
             if (fileRename.isSelected()) {
                 File song = new File(filePath);
