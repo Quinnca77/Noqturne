@@ -64,40 +64,7 @@ public class guiTagger extends JFrame {
             }
         });
 
-        addCoverForIndividualButton.addActionListener(e -> {
-            String filePath = filePathSong.getText().replaceAll("\"", "");
-            if (filePath.isEmpty()) {
-                JOptionPane.showMessageDialog(guiTagger.this, "Please put in a file path when using this option");
-            }
-            String vID = vIDThumbnail.getText();
-            if (fileRename.isSelected()) {
-                File song = new File(filePath);
-                JPanel fields = getFields(song.getName());
-
-                int result = JOptionPane.showConfirmDialog(guiTagger.this, fields, "Rename file", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
-                switch (result) {
-                    case JOptionPane.OK_OPTION:
-                        if (!(artistNameInput.getText().isEmpty() && songNameInput.getText().isEmpty())) {
-                            filePath = PATH_TO_SONGS + artistNameInput.getText() + " - " + songNameInput.getText() + ".mp3";
-                            song.renameTo(new File(filePath));
-                        }
-                        break;
-
-                    case JOptionPane.CANCEL_OPTION:
-                        break;
-                }
-            }
-            try {
-                Tagger.tagFile(filePath, true, vID);
-                JOptionPane.showMessageDialog(guiTagger.this, "Tagging successful!");
-            } catch (InvalidDataException | UnsupportedTagException | IOException | URISyntaxException |
-                     InterruptedException | NotSupportedException ex) {
-                JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, sowwy");
-                throw new RuntimeException(ex);
-            } catch (VideoIdEmptyException exce) {
-                JOptionPane.showMessageDialog(guiTagger.this, "No song online found that corresponds with these fields!");
-            }
-        });
+        addCoverForIndividualButton.addActionListener(e -> addCoverForIndividualFile());
     }
 
     private static @NotNull JPanel getFields(String fileName) {
@@ -120,5 +87,41 @@ public class guiTagger extends JFrame {
         mainPanel.add(fields, BorderLayout.CENTER);
         mainPanel.setPreferredSize(new Dimension(800,60));
         return mainPanel;
+    }
+
+    private void addCoverForIndividualFile() {
+        String filePath = filePathSong.getText().replaceAll("\"", "");
+        if (filePath.isEmpty()) {
+            JOptionPane.showMessageDialog(guiTagger.this, "Please put in a file path when using this option");
+            return;
+        }
+        String vID = vIDThumbnail.getText();
+        if (fileRename.isSelected()) {
+            File song = new File(filePath);
+            JPanel fields = getFields(song.getName());
+
+            int result = JOptionPane.showConfirmDialog(guiTagger.this, fields, "Rename file", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+            switch (result) {
+                case JOptionPane.OK_OPTION:
+                    if (!(artistNameInput.getText().isEmpty() && songNameInput.getText().isEmpty())) {
+                        filePath = PATH_TO_SONGS + artistNameInput.getText() + " - " + songNameInput.getText() + ".mp3";
+                        song.renameTo(new File(filePath));
+                    }
+                    break;
+
+                case JOptionPane.CANCEL_OPTION:
+                    break;
+            }
+        }
+        try {
+            Tagger.tagFile(filePath, true, vID);
+            JOptionPane.showMessageDialog(guiTagger.this, "Tagging successful!");
+        } catch (InvalidDataException | UnsupportedTagException | IOException | URISyntaxException |
+                 InterruptedException | NotSupportedException ex) {
+            JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, sowwy");
+            throw new RuntimeException(ex);
+        } catch (VideoIdEmptyException exce) {
+            JOptionPane.showMessageDialog(guiTagger.this, "No song online found that corresponds with these fields!");
+        }
     }
 }
