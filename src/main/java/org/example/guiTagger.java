@@ -115,6 +115,7 @@ public class guiTagger extends JFrame {
         fields.add(songNameInput);
         mainPanel.add(title, BorderLayout.NORTH);
         mainPanel.add(fields, BorderLayout.CENTER);
+        mainPanel.setPreferredSize(new Dimension(800,60));
         return mainPanel;
     }
 }

@@ -20,6 +20,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Tagger {
@@ -195,19 +196,25 @@ public class Tagger {
         Process p = pb.start();
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(p.getInputStream()));
-        StringBuilder buffer = new StringBuilder();
-        String line;
-        while ((line = in.readLine()) != null){
-            buffer.append(line);
+        String buffer;
+        ArrayList<String> fullOutput = new ArrayList<>();
+        while ((buffer = in.readLine()) != null){
+            fullOutput.add(buffer);
         }
         p.waitFor();
-        System.out.println("Value is: " + buffer);
-        String vID = buffer.toString();
-        if (vID.isEmpty()) {
+        System.out.println("Value is: " + fullOutput);
+        if (fullOutput.isEmpty()) {
             throw new VideoIdEmptyException();
         }
         in.close();
-        return getCroppedImageFromVID(vID);
+        for (String vID : fullOutput) {
+            try {
+                return getCroppedImageFromVID(vID);
+            } catch (IOException ignored) {
+
+            }
+        }
+        throw new IOException("No vID found without error-causing image");
     }
 
     private static @NotNull File getCroppedImageFromVID(String vID) throws IOException {
