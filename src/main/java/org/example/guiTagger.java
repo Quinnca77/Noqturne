@@ -21,6 +21,8 @@ public class guiTagger extends JFrame {
     private JTextField vIDThumbnail;
     private JPanel MainPanel;
     private JCheckBox fileRename;
+    private JTextField songPlaylistURLTextField;
+    private JButton downloadAndTagSongButton;
     private static final JTextField artistNameInput = new JTextField(10);
     private static final JTextField songNameInput = new JTextField(10);
 
@@ -31,40 +33,9 @@ public class guiTagger extends JFrame {
         setSize(700, 500);
         setLocationRelativeTo(null);
         setVisible(true);
-        tagAllFilesInButton.addActionListener(e -> {
-            if (fileRename.isSelected()) {
-                File[] songs = getAllFiles();
-                for (File song : songs) {
-                    JPanel fields = getFields(song.getName());
-
-                    int result = JOptionPane.showConfirmDialog(guiTagger.this, fields, "Rename file", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
-                    switch (result) {
-                        case JOptionPane.OK_OPTION:
-                            if (!(artistNameInput.getText().isEmpty() && songNameInput.getText().isEmpty())) {
-                                song.renameTo(new File(PATH_TO_SONGS + artistNameInput.getText() + " - " + songNameInput.getText() + ".mp3"));
-                            }
-                            break;
-
-                        case JOptionPane.CANCEL_OPTION:
-                            break;
-                    }
-                }
-            }
-            try {
-                Tagger.tagAllFiles();
-                JOptionPane.showMessageDialog(guiTagger.this, "Tagging successful!");
-            } catch (InvalidDataException | UnsupportedTagException | IOException | URISyntaxException |
-                     InterruptedException | NotSupportedException ex) {
-                JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, sowwy");
-                throw new RuntimeException(ex);
-            } catch (NoSongFoundException exc) {
-                JOptionPane.showMessageDialog(guiTagger.this, "No songs found in Downloads folder!");
-            } catch (VideoIdEmptyException exce) {
-                JOptionPane.showMessageDialog(guiTagger.this, "No song online found that corresponds with these fields!");
-            }
-        });
-
+        tagAllFilesInButton.addActionListener(e -> tagAllFiles());
         addCoverForIndividualButton.addActionListener(e -> addCoverForIndividualFile());
+        downloadAndTagSongButton.addActionListener(e -> downloadAndTag());
     }
 
     private static @NotNull JPanel getFields(String fileName) {
@@ -87,6 +58,42 @@ public class guiTagger extends JFrame {
         mainPanel.add(fields, BorderLayout.CENTER);
         mainPanel.setPreferredSize(new Dimension(800,60));
         return mainPanel;
+    }
+
+    private void tagAllFiles() {
+        // TODO: make separate progress bar for tagging here
+        if (fileRename.isSelected()) {
+            File[] songs = getAllFiles();
+            for (File song : songs) {
+                JPanel fields = getFields(song.getName());
+
+                int result = JOptionPane.showConfirmDialog(guiTagger.this, fields, "Rename file", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                switch (result) {
+                    case JOptionPane.OK_OPTION:
+                        if (!(artistNameInput.getText().isEmpty() && songNameInput.getText().isEmpty())) {
+                            song.renameTo(new File(PATH_TO_SONGS + artistNameInput.getText() + " - " + songNameInput.getText() + ".mp3"));
+                        }
+                        break;
+
+                    case JOptionPane.CANCEL_OPTION:
+                        break;
+                }
+            }
+        }
+        try {
+            setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            Tagger.tagAllFiles();
+            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            JOptionPane.showMessageDialog(guiTagger.this, "Tagging successful!");
+        } catch (InvalidDataException | UnsupportedTagException | IOException | URISyntaxException |
+                 InterruptedException | NotSupportedException ex) {
+            JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, sowwy");
+            throw new RuntimeException(ex);
+        } catch (NoSongFoundException exc) {
+            JOptionPane.showMessageDialog(guiTagger.this, "No songs found in Downloads folder!");
+        } catch (VideoIdEmptyException exce) {
+            JOptionPane.showMessageDialog(guiTagger.this, "No song online found that corresponds with these fields!");
+        }
     }
 
     private void addCoverForIndividualFile() {
@@ -118,10 +125,20 @@ public class guiTagger extends JFrame {
             JOptionPane.showMessageDialog(guiTagger.this, "Tagging successful!");
         } catch (InvalidDataException | UnsupportedTagException | IOException | URISyntaxException |
                  InterruptedException | NotSupportedException ex) {
-            JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, sowwy");
+            JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, please contact the developer");
             throw new RuntimeException(ex);
         } catch (VideoIdEmptyException exce) {
             JOptionPane.showMessageDialog(guiTagger.this, "No song online found that corresponds with these fields!");
+        }
+    }
+
+    private void downloadAndTag() {
+        try {
+            // TODO: display progress bar and provide update progress bar function
+            Downloader.downloadSongs(songPlaylistURLTextField.getText());
+            tagAllFiles();
+        } catch (IOException | InterruptedException ignored) {
+            JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, please contact the developer");
         }
     }
 }
