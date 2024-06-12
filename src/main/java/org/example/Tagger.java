@@ -21,7 +21,6 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Tagger {
 
@@ -29,9 +28,14 @@ public class Tagger {
     static int MODE = 2;
     // file filter for sort mp3 files
     static FileFilter filter = file -> file.getName().endsWith(".mp3");
+    Logger logger;
     
     public static void main(String[] args) {
         new guiTagger();
+    }
+
+    public Tagger() {
+        this.logger = Logger.getLogger();
     }
 
     public static File[] getAllFiles() {
@@ -39,7 +43,7 @@ public class Tagger {
         return file.listFiles(filter);
     }
 
-    public static void tagAllFiles() throws InvalidDataException, UnsupportedTagException, IOException, URISyntaxException, InterruptedException, NotSupportedException, NoSongFoundException, VideoIdEmptyException {
+    public void tagAllFiles() throws InvalidDataException, UnsupportedTagException, IOException, URISyntaxException, InterruptedException, NotSupportedException, NoSongFoundException, VideoIdEmptyException {
         File file = new File(PATH_TO_SONGS);
         File[] songs = file.listFiles(filter);
         if (songs != null && songs.length != 0) {
@@ -47,18 +51,17 @@ public class Tagger {
                 tagFile(mp3.getAbsolutePath(), false, null);
             }
         } else {
-            System.out.println("There are no songs in your downloads folder!");
+            this.logger.println("There are no songs in your downloads folder!");
             throw new NoSongFoundException();
         }
     }
 
-    public static void tagFile(String filePath, boolean individual, String vID) throws InvalidDataException, UnsupportedTagException, IOException, URISyntaxException, InterruptedException, NotSupportedException, VideoIdEmptyException {
+    public void tagFile(String filePath, boolean individual, String vID) throws InvalidDataException, UnsupportedTagException, IOException, URISyntaxException, InterruptedException, NotSupportedException, VideoIdEmptyException {
         ID3v2 id3v2Tag;
         Mp3File mp3file = new Mp3File(filePath);
         String songName = mp3file.getFilename().substring(PATH_TO_SONGS.length(), mp3file.getFilename().length() - 4);
-        System.out.println(songName);
+        this.logger.println("Tagging " + songName + " now...");
         String[] splitSong = songName.split(" - ");
-        System.out.println(Arrays.toString(splitSong));
         id3v2Tag = addArtistAndSongname(splitSong, mp3file);
         if (id3v2Tag == null) {
             if (mp3file.hasId3v2Tag()) {
@@ -82,7 +85,7 @@ public class Tagger {
         } else if (MODE == 2) {
             img = getCoverArtNewest(songName);
         } else {
-            System.out.println("Unidentified mode variable used!");
+            this.logger.println("Unidentified mode variable used within source code! Did you tamper with it?");
             return;
         }
         byte[] bytes = FileUtils.readFileToByteArray(img);
@@ -94,7 +97,6 @@ public class Tagger {
 
         // Replace original file with the temporary file
         Files.move(tempMp3File.toPath(), new File(filePath).toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-        System.out.println("Tagging complete.");
     }
 
     private static ID3v2 addArtistAndSongname(String[] splitSong, Mp3File mp3file) {
@@ -113,7 +115,7 @@ public class Tagger {
         return id3v2Tag;
     }
 
-    public static String getMbid(String songName, String artistName) throws URISyntaxException, IOException, InterruptedException {
+    public String getMbid(String songName, String artistName) throws URISyntaxException, IOException, InterruptedException {
         // Base URL of the MusicBrainz API
         String baseUrl = "https://musicbrainz.org/ws/2/";
 
@@ -136,16 +138,13 @@ public class Tagger {
 
         // Print formatted JSON
         String formattedJson = gson.toJson(json);
-        System.out.println("Formatted response:\n" + formattedJson);
 
         if (LevenshteinDistance.getDefaultInstance().apply(songName, JsonPath.from(formattedJson).get("recordings[0].title")) > 7) {
-            System.out.println("Song names not similar enough!");
+            this.logger.println("Song names not similar enough!");
             return null;
         }
 
-        String mbid = JsonPath.from(formattedJson).get("recordings[0].releases[0].id");
-        System.out.println(mbid);
-        return mbid;
+        return JsonPath.from(formattedJson).get("recordings[0].releases[0].id");
     }
 
     public static File getCoverArt(String mbid) throws URISyntaxException, IOException, InterruptedException {
@@ -157,7 +156,6 @@ public class Tagger {
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         String jsonResponse = response.body();
-        System.out.println(jsonResponse.substring(5));
         URL url = new URL(jsonResponse.substring(5));
         File img = new File("img.jpg");
         FileUtils.copyURLToFile(url, img);
@@ -180,12 +178,10 @@ public class Tagger {
 
             // Print formatted JSON
             String formattedJson = gson.toJson(json);
-            System.out.println("Formatted response:\n" + formattedJson);
             vID = JsonPath.from(formattedJson).get("items[0].id.videoId");
         } else {
             vID = songName;
         }
-        System.out.println(vID);
         return getCroppedImageFromVID(vID);
     }
 
@@ -202,7 +198,6 @@ public class Tagger {
             fullOutput.add(buffer);
         }
         p.waitFor();
-        System.out.println("Value is: " + fullOutput);
         if (fullOutput.isEmpty()) {
             throw new VideoIdEmptyException();
         }
