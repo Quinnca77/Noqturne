@@ -24,12 +24,13 @@ public class guiTagger extends JFrame {
     private JTextField songPlaylistURLTextField;
     private JButton downloadAndTagSongButton;
     private JTextPane loadingText;
+    private JTextField filePathSong;
+    private JTextField vIDThumbnail;
+    private JButton addCoverForIndividualButton;
     private static final JTextField artistNameInput = new JTextField(10);
     private static final JTextField songNameInput = new JTextField(10);
     private final Tagger tagger;
     private final Downloader downloader;
-
-    // TODO: bring back individual tagging (turned out more useful than thought before)
 
     public guiTagger() {
         setContentPane(MainPanel);
@@ -39,11 +40,64 @@ public class guiTagger extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
         tagAllFilesInButton.addActionListener(e -> invokeTagAllFiles());
-        downloadAndTagSongButton.addActionListener(e -> downloadAndTag());
+        downloadAndTagSongButton.addActionListener(e -> invokeDownloadAndTag());
+        addCoverForIndividualButton.addActionListener(e -> invokeIndividualTag());
 
         new Logger(this);
         this.tagger = new Tagger();
         this.downloader = new Downloader();
+    }
+
+    private void addCoverForIndividualFile() {
+        String filePath = filePathSong.getText().replaceAll("\"", "");
+        if (filePath.isEmpty()) {
+            JOptionPane.showMessageDialog(guiTagger.this, "Please put in a file path when using this option");
+            return;
+        }
+        String vID = vIDThumbnail.getText();
+        if (fileRename.isSelected()) {
+            File song = new File(filePath);
+            JPanel fields = getFields(song.getName());
+
+            int result = JOptionPane.showConfirmDialog(guiTagger.this, fields, "Rename file", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+            switch (result) {
+                case JOptionPane.OK_OPTION:
+                    if (!(artistNameInput.getText().isEmpty() && songNameInput.getText().isEmpty())) {
+                        filePath = PATH_TO_SONGS + artistNameInput.getText() + " - " + songNameInput.getText() + ".mp3";
+                        song.renameTo(new File(filePath));
+                    }
+                    break;
+
+                case JOptionPane.CANCEL_OPTION:
+                    break;
+            }
+        }
+        try {
+            tagger.tagFile(filePath, true, vID);
+            JOptionPane.showMessageDialog(guiTagger.this, "Tagging successful!");
+        } catch (InvalidDataException | UnsupportedTagException | IOException | URISyntaxException |
+                 InterruptedException | NotSupportedException ex) {
+            JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, please contact the developer");
+            throw new RuntimeException(ex);
+        } catch (VideoIdEmptyException exce) {
+            JOptionPane.showMessageDialog(guiTagger.this, "No song online found that corresponds with these fields!");
+        }
+    }
+
+    private class tagIndividualFileWorker extends SwingWorker<Void, Void> {
+        @Override
+        protected Void doInBackground() {
+            setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            displayText("Starting tagging...");
+            addCoverForIndividualFile();
+            return null;
+        }
+
+        @Override
+        protected void done() {
+            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            displayText("Tagging complete!");
+        }
     }
 
     private static @NotNull JPanel getFields(String fileName) {
@@ -121,9 +175,11 @@ public class guiTagger extends JFrame {
         new tagAllFilesWorker().execute();
     }
 
-    private void downloadAndTag() {
+    private void invokeDownloadAndTag() {
         new DownloadAndTagWorker().execute();
     }
+
+    private void invokeIndividualTag() { new tagIndividualFileWorker().execute(); }
 
     private class DownloadAndTagWorker extends SwingWorker<Void, Void> {
         @Override
