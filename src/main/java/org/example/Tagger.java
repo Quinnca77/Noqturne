@@ -1,5 +1,6 @@
 package org.example;
 
+import com.formdev.flatlaf.FlatDarkLaf;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mpatric.mp3agic.*;
@@ -31,6 +32,7 @@ public class Tagger {
     Logger logger;
     
     public static void main(String[] args) {
+        FlatDarkLaf.setup();
         new guiTagger();
     }
 
