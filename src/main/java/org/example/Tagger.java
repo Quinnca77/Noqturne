@@ -30,11 +30,6 @@ public class Tagger {
     // file filter for sort mp3 files
     static FileFilter filter = file -> file.getName().endsWith(".mp3");
     Logger logger;
-    
-    public static void main(String[] args) {
-        FlatDarkLaf.setup();
-        new guiTagger();
-    }
 
     public Tagger() {
         this.logger = Logger.getLogger();
