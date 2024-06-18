@@ -12,6 +12,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.concurrent.ExecutionException;
 
 import static org.example.Tagger.PATH_TO_SONGS;
@@ -38,6 +39,13 @@ public class guiTagger extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(700, 500);
         setLocationRelativeTo(null);
+
+        URL iconURL = getClass().getResource("/icon.png");
+        if (iconURL != null) {
+            ImageIcon icon = new ImageIcon(iconURL);
+            this.setIconImage(icon.getImage());
+        }
+
         setVisible(true);
         tagAllFilesInButton.addActionListener(e -> invokeTagAllFiles());
         downloadAndTagSongButton.addActionListener(e -> invokeDownloadAndTag());
