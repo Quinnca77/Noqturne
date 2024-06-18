@@ -77,7 +77,7 @@ public class guiTagger extends JFrame {
             JOptionPane.showMessageDialog(guiTagger.this, "Tagging successful!");
         } catch (InvalidDataException | UnsupportedTagException | IOException | URISyntaxException |
                  InterruptedException | NotSupportedException ex) {
-            JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, please contact the developer");
+            JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, please contact the developer.\nError code 01");
             throw new RuntimeException(ex);
         } catch (VideoIdEmptyException exce) {
             JOptionPane.showMessageDialog(guiTagger.this, "No song online found that corresponds with these fields!");
@@ -162,7 +162,7 @@ public class guiTagger extends JFrame {
             JOptionPane.showMessageDialog(guiTagger.this, "Tagging successful!");
         } catch (InvalidDataException | UnsupportedTagException | IOException | URISyntaxException |
                  InterruptedException | NotSupportedException ex) {
-            JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, sowwy");
+            JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, please contact the developer.\nError code 02");
             throw new RuntimeException(ex);
         } catch (NoSongFoundException exc) {
             JOptionPane.showMessageDialog(guiTagger.this, "No songs found in Downloads folder!");
@@ -191,7 +191,7 @@ public class guiTagger extends JFrame {
                 displayText("Download complete. Starting tagging...\n");
                 tagAllFiles();
             } catch (IOException | InterruptedException e) {
-                JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, please contact the developer");
+                JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, please contact the developer.\nError code 03");
             }
             return null;
         }
@@ -203,7 +203,7 @@ public class guiTagger extends JFrame {
                 get();
                 displayText("Tagging complete!\n");
             } catch (InterruptedException | ExecutionException e) {
-                JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, please contact the developer");
+                JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, please contact the developer.\nError code 04");
             }
         }
     }
@@ -214,7 +214,7 @@ public class guiTagger extends JFrame {
             try {
                 doc.insertString(doc.getLength(), string, null);
             } catch (BadLocationException exc) {
-                JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, please contact the developer");
+                JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, please contact the developer.\nError code 05");
             }
         });
     }
