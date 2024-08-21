@@ -1,31 +1,20 @@
 package org.example;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.mpatric.mp3agic.*;
-import io.restassured.path.json.JsonPath;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 
 public class Tagger {
 
     public static final String PATH_TO_SONGS = "C:\\Users\\" + System.getProperty("user.name") + "\\Downloads\\";
-    static int MODE = 2;
     // file filter for sort mp3 files
     static FileFilter filter = file -> file.getName().endsWith(".mp3");
     Logger logger;
@@ -69,20 +58,10 @@ public class Tagger {
             }
         }
         File img;
-        if (MODE == 0) {
-            String mbid = getMbid(splitSong[1], splitSong[0]);
-            img = getCoverArt(mbid);
-        } else if (MODE == 1 || individual) {
-            if (!individual) {
-                img = getCoverArtNew(songName, false);
-            } else {
-                img = getCoverArtNew(vID, true);
-            }
-        } else if (MODE == 2) {
-            img = getCoverArtNewest(songName);
+        if (individual) {
+            img = getCroppedImageFromVID(vID);
         } else {
-            this.logger.println("Unidentified mode variable used within source code! Did you tamper with it?");
-            return;
+            img = getCoverArt(songName);
         }
         byte[] bytes = FileUtils.readFileToByteArray(img);
         String mimeType = Files.probeContentType(img.toPath());
@@ -111,79 +90,10 @@ public class Tagger {
         return id3v2Tag;
     }
 
-    public String getMbid(String songName, String artistName) throws URISyntaxException, IOException, InterruptedException {
-        // Base URL of the MusicBrainz API
-        String baseUrl = "https://musicbrainz.org/ws/2/";
-
-        // Endpoint path for search
-        String endpoint = "recording";
-
-        HttpClient client = HttpClient.newHttpClient();
-
-        // Encode the song name for URL
-        String encodedSongName = URLEncoder.encode(songName, StandardCharsets.UTF_8);
-
-        HttpRequest request = HttpRequest.newBuilder(new URI(baseUrl + endpoint + "?query=recording:" + encodedSongName + "%20AND%20artistname:" + artistName + "%20AND%20status:official%20AND%20primarytype:album&inc=releases&limit=3&fmt=json"))
-                .GET()
-                .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        // Parse JSON response
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        String jsonResponse = response.body();
-        Object json = gson.fromJson(jsonResponse, Object.class); // Deserialize JSON to Object
-
-        // Print formatted JSON
-        String formattedJson = gson.toJson(json);
-
-        if (LevenshteinDistance.getDefaultInstance().apply(songName, JsonPath.from(formattedJson).get("recordings[0].title")) > 7) {
-            this.logger.println("Song names not similar enough!");
-            return null;
-        }
-
-        return JsonPath.from(formattedJson).get("recordings[0].releases[0].id");
-    }
-
-    public static File getCoverArt(String mbid) throws URISyntaxException, IOException, InterruptedException {
-        String baseUrl = "http://coverartarchive.org";
-        String endpoint = "/release/" + mbid + "/front";
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder(new URI(baseUrl + endpoint))
-                .GET()
-                .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        String jsonResponse = response.body();
-        URL url = new URL(jsonResponse.substring(5));
-        File img = new File("img.jpg");
-        FileUtils.copyURLToFile(url, img);
-        return img;
-    }
-
-    public static File getCoverArtNew(String songName, boolean individual) throws IOException, URISyntaxException, InterruptedException {
-        String vID;
-        if (!individual) {
-            String encodedSongName = URLEncoder.encode(songName, StandardCharsets.UTF_8);
-            HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder(new URI("https://www.googleapis.com/youtube/v3/search?key=***REMOVED***&part=snippet&maxResults=2&topicId=/m/04rlf&q=" + encodedSongName))
-                    .GET()
-                    .build();
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            // Parse JSON response
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            String jsonResponse = response.body();
-            Object json = gson.fromJson(jsonResponse, Object.class); // Deserialize JSON to Object
-
-            // Print formatted JSON
-            String formattedJson = gson.toJson(json);
-            vID = JsonPath.from(formattedJson).get("items[0].id.videoId");
-        } else {
-            vID = songName;
-        }
-        return getCroppedImageFromVID(vID);
-    }
-
     // TODO if no decent match is found (hamming distance song title), return special value and get artist picture instead
-    public static File getCoverArtNewest(String songName) throws IOException, InterruptedException, VideoIdEmptyException {
+    public static File getCoverArt(String songName) throws IOException, InterruptedException, VideoIdEmptyException {
         String filePath = "coverArt.py";
+        // TODO use python code calls and names that make more sense than "main33"
         ProcessBuilder pb = new ProcessBuilder()
                 .command("python", "-u", filePath, "main33", songName);
         Process p = pb.start();
