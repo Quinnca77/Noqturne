@@ -1,5 +1,5 @@
 package org.example;
 
-public class VideoIdEmptyException extends Throwable {
+public class VideoIdEmptyException extends Exception {
 
 }

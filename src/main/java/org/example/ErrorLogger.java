@@ -1,17 +1,30 @@
 package org.example;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
+/**
+ * Class that gets called whenever a critical error occurs and reviewing a stacktrace
+ * is necessary
+ */
 public class ErrorLogger {
 
-    public static void runtimeExceptionOccurred(Exception e) throws IOException {
-        File errorLog = new File("errorLog.log");
-        errorLog.createNewFile();
-        FileWriter fileWriter = new FileWriter("errorLog.log");
-        fileWriter.write(String.valueOf(e));
-        fileWriter.close();
+    /**
+     * Called when a critical Exception occurs. Dumps the stack trace of the Exception to a log
+     * file for debugging purposes.
+     * @param e the Exception to be logged.
+     */
+    public static void runtimeExceptionOccurred(Throwable e) {
+        try {
+            File errorLog = new File("errorLog.log");
+            errorLog.createNewFile();
+            FileWriter fileWriter = new FileWriter("errorLog.log");
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            fileWriter.write(sw.toString());
+            fileWriter.close();
+        } catch (IOException ex) {
+            Logger.getLogger().println("A runtime error occurred, but could not be logged due to an IOException");
+        }
     }
 
 }

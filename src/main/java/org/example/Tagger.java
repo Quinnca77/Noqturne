@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -42,12 +41,11 @@ public class Tagger {
      * automatically.
      *
      * @throws IOException if file permissions are not configured as expected
-     * @throws URISyntaxException if input is not a valid URI
      * @throws NoSongFoundException if there is no mp3 file in the Downloads folder
      * @throws VideoIdEmptyException if the cover art finder fails and find
      * no video IDs with an appropriate cover art
      */
-    public void tagAllFiles() throws IOException, URISyntaxException, InterruptedException, NotSupportedException, NoSongFoundException, VideoIdEmptyException {
+    public void tagAllFiles() throws IOException, InterruptedException, NotSupportedException, NoSongFoundException, VideoIdEmptyException {
         File file = new File(PATH_TO_SONGS);
         File[] songs = file.listFiles(filter);
         if (songs != null && songs.length != 0) {
@@ -68,11 +66,10 @@ public class Tagger {
      * @param vId vId of the cover art the file is to be tagged with (only used if
      *            "individual" is true)
      * @throws IOException if file permissions are not configured as expected
-     * @throws URISyntaxException if input is not a valid URI
      * @throws VideoIdEmptyException if the cover art finder fails and find
      * no video IDs with an appropriate cover art
      */
-    public void tagFile(String filePath, boolean individual, String vId) throws IOException, URISyntaxException, InterruptedException, NotSupportedException, VideoIdEmptyException {
+    public void tagFile(String filePath, boolean individual, String vId) throws IOException, InterruptedException, NotSupportedException, VideoIdEmptyException {
         ID3v2 id3v2Tag;
         Mp3File mp3file;
         try {
@@ -90,7 +87,7 @@ public class Tagger {
             if (mp3file.hasId3v2Tag()) {
                 id3v2Tag = mp3file.getId3v2Tag();
             } else {
-                // mp3 does not have an ID3v2 tag, let's create one
+                // Mp3 does not have an ID3v2 tag, let's create one
                 id3v2Tag = new ID3v24Tag();
                 mp3file.setId3v1Tag(id3v2Tag);
             }

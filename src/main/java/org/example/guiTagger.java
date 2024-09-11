@@ -9,7 +9,6 @@ import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
 
@@ -83,10 +82,9 @@ public class guiTagger extends JFrame {
             JOptionPane.showMessageDialog(guiTagger.this, "Tagging successful!");
         } catch (IOException |
                  InterruptedException | NotSupportedException e) {
+            ErrorLogger.runtimeExceptionOccurred(e);
             JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, please contact the developer.\nError code 01");
             throw new RuntimeException(e);
-        } catch (URISyntaxException e) {
-            JOptionPane.showMessageDialog(guiTagger.this, "Input is not a valid URI");
         } catch (VideoIdEmptyException e) {
             JOptionPane.showMessageDialog(guiTagger.this, "No song online found that corresponds with these fields!");
         }
@@ -170,10 +168,9 @@ public class guiTagger extends JFrame {
             JOptionPane.showMessageDialog(guiTagger.this, "Tagging successful!");
         } catch (IOException |
                  InterruptedException | NotSupportedException e) {
+            ErrorLogger.runtimeExceptionOccurred(e);
             JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, please contact the developer.\nError code 02");
             throw new RuntimeException(e);
-        } catch (URISyntaxException e) {
-            JOptionPane.showMessageDialog(guiTagger.this, "Input is not a valid URI");
         } catch (NoSongFoundException e) {
             JOptionPane.showMessageDialog(guiTagger.this, "No songs found in Downloads folder!");
         } catch (VideoIdEmptyException e) {
