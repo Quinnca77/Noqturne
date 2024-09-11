@@ -93,9 +93,8 @@ public class Tagger {
     // TODO if no decent match is found (hamming distance song title), return special value and get artist picture instead
     public static File getCoverArt(String songName) throws IOException, InterruptedException, VideoIdEmptyException {
         String filePath = "coverArt.py";
-        // TODO use python code calls and names that make more sense than "main33"
         ProcessBuilder pb = new ProcessBuilder()
-                .command("python", "-u", filePath, "main33", songName);
+                .command("python", "-u", filePath, songName);
         Process p = pb.start();
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(p.getInputStream()));
