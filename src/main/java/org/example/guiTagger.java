@@ -1,8 +1,6 @@
 package org.example;
 
-import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.NotSupportedException;
-import com.mpatric.mp3agic.UnsupportedTagException;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -26,7 +24,7 @@ public class guiTagger extends JFrame {
     private JButton downloadAndTagSongButton;
     private JTextPane loadingText;
     private JTextField filePathSong;
-    private JTextField vIDThumbnail;
+    private JTextField vIdThumbnail;
     private JButton addCoverForIndividualButton;
     private static final JTextField artistNameInput = new JTextField(10);
     private static final JTextField songNameInput = new JTextField(10);
@@ -62,7 +60,7 @@ public class guiTagger extends JFrame {
             JOptionPane.showMessageDialog(guiTagger.this, "Please put in a file path when using this option");
             return;
         }
-        String vID = vIDThumbnail.getText();
+        String vId = vIdThumbnail.getText();
         if (fileRename.isSelected()) {
             File song = new File(filePath);
             JPanel fields = getFields(song.getName());
@@ -81,13 +79,15 @@ public class guiTagger extends JFrame {
             }
         }
         try {
-            tagger.tagFile(filePath, true, vID);
+            tagger.tagFile(filePath, true, vId);
             JOptionPane.showMessageDialog(guiTagger.this, "Tagging successful!");
-        } catch (InvalidDataException | UnsupportedTagException | IOException | URISyntaxException |
-                 InterruptedException | NotSupportedException ex) {
+        } catch (IOException |
+                 InterruptedException | NotSupportedException e) {
             JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, please contact the developer.\nError code 01");
-            throw new RuntimeException(ex);
-        } catch (VideoIdEmptyException exce) {
+            throw new RuntimeException(e);
+        } catch (URISyntaxException e) {
+            JOptionPane.showMessageDialog(guiTagger.this, "Input is not a valid URI");
+        } catch (VideoIdEmptyException e) {
             JOptionPane.showMessageDialog(guiTagger.this, "No song online found that corresponds with these fields!");
         }
     }
@@ -168,13 +168,15 @@ public class guiTagger extends JFrame {
         try {
             this.tagger.tagAllFiles();
             JOptionPane.showMessageDialog(guiTagger.this, "Tagging successful!");
-        } catch (InvalidDataException | UnsupportedTagException | IOException | URISyntaxException |
-                 InterruptedException | NotSupportedException ex) {
+        } catch (IOException |
+                 InterruptedException | NotSupportedException e) {
             JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, please contact the developer.\nError code 02");
-            throw new RuntimeException(ex);
-        } catch (NoSongFoundException exc) {
+            throw new RuntimeException(e);
+        } catch (URISyntaxException e) {
+            JOptionPane.showMessageDialog(guiTagger.this, "Input is not a valid URI");
+        } catch (NoSongFoundException e) {
             JOptionPane.showMessageDialog(guiTagger.this, "No songs found in Downloads folder!");
-        } catch (VideoIdEmptyException exce) {
+        } catch (VideoIdEmptyException e) {
             JOptionPane.showMessageDialog(guiTagger.this, "No song online found that corresponds with these fields!");
         }
     }

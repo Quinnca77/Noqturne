@@ -12,10 +12,13 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
 
+/**
+ * Class for all functionalities associated with tagging an mp3 file in the Downloads folder.
+ */
 public class Tagger {
 
     public static final String PATH_TO_SONGS = "C:\\Users\\" + System.getProperty("user.name") + "\\Downloads\\";
-    // file filter for sort mp3 files
+    // File filter for sorting mp3 files
     static FileFilter filter = file -> file.getName().endsWith(".mp3");
     Logger logger;
 
@@ -23,12 +26,28 @@ public class Tagger {
         this.logger = Logger.getLogger();
     }
 
+    /**
+     * Gets all mp3 files in the Downloads folder.
+     * @return a File array with mp3 files
+     */
     public static File[] getAllFiles() {
         File file = new File(PATH_TO_SONGS);
         return file.listFiles(filter);
     }
 
-    public void tagAllFiles() throws InvalidDataException, UnsupportedTagException, IOException, URISyntaxException, InterruptedException, NotSupportedException, NoSongFoundException, VideoIdEmptyException {
+    /**
+     * Most important function of this application. When this function is called,
+     * it iterates over all mp3 files in the Downloads folder and tags them with
+     * an artist tag, title tag, and cover art, of which the last is always performed
+     * automatically.
+     *
+     * @throws IOException if file permissions are not configured as expected
+     * @throws URISyntaxException if input is not a valid URI
+     * @throws NoSongFoundException if there is no mp3 file in the Downloads folder
+     * @throws VideoIdEmptyException if the cover art finder fails and find
+     * no video IDs with an appropriate cover art
+     */
+    public void tagAllFiles() throws IOException, URISyntaxException, InterruptedException, NotSupportedException, NoSongFoundException, VideoIdEmptyException {
         File file = new File(PATH_TO_SONGS);
         File[] songs = file.listFiles(filter);
         if (songs != null && songs.length != 0) {
@@ -41,9 +60,28 @@ public class Tagger {
         }
     }
 
-    public void tagFile(String filePath, boolean individual, String vID) throws InvalidDataException, UnsupportedTagException, IOException, URISyntaxException, InterruptedException, NotSupportedException, VideoIdEmptyException {
+    // TODO split this function into two because doing it with a boolean variable is not optimal
+    /**
+     * Tags a single mp3 file with an artist name, song name and cover art.
+     * @param filePath file path to the mp3 file to be tagged
+     * @param individual whether this function is called for an individual file or not
+     * @param vId vId of the cover art the file is to be tagged with (only used if
+     *            "individual" is true)
+     * @throws IOException if file permissions are not configured as expected
+     * @throws URISyntaxException if input is not a valid URI
+     * @throws VideoIdEmptyException if the cover art finder fails and find
+     * no video IDs with an appropriate cover art
+     */
+    public void tagFile(String filePath, boolean individual, String vId) throws IOException, URISyntaxException, InterruptedException, NotSupportedException, VideoIdEmptyException {
         ID3v2 id3v2Tag;
-        Mp3File mp3file = new Mp3File(filePath);
+        Mp3File mp3file;
+        try {
+            mp3file = new Mp3File(filePath);
+        } catch (InvalidDataException | UnsupportedTagException e) {
+            // This should never happen, as this function is only ever called with MP3 files.
+            ErrorLogger.runtimeExceptionOccurred(e);
+            throw new RuntimeException(e);
+        }
         String songName = mp3file.getFilename().substring(PATH_TO_SONGS.length(), mp3file.getFilename().length() - 4);
         this.logger.println("Tagging " + songName + " now...");
         String[] splitSong = songName.split(" - ");
@@ -58,15 +96,19 @@ public class Tagger {
             }
         }
         File img;
-        if (individual) {
-            img = getCroppedImageFromVID(vID);
-        } else {
-            img = getCoverArt(songName);
+        try {
+            if (individual) {
+                img = getCroppedImageFromVID(vId);
+            } else {
+                img = getCoverArt(songName);
+            }
+            byte[] bytes = FileUtils.readFileToByteArray(img);
+            String mimeType = Files.probeContentType(img.toPath());
+            id3v2Tag.setAlbumImage(bytes, mimeType);
+        } catch (VIdException e) {
+            this.logger.println("Couldn't find valid cover art, skipping cover art for " + songName);
         }
-        byte[] bytes = FileUtils.readFileToByteArray(img);
-        String mimeType = Files.probeContentType(img.toPath());
-        id3v2Tag.setAlbumImage(bytes, mimeType);
-
+        
         File tempMp3File = File.createTempFile("temp", ".mp3");
         mp3file.save(tempMp3File.getAbsolutePath()); // Save to temporary file
 
@@ -74,6 +116,14 @@ public class Tagger {
         Files.move(tempMp3File.toPath(), new File(filePath).toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
     }
 
+    /**
+     * Tags an mp3 file with the artist name and song name in their metadata.
+     * @param splitSong array of 2 elements. First element is the artist, second
+     *                  element is the song title
+     * @param mp3file Mp3File object of the mp3 file to be tagged
+     * @return ID3v2 tag of the associated mp3 file, ready for more tags to be added
+     * to it
+     */
     private static ID3v2 addArtistAndSongname(String[] splitSong, Mp3File mp3file) {
         ID3v2 id3v2Tag = null;
         if (splitSong.length == 2) {
@@ -82,7 +132,7 @@ public class Tagger {
             } else {
                 // mp3 does not have an ID3v2 tag, let's create one
                 id3v2Tag = new ID3v24Tag();
-                mp3file.setId3v1Tag(id3v2Tag);
+                mp3file.setId3v2Tag(id3v2Tag);
             }
             id3v2Tag.setArtist(splitSong[0]);
             id3v2Tag.setTitle(splitSong[1]);
@@ -91,7 +141,15 @@ public class Tagger {
     }
 
     // TODO if no decent match is found (hamming distance song title), return special value and get artist picture instead
-    public static File getCoverArt(String songName) throws IOException, InterruptedException, VideoIdEmptyException {
+    /**
+     * Finds cover art for a song.
+     * @param songName the name of the song you want to find a cover art of
+     * @return cover art File associated to the corresponding song name
+     * @throws VideoIdEmptyException if the cover art finder fails and find
+     * no video IDs with an appropriate cover art
+     * @throws VIdException if the cover art finder would error on a cover art instance
+     */
+    public File getCoverArt(String songName) throws IOException, InterruptedException, VideoIdEmptyException, VIdException {
         String filePath = "coverArt.py";
         ProcessBuilder pb = new ProcessBuilder()
                 .command("python", "-u", filePath, songName);
@@ -108,27 +166,34 @@ public class Tagger {
             throw new VideoIdEmptyException();
         }
         in.close();
-        for (String vID : fullOutput) {
+        for (String vId : fullOutput) {
             try {
-                return getCroppedImageFromVID(vID);
+                return getCroppedImageFromVID(vId);
             } catch (IOException ignored) {
 
             }
         }
-        throw new IOException("No vID found without error-causing image");
+        this.logger.println("No vId found without error-causing image, skipping this song.");
+        throw new VIdException();
     }
 
-    private static @NotNull File getCroppedImageFromVID(String vID) throws IOException {
-        URL url = new URL("https://i.ytimg.com/vi/" + vID + "/maxresdefault.jpg");
+    /**
+     * Given a vId, returns the cropped cover art corresponding to it.
+     * @param vId the vId of the cover art to be extracted
+     * @return an image File with the cropped cover art
+     * @throws IOException if file permissions are not configured as expected
+     */
+    private @NotNull File getCroppedImageFromVID(String vId) throws IOException {
+        URL url = new URL("https://i.ytimg.com/vi/" + vId + "/maxresdefault.jpg");
         File img = new File("img.jpg");
         try {
             FileUtils.copyURLToFile(url, img);
         } catch (FileNotFoundException e) {
             try {
-                url = new URL("https://i.ytimg.com/vi/" + vID + "/hq720.jpg");
+                url = new URL("https://i.ytimg.com/vi/" + vId + "/hq720.jpg");
                 FileUtils.copyURLToFile(url, img);
             } catch (FileNotFoundException ex) {
-                url = new URL("https://i.ytimg.com/vi/" + vID + "/hqdefault.jpg");
+                url = new URL("https://i.ytimg.com/vi/" + vId + "/hqdefault.jpg");
                 FileUtils.copyURLToFile(url, img);
             }
         }
