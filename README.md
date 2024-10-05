@@ -25,7 +25,7 @@ You have a few options to choose from when installing this application:
 
 Whichever of these options you choose, you will still have to go through the necessary steps below. I know this is quite an elaborate installation, but if you follow all the steps below it will all
 work like a charm. I'd say the descriptions given are quite detailed, so you shouldn't have any trouble. For more information about the installation procedure and why it is the way it is, see the 
-[FAQ](#is-there-any-way-to-simplify-the-installation-procedure?)
+[FAQ](#installation-procedure)
 ### Installing Python
 You can skip this step if you already have Python installed.
 
@@ -106,6 +106,7 @@ Yes, although the last commit might have been a while ago. As long as there are 
 #### I cannot get this project to work for me
 Technically, that's not even a question, but I'll let that slip for now. Try to follow the steps in [Installation](#installation) as closely as possible and if you still cannot figure out why things 
 don't work, you can always contact me.
+<a name="installation-procedure"></a>
 #### Is there any way to simplify the installation procedure?
 This is still in development. For now, it's the most reliable way to install all necessary components yourself.
 #### Is there not a better way to find cover art than just checking the filename?
