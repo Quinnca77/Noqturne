@@ -10,6 +10,7 @@ public class Logger {
     /**
      * This constructor is never called except for the initialization of guiTagger.
      * Keep it like that.
+     *
      * @param gui the GUI for the logger to attach to
      */
     public Logger(guiTagger gui) {
@@ -27,6 +28,7 @@ public class Logger {
     /**
      * Prints a string to the GUI for the user to see. Only meant for user-friendly
      * language, no technical specifics.
+     *
      * @param string the string to be displayed to the user via the GUI textbox
      */
     public void println(String string) {

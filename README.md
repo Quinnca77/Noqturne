@@ -97,12 +97,12 @@ title. If you do not see the cover art that the cover art finder found, but inst
 improve the algorithm somehow.
 
 ## Contributions
-I am currently not accepting external contributions to this repository. If you really want to make changes yourself, please make a fork or open a Github issue if it's about a bug. 
+I am currently not accepting external contributions to this repository. If you really want to make changes yourself, please make a fork or open a GitHub issue if it's about a bug. 
 No guarantees are given on the time taken for a bug to be patched, this is a hobby project after all.
 
 ## FAQ
 #### Is this still being maintained?
-Yes, although the last commit might have been a while ago. As long as there are still bugs to be fixed and improvements to be made (AKA always), I will be mainting this project until stated otherwise.
+Yes, although the last commit might have been a while ago. As long as there are still bugs to be fixed and improvements to be made (AKA always), I will be maintaining this project until stated otherwise.
 #### I cannot get this project to work for me
 Technically, that's not even a question, but I'll let that slip for now. Try to follow the steps in [Installation](#installation) as closely as possible and if you still cannot figure out why things 
 don't work, you can always contact me.
@@ -112,7 +112,7 @@ This is still in development. For now, it's the most reliable way to install all
 #### Is there not a better way to find cover art than just checking the filename?
 I have thought about this for a long time actually, and found that there is no more reliable way to do it (that I seem to be capable of anyway). In very early iterations of this application,
 I used the [MusicBrainz API](https://musicbrainz.org/doc/MusicBrainz_API) to find a song and tag it with the appropriate cover art. This worked even with nonsense filenames, since it used the
-contents of the song, the actual music, to find the song in their database. The only reason I did not use this method is because I found their database to be extremely lacking in its
+contents of the song, the actual music, to find the song in their database. The only reason I did not use this method is that I found their database to be extremely lacking in its
 coverage of songs. It seemed like the moment a song was even remotely unpopular, niche or unofficial in any way, MusicBrainz would not have an entry for it in their database. 
 So I went with YouTube instead, which seems to have a way bigger database of songs than MusicBrainz.
 #### Why the Downloads folder specifically?

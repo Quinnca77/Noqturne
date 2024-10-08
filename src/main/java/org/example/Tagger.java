@@ -16,10 +16,10 @@ import java.util.ArrayList;
  */
 public class Tagger {
 
-    public static final String PATH_TO_SONGS = "C:\\Users\\" + System.getProperty("user.name") + "\\Downloads\\";
+    public final static String PATH_TO_SONGS = "C:\\Users\\" + System.getProperty("user.name") + "\\Downloads\\";
     // File filter for sorting mp3 files
-    static FileFilter filter = file -> file.getName().endsWith(".mp3");
-    Logger logger;
+    private final static FileFilter filter = file -> file.getName().endsWith(".mp3");
+    private final Logger logger;
 
     public Tagger() {
         this.logger = Logger.getLogger();
@@ -27,6 +27,7 @@ public class Tagger {
 
     /**
      * Gets all mp3 files in the Downloads folder.
+     *
      * @return a File array with mp3 files
      */
     public static File[] getAllFiles() {
@@ -50,7 +51,7 @@ public class Tagger {
         File[] songs = file.listFiles(filter);
         if (songs != null && songs.length != 0) {
             for (File mp3 : songs) {
-                tagFile(mp3.getAbsolutePath(), false, null);
+                genericTagFile(mp3.getAbsolutePath());
             }
         } else {
             this.logger.println("There are no songs in your downloads folder!");
@@ -58,31 +59,71 @@ public class Tagger {
         }
     }
 
-    // TODO split this function into two because doing it with a boolean variable is not optimal
     /**
-     * Tags a single mp3 file with an artist name, song name and cover art.
+     * Tags a single generic mp3 file with an artist name, song name and cover art automatically
+     * based on the name of the song.
+     *
      * @param filePath file path to the mp3 file to be tagged
-     * @param individual whether this function is called for an individual file or not
-     * @param vId vId of the cover art the file is to be tagged with (only used if
-     *            "individual" is true)
      * @throws IOException if file permissions are not configured as expected
-     * @throws VideoIdEmptyException if the cover art finder fails and find
+     * @throws VideoIdEmptyException if the cover art finder fails and finds
      * no video IDs with an appropriate cover art
      */
-    public void tagFile(String filePath, boolean individual, String vId) throws IOException, InterruptedException, NotSupportedException, VideoIdEmptyException {
-        ID3v2 id3v2Tag;
-        Mp3File mp3file;
-        try {
-            mp3file = new Mp3File(filePath);
-        } catch (InvalidDataException | UnsupportedTagException e) {
-            // This should never happen, as this function is only ever called with MP3 files.
-            ErrorLogger.runtimeExceptionOccurred(e);
-            throw new RuntimeException(e);
-        }
+    public void genericTagFile(String filePath) throws IOException, InterruptedException, NotSupportedException, VideoIdEmptyException {
+        Mp3File mp3file = loadMp3File(filePath);
         String songName = mp3file.getFilename().substring(PATH_TO_SONGS.length(), mp3file.getFilename().length() - 4);
+
         this.logger.println("Tagging " + songName + " now...");
         String[] splitSong = songName.split(" - ");
-        id3v2Tag = addArtistAndSongname(splitSong, mp3file);
+        ID3v2 id3v2Tag = getId3v2Tag(splitSong, mp3file);
+
+        File img;
+        try {
+            img = getCoverArt(songName);
+            byte[] bytes = FileUtils.readFileToByteArray(img);
+            String mimeType = Files.probeContentType(img.toPath());
+            id3v2Tag.setAlbumImage(bytes, mimeType);
+        } catch (VIdException e) {
+            this.logger.println("Couldn't find valid cover art, skipping cover art for " + songName);
+        }
+
+        saveMP3FileWithCover(filePath, mp3file);
+    }
+
+    /**
+     * Tags a single mp3 file with an artist name, song name and cover art with the provided vId
+     * of the video that should become its cover art.
+     *
+     * @param filePath file path to the mp3 file to be tagged
+     * @param vId vId of the cover art the file is to be tagged with
+     * @throws IOException if file permissions are not configured as expected
+     */
+    public void tagIndividualFile(String filePath, String vId) throws IOException, NotSupportedException {
+        Mp3File mp3file = loadMp3File(filePath);
+        String songName = mp3file.getFilename().substring(PATH_TO_SONGS.length(), mp3file.getFilename().length() - 4);
+
+        this.logger.println("Tagging " + songName + " now...");
+        String[] splitSong = songName.split(" - ");
+        ID3v2 id3v2Tag = getId3v2Tag(splitSong, mp3file);
+
+        File img;
+        img = getCroppedImageFromVID(vId);
+        byte[] bytes = FileUtils.readFileToByteArray(img);
+        String mimeType = Files.probeContentType(img.toPath());
+        id3v2Tag.setAlbumImage(bytes, mimeType);
+
+        saveMP3FileWithCover(filePath, mp3file);
+    }
+
+    private static void saveMP3FileWithCover(String filePath, Mp3File mp3file) throws IOException, NotSupportedException {
+        File tempMp3File = File.createTempFile("temp", ".mp3");
+        mp3file.save(tempMp3File.getAbsolutePath()); // Save to temporary file
+
+        // Replace original file with the temporary file
+        Files.move(tempMp3File.toPath(), new File(filePath).toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    private static ID3v2 getId3v2Tag(String[] splitSong, Mp3File mp3file) {
+        ID3v2 id3v2Tag = addArtistAndSongname(splitSong, mp3file);
         if (id3v2Tag == null) {
             if (mp3file.hasId3v2Tag()) {
                 id3v2Tag = mp3file.getId3v2Tag();
@@ -92,29 +133,24 @@ public class Tagger {
                 mp3file.setId3v1Tag(id3v2Tag);
             }
         }
-        File img;
-        try {
-            if (individual) {
-                img = getCroppedImageFromVID(vId);
-            } else {
-                img = getCoverArt(songName);
-            }
-            byte[] bytes = FileUtils.readFileToByteArray(img);
-            String mimeType = Files.probeContentType(img.toPath());
-            id3v2Tag.setAlbumImage(bytes, mimeType);
-        } catch (VIdException e) {
-            this.logger.println("Couldn't find valid cover art, skipping cover art for " + songName);
-        }
-        
-        File tempMp3File = File.createTempFile("temp", ".mp3");
-        mp3file.save(tempMp3File.getAbsolutePath()); // Save to temporary file
+        return id3v2Tag;
+    }
 
-        // Replace original file with the temporary file
-        Files.move(tempMp3File.toPath(), new File(filePath).toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+    private static @NotNull Mp3File loadMp3File(String filePath) throws IOException {
+        Mp3File mp3file;
+        try {
+            mp3file = new Mp3File(filePath);
+        } catch (InvalidDataException | UnsupportedTagException e) {
+            // This should never happen, as this function is only ever called with MP3 files.
+            ErrorLogger.runtimeExceptionOccurred(e);
+            throw new RuntimeException(e);
+        }
+        return mp3file;
     }
 
     /**
      * Tags an mp3 file with the artist name and song name in their metadata.
+     *
      * @param splitSong array of 2 elements. First element is the artist, second
      *                  element is the song title
      * @param mp3file Mp3File object of the mp3 file to be tagged
@@ -140,6 +176,7 @@ public class Tagger {
     // TODO if no decent match is found (hamming distance song title), return special value and get artist picture instead
     /**
      * Finds cover art for a song.
+     *
      * @param songName the name of the song you want to find a cover art of
      * @return cover art File associated to the corresponding song name
      * @throws VideoIdEmptyException if the cover art finder fails and find
@@ -176,6 +213,7 @@ public class Tagger {
 
     /**
      * Given a vId, returns the cropped cover art corresponding to it.
+     *
      * @param vId the vId of the cover art to be extracted
      * @return an image File with the cropped cover art
      * @throws IOException if file permissions are not configured as expected

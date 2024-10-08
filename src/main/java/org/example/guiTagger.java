@@ -27,6 +27,7 @@ public class guiTagger extends JFrame {
     private JButton addCoverForIndividualButton;
     private static final JTextField artistNameInput = new JTextField(10);
     private static final JTextField songNameInput = new JTextField(10);
+    private final Logger logger;
     private final Tagger tagger;
     private final Downloader downloader;
 
@@ -49,6 +50,7 @@ public class guiTagger extends JFrame {
         addCoverForIndividualButton.addActionListener(e -> invokeIndividualTag());
 
         new Logger(this);
+        this.logger = Logger.getLogger();
         this.tagger = new Tagger();
         this.downloader = new Downloader();
     }
@@ -69,7 +71,9 @@ public class guiTagger extends JFrame {
                 case JOptionPane.OK_OPTION:
                     if (!(artistNameInput.getText().isEmpty() && songNameInput.getText().isEmpty())) {
                         filePath = PATH_TO_SONGS + artistNameInput.getText() + " - " + songNameInput.getText() + ".mp3";
-                        song.renameTo(new File(filePath));
+                        if (!song.renameTo(new File(filePath))) {
+                            this.logger.println("Renaming song failed!");
+                        }
                     }
                     break;
 
@@ -78,15 +82,12 @@ public class guiTagger extends JFrame {
             }
         }
         try {
-            tagger.tagFile(filePath, true, vId);
+            tagger.tagIndividualFile(filePath, vId);
             JOptionPane.showMessageDialog(guiTagger.this, "Tagging successful!");
-        } catch (IOException |
-                 InterruptedException | NotSupportedException e) {
+        } catch (IOException | NotSupportedException e) {
             ErrorLogger.runtimeExceptionOccurred(e);
             JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, please contact the developer.\nError code 01");
             throw new RuntimeException(e);
-        } catch (VideoIdEmptyException e) {
-            JOptionPane.showMessageDialog(guiTagger.this, "No song online found that corresponds with these fields!");
         }
     }
 
@@ -154,7 +155,9 @@ public class guiTagger extends JFrame {
                 switch (result) {
                     case JOptionPane.OK_OPTION:
                         if (!(artistNameInput.getText().isEmpty() && songNameInput.getText().isEmpty())) {
-                            song.renameTo(new File(PATH_TO_SONGS + artistNameInput.getText() + " - " + songNameInput.getText() + ".mp3"));
+                            if (!song.renameTo(new File(PATH_TO_SONGS + artistNameInput.getText() + " - " + songNameInput.getText() + ".mp3"))) {
+                                this.logger.println("Renaming song failed!");
+                            }
                         }
                         break;
 

@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 public class Downloader {
 
-    Logger logger;
+    private final Logger logger;
 
     public Downloader() {
         this.logger = Logger.getLogger();

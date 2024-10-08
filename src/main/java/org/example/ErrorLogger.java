@@ -11,11 +11,13 @@ public class ErrorLogger {
     /**
      * Called when a critical Exception occurs. Dumps the stack trace of the Exception to a log
      * file for debugging purposes.
+     *
      * @param e the Exception to be logged.
      */
     public static void runtimeExceptionOccurred(Throwable e) {
         try {
             File errorLog = new File("errorLog.log");
+            //noinspection ResultOfMethodCallIgnored
             errorLog.createNewFile();
             FileWriter fileWriter = new FileWriter("errorLog.log");
             StringWriter sw = new StringWriter();
