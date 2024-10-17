@@ -173,7 +173,6 @@ public class Tagger {
         return id3v2Tag;
     }
 
-    // TODO if no decent match is found (hamming distance song title), return special value and get artist picture instead
     /**
      * Finds cover art for a song.
      *
