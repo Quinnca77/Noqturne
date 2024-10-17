@@ -15,6 +15,7 @@ import java.util.concurrent.ExecutionException;
 import static org.example.Tagger.PATH_TO_SONGS;
 import static org.example.Tagger.getAllFiles;
 
+// TODO document this class
 public class guiTagger extends JFrame {
     private JButton tagAllFilesInButton;
     private JPanel MainPanel;
