@@ -1,7 +1,6 @@
 package org.example;
 
 import com.mpatric.mp3agic.*;
-import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
@@ -19,6 +18,7 @@ public class Tagger {
     public final static String PATH_TO_SONGS = "C:\\Users\\" + System.getProperty("user.name") + "\\Downloads\\";
     // File filter for sorting mp3 files
     private final static FileFilter filter = file -> file.getName().endsWith(".mp3");
+    public static final String MIME_TYPE = "image/jpeg";
     private final Logger logger;
 
     public Tagger() {
@@ -76,12 +76,10 @@ public class Tagger {
         String[] splitSong = songName.split(" - ");
         ID3v2 id3v2Tag = getId3v2Tag(splitSong, mp3file);
 
-        File img;
+        byte[] img;
         try {
             img = getCoverArt(songName);
-            byte[] bytes = FileUtils.readFileToByteArray(img);
-            String mimeType = Files.probeContentType(img.toPath());
-            id3v2Tag.setAlbumImage(bytes, mimeType);
+            id3v2Tag.setAlbumImage(img, MIME_TYPE);
         } catch (VIdException e) {
             this.logger.println("Couldn't find valid cover art, skipping cover art for " + songName);
         }
@@ -105,11 +103,8 @@ public class Tagger {
         String[] splitSong = songName.split(" - ");
         ID3v2 id3v2Tag = getId3v2Tag(splitSong, mp3file);
 
-        File img;
-        img = getCroppedImageFromVID(vId);
-        byte[] bytes = FileUtils.readFileToByteArray(img);
-        String mimeType = Files.probeContentType(img.toPath());
-        id3v2Tag.setAlbumImage(bytes, mimeType);
+        byte[] img = getCroppedImageFromVID(vId);
+        id3v2Tag.setAlbumImage(img, MIME_TYPE);
 
         saveMP3FileWithCover(filePath, mp3file);
     }
@@ -177,12 +172,12 @@ public class Tagger {
      * Finds cover art for a song.
      *
      * @param songName the name of the song you want to find a cover art of
-     * @return cover art File associated to the corresponding song name
+     * @return cover art byte[] (mimeType jpeg) associated to the corresponding song name
      * @throws VideoIdEmptyException if the cover art finder fails and find
      * no video IDs with an appropriate cover art
      * @throws VIdException if the cover art finder would error on a cover art instance
      */
-    public File getCoverArt(String songName) throws IOException, InterruptedException, VideoIdEmptyException, VIdException {
+    public byte[] getCoverArt(String songName) throws IOException, InterruptedException, VideoIdEmptyException, VIdException {
         String filePath = "coverArt.py";
         ProcessBuilder pb = new ProcessBuilder()
                 .command("python", "-u", filePath, songName);
@@ -214,29 +209,28 @@ public class Tagger {
      * Given a vId, returns the cropped cover art corresponding to it.
      *
      * @param vId the vId of the cover art to be extracted
-     * @return an image File with the cropped cover art
+     * @return byte[] with the cropped cover art (mimeType jpeg)
      * @throws IOException if file permissions are not configured as expected
      */
-    private @NotNull File getCroppedImageFromVID(String vId) throws IOException {
+    private byte[] getCroppedImageFromVID(String vId) throws IOException {
         URL url = new URL("https://i.ytimg.com/vi/" + vId + "/maxresdefault.jpg");
-        File img = new File("img.jpg");
+        BufferedImage img;
         try {
-            FileUtils.copyURLToFile(url, img);
+            img = ImageIO.read(url);
         } catch (FileNotFoundException e) {
             try {
                 url = new URL("https://i.ytimg.com/vi/" + vId + "/hq720.jpg");
-                FileUtils.copyURLToFile(url, img);
+                img = ImageIO.read(url);
             } catch (FileNotFoundException ex) {
                 url = new URL("https://i.ytimg.com/vi/" + vId + "/hqdefault.jpg");
-                FileUtils.copyURLToFile(url, img);
+                img = ImageIO.read(url);
             }
         }
-        BufferedImage bufferedImg = ImageIO.read(img);
-        int targetWidth = bufferedImg.getHeight();
-        int startX = (bufferedImg.getWidth() / 2) - (targetWidth / 2);
-        BufferedImage croppedImage = bufferedImg.getSubimage(startX, 0, targetWidth, targetWidth);
-        File outputFile = new File("croppedImage.jpg");
-        ImageIO.write(croppedImage, "jpg", outputFile);
-        return outputFile;
+        int targetWidth = img.getHeight();
+        int startX = (img.getWidth() / 2) - (targetWidth / 2);
+        BufferedImage croppedImg = img.getSubimage(startX, 0, targetWidth, targetWidth);
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        ImageIO.write(croppedImg, "jpg", byteStream);
+        return byteStream.toByteArray();
     }
 }

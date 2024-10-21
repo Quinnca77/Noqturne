@@ -40,9 +40,7 @@ build/
 ### Mac OS ###
 .DS_Store
 
-out/*
-croppedImage.jpg
-img.jpg
+out/
 Auto-tagger.jar
 yt-dlp.exe
 icon.ico
