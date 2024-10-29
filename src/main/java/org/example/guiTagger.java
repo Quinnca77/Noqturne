@@ -10,7 +10,6 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.concurrent.ExecutionException;
 
 import static org.example.Tagger.PATH_TO_SONGS;
 import static org.example.Tagger.getAllFiles;
@@ -92,22 +91,6 @@ public class guiTagger extends JFrame {
         }
     }
 
-    private class tagIndividualFileWorker extends SwingWorker<Void, Void> {
-        @Override
-        protected Void doInBackground() {
-            setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-            displayText("Starting tagging...");
-            addCoverForIndividualFile();
-            return null;
-        }
-
-        @Override
-        protected void done() {
-            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            displayText("Tagging complete!");
-        }
-    }
-
     private static @NotNull JPanel getFields(String fileName) {
         JPanel mainPanel = new JPanel(new BorderLayout());
         JPanel title = new JPanel();
@@ -128,22 +111,6 @@ public class guiTagger extends JFrame {
         mainPanel.add(fields, BorderLayout.CENTER);
         mainPanel.setPreferredSize(new Dimension(800,60));
         return mainPanel;
-    }
-
-    private class tagAllFilesWorker extends SwingWorker<Void, Void> {
-        @Override
-        protected Void doInBackground() {
-            setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-            displayText("Starting tagging...");
-            tagAllFiles();
-            return null;
-        }
-
-        @Override
-        protected void done() {
-            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            displayText("Tagging complete!");
-        }
     }
 
     private void tagAllFiles() {
@@ -183,40 +150,60 @@ public class guiTagger extends JFrame {
     }
 
     private void invokeTagAllFiles() {
-        new tagAllFilesWorker().execute();
+        new AbstractWorker(this) {
+            @Override
+            protected void beginTask() {
+                displayText("Starting tagging...");
+            }
+            @Override
+            protected void executeTask() {
+                tagAllFiles();
+            }
+            @Override
+            protected void taskCompleted() {
+                displayText("Tagging complete!");
+            }
+        }.execute();
     }
 
     private void invokeDownloadAndTag() {
-        new DownloadAndTagWorker().execute();
+        new AbstractWorker(this) {
+            @Override
+            protected void beginTask() {
+                displayText("Starting download...\n");
+            }
+            @Override
+            protected void executeTask() {
+                try {
+                    downloader.downloadSongs(songPlaylistURLTextField.getText());
+                } catch (IOException | InterruptedException e) {
+                    JOptionPane.showMessageDialog(guiTagger.this,
+                            "Something went wrong, please contact the developer.\nError code 03");
+                }
+            }
+            @Override
+            protected void taskCompleted() {
+                displayText("Download complete. Starting tagging...\n");
+                invokeTagAllFiles();
+            }
+        }.execute();
     }
 
-    private void invokeIndividualTag() { new tagIndividualFileWorker().execute(); }
-
-    private class DownloadAndTagWorker extends SwingWorker<Void, Void> {
-        @Override
-        protected Void doInBackground() {
-            try {
-                setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                displayText("Starting download...\n");
-                downloader.downloadSongs(songPlaylistURLTextField.getText());
-                displayText("Download complete. Starting tagging...\n");
-                tagAllFiles();
-            } catch (IOException | InterruptedException e) {
-                JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, please contact the developer.\nError code 03");
+    private void invokeIndividualTag() {
+        new AbstractWorker(this) {
+            @Override
+            protected void beginTask() {
+                displayText("Starting tagging...");
             }
-            return null;
-        }
-
-        @Override
-        protected void done() {
-            try {
-                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-                get();
-                displayText("Tagging complete!\n");
-            } catch (InterruptedException | ExecutionException e) {
-                JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, please contact the developer.\nError code 04");
+            @Override
+            protected void executeTask() {
+                addCoverForIndividualFile();
             }
-        }
+            @Override
+            protected void taskCompleted() {
+                displayText("Tagging complete!");
+            }
+        }.execute();
     }
 
     public void displayText(String string) {
