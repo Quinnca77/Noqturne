@@ -16,22 +16,34 @@ import static org.autoTagger.Tagger.getAllFiles;
 
 // TODO document this class
 public class guiTagger extends JFrame {
-    private JButton tagAllFilesInButton;
-    private JPanel MainPanel;
-    private JCheckBox fileRename;
-    private JTextField songPlaylistURLTextField;
-    private JButton downloadAndTagSongButton;
-    private JTextPane loadingText;
-    private JTextField filePathSong;
-    private JTextField vIdThumbnail;
-    private JButton addCoverForIndividualButton;
-    private static final JTextField artistNameInput = new JTextField(10);
-    private static final JTextField songNameInput = new JTextField(10);
-    private final Logger logger;
-    private final Tagger tagger;
-    private final Downloader downloader;
+    protected JButton tagAllFilesInButton;
+    protected JPanel MainPanel;
+    protected JCheckBox fileRename;
+    protected JTextField songPlaylistURLTextField;
+    protected JButton downloadAndTagSongButton;
+    protected JTextPane loadingText;
+    protected JTextField filePathSong;
+    protected JTextField vIdThumbnail;
+    protected JButton addCoverForIndividualButton;
+    protected JTextField artistNameInput = new JTextField(10);
+    protected JTextField songNameInput = new JTextField(10);
+    protected final Logger logger;
+    protected final Tagger tagger;
+    protected final Downloader downloader;
 
-    public guiTagger() {
+    // Constructor that considers testing
+    public guiTagger(boolean testing) {
+        new Logger(this);
+        this.logger = Logger.getLogger();
+        this.tagger = new Tagger();
+        this.downloader = new Downloader();
+        if (!testing) {
+            initializeGUI();
+        }
+    }
+
+    // Show GUI and initialize its fields
+    private void initializeGUI() {
         setContentPane(MainPanel);
         setTitle("Auto-Tagger by Quinn Caris");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -48,17 +60,12 @@ public class guiTagger extends JFrame {
         tagAllFilesInButton.addActionListener(e -> invokeTagAllFiles());
         downloadAndTagSongButton.addActionListener(e -> invokeDownloadAndTag());
         addCoverForIndividualButton.addActionListener(e -> invokeIndividualTag());
-
-        new Logger(this);
-        this.logger = Logger.getLogger();
-        this.tagger = new Tagger();
-        this.downloader = new Downloader();
     }
 
-    private void addCoverForIndividualFile() {
+    protected void addCoverForIndividualFile() {
         String filePath = filePathSong.getText().replaceAll("\"", "");
         if (filePath.isEmpty()) {
-            JOptionPane.showMessageDialog(guiTagger.this, "Please put in a file path when using this option");
+            showMessageDialog(guiTagger.this, "Please put in a file path when using this option");
             return;
         }
         String vId = vIdThumbnail.getText();
@@ -83,15 +90,15 @@ public class guiTagger extends JFrame {
         }
         try {
             tagger.tagIndividualFile(filePath, vId);
-            JOptionPane.showMessageDialog(guiTagger.this, "Tagging successful!");
+            showMessageDialog(guiTagger.this, "Tagging successful!");
         } catch (IOException | NotSupportedException e) {
             ErrorLogger.runtimeExceptionOccurred(e);
-            JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, please contact the developer.\nError code 01");
+            showMessageDialog(guiTagger.this, "Something went wrong, please contact the developer.\nError code 01");
             throw new RuntimeException(e);
         }
     }
 
-    private static @NotNull JPanel getFields(String fileName) {
+    private @NotNull JPanel getFields(String fileName) {
         JPanel mainPanel = new JPanel(new BorderLayout());
         JPanel title = new JPanel();
         JPanel fields = new JPanel(new GridLayout(2, 2));
@@ -113,7 +120,7 @@ public class guiTagger extends JFrame {
         return mainPanel;
     }
 
-    private void tagAllFiles() {
+    protected void tagAllFiles() {
         if (fileRename.isSelected()) {
             File[] songs = getAllFiles();
             for (File song : songs) {
@@ -136,20 +143,20 @@ public class guiTagger extends JFrame {
         }
         try {
             this.tagger.tagAllFiles();
-            JOptionPane.showMessageDialog(guiTagger.this, "Tagging successful!");
+            showMessageDialog(guiTagger.this, "Tagging successful!");
         } catch (IOException |
                  InterruptedException | NotSupportedException e) {
             ErrorLogger.runtimeExceptionOccurred(e);
-            JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, please contact the developer.\nError code 02");
+            showMessageDialog(guiTagger.this, "Something went wrong, please contact the developer.\nError code 02");
             throw new RuntimeException(e);
         } catch (NoSongFoundException e) {
-            JOptionPane.showMessageDialog(guiTagger.this, "No songs found in Downloads folder!");
+            showMessageDialog(guiTagger.this, "No songs found in Downloads folder!");
         } catch (VideoIdEmptyException e) {
-            JOptionPane.showMessageDialog(guiTagger.this, "No song online found that corresponds with these fields!");
+            showMessageDialog(guiTagger.this, "No song online found that corresponds with these fields!");
         }
     }
 
-    private void invokeTagAllFiles() {
+    protected void invokeTagAllFiles() {
         new AbstractWorker(this) {
             @Override
             protected void beginTask() {
@@ -166,7 +173,7 @@ public class guiTagger extends JFrame {
         }.execute();
     }
 
-    private void invokeDownloadAndTag() {
+    protected void invokeDownloadAndTag() {
         new AbstractWorker(this) {
             @Override
             protected void beginTask() {
@@ -175,9 +182,9 @@ public class guiTagger extends JFrame {
             @Override
             protected void executeTask() {
                 try {
-                    downloader.downloadSongs(songPlaylistURLTextField.getText());
+                    downloadSongs();
                 } catch (IOException | InterruptedException e) {
-                    JOptionPane.showMessageDialog(guiTagger.this,
+                    showMessageDialog(guiTagger.this,
                             "Something went wrong, please contact the developer.\nError code 03");
                 }
             }
@@ -189,7 +196,7 @@ public class guiTagger extends JFrame {
         }.execute();
     }
 
-    private void invokeIndividualTag() {
+    protected void invokeIndividualTag() {
         new AbstractWorker(this) {
             @Override
             protected void beginTask() {
@@ -206,13 +213,22 @@ public class guiTagger extends JFrame {
         }.execute();
     }
 
+    protected void showMessageDialog(Component parent, String message) {
+        JOptionPane.showMessageDialog(parent, message);
+    }
+
+    protected void downloadSongs() throws IOException, InterruptedException {
+        System.out.println(songPlaylistURLTextField.getText());
+        downloader.downloadSongs(songPlaylistURLTextField.getText());
+    }
+
     public void displayText(String string) {
         SwingUtilities.invokeLater(() -> {
             StyledDocument doc = loadingText.getStyledDocument();
             try {
                 doc.insertString(doc.getLength(), string, null);
             } catch (BadLocationException exc) {
-                JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, please contact the developer.\nError code 04");
+                showMessageDialog(guiTagger.this, "Something went wrong, please contact the developer.\nError code 04");
             }
         });
     }
