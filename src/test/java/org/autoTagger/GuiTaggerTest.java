@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.StyledDocument;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
@@ -19,8 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 import static org.autoTagger.Tagger.PATH_TO_SONGS;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -39,22 +40,28 @@ class GuiTaggerTest {
     private static final String TEST_SPECIFIED_COVER_ART = "SpecifiedCoverArt.jpg";
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws BadLocationException {
         guiTagger = spy(new guiTagger(true));
 
         // Mock dependencies
         mockSongPlaylistURLTextField = Mockito.mock(JTextField.class);
         mockFilePathSong = Mockito.mock(JTextField.class);
         mockVIdThumbnail = Mockito.mock(JTextField.class);
+        JTextPane mockLoadingText = Mockito.mock(JTextPane.class);
+        StyledDocument mockStyledDocument = Mockito.mock(StyledDocument.class);
         JCheckBox mockFileRename = Mockito.mock(JCheckBox.class);
 
         // Set mock objects in guiTagger
         guiTagger.songPlaylistURLTextField = mockSongPlaylistURLTextField;
         guiTagger.filePathSong = mockFilePathSong;
         guiTagger.vIdThumbnail = mockVIdThumbnail;
+        guiTagger.loadingText = mockLoadingText;
         guiTagger.fileRename = mockFileRename;
+
         Mockito.doNothing().when(guiTagger).showMessageDialog(any(), anyString());
         when(mockFileRename.isSelected()).thenReturn(false);
+        when(mockLoadingText.getStyledDocument()).thenReturn(mockStyledDocument);
+        Mockito.doNothing().when(mockStyledDocument).insertString(anyInt(), anyString(), any());
     }
 
     @Test
