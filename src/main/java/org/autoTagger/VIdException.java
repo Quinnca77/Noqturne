@@ -1,4 +1,4 @@
-package org.example;
+package org.autoTagger;
 
 /**
  * Thrown when a vId is found, but it has erroneous behaviour when attempting extraction.

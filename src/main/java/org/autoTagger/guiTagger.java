@@ -1,4 +1,4 @@
-package org.example;
+package org.autoTagger;
 
 import com.mpatric.mp3agic.NotSupportedException;
 import org.jetbrains.annotations.NotNull;
@@ -11,8 +11,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import static org.example.Tagger.PATH_TO_SONGS;
-import static org.example.Tagger.getAllFiles;
+import static org.autoTagger.Tagger.PATH_TO_SONGS;
+import static org.autoTagger.Tagger.getAllFiles;
 
 // TODO document this class
 public class guiTagger extends JFrame {

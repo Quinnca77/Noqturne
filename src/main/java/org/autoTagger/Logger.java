@@ -1,4 +1,4 @@
-package org.example;
+package org.autoTagger;
 
 /**
  * Singleton class for handling all status updates in the program.

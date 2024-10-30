@@ -1,4 +1,4 @@
-package org.example;
+package org.autoTagger;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 

@@ -1,4 +1,4 @@
-package org.example;
+package org.autoTagger;
 
 import com.mpatric.mp3agic.*;
 import org.jetbrains.annotations.NotNull;

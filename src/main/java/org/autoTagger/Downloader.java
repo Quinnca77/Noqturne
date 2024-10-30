@@ -1,4 +1,4 @@
-package org.example;
+package org.autoTagger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
