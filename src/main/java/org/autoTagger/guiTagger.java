@@ -153,7 +153,7 @@ public class guiTagger extends JFrame {
         new AbstractWorker(this) {
             @Override
             protected void beginTask() {
-                displayText("Starting tagging...");
+                Logger.getLogger().println("Starting tagging...");
             }
             @Override
             protected void executeTask() {
@@ -161,7 +161,7 @@ public class guiTagger extends JFrame {
             }
             @Override
             protected void taskCompleted() {
-                displayText("Tagging complete!");
+                Logger.getLogger().println("Tagging complete!");
             }
         }.execute();
     }
@@ -170,7 +170,7 @@ public class guiTagger extends JFrame {
         new AbstractWorker(this) {
             @Override
             protected void beginTask() {
-                displayText("Starting download...\n");
+                Logger.getLogger().println("Starting download...");
             }
             @Override
             protected void executeTask() {
@@ -183,7 +183,7 @@ public class guiTagger extends JFrame {
             }
             @Override
             protected void taskCompleted() {
-                displayText("Download complete. Starting tagging...\n");
+                Logger.getLogger().println("Download complete.");
                 invokeTagAllFiles();
             }
         }.execute();
@@ -193,7 +193,7 @@ public class guiTagger extends JFrame {
         new AbstractWorker(this) {
             @Override
             protected void beginTask() {
-                displayText("Starting tagging...");
+                Logger.getLogger().println("Starting tagging...");
             }
             @Override
             protected void executeTask() {
@@ -201,7 +201,7 @@ public class guiTagger extends JFrame {
             }
             @Override
             protected void taskCompleted() {
-                displayText("Tagging complete!");
+                Logger.getLogger().println("Tagging complete!");
             }
         }.execute();
     }
