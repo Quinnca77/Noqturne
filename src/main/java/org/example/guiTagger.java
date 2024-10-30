@@ -212,7 +212,7 @@ public class guiTagger extends JFrame {
             try {
                 doc.insertString(doc.getLength(), string, null);
             } catch (BadLocationException exc) {
-                JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, please contact the developer.\nError code 05");
+                JOptionPane.showMessageDialog(guiTagger.this, "Something went wrong, please contact the developer.\nError code 04");
             }
         });
     }
