@@ -38,7 +38,7 @@ public class Downloader {
                 "-x",
                 "--audio-format", "mp3",
                 "-P \"%USERPROFILE%/Downloads\"",
-                "-o \"%(title)s.%(ext)s\"",
+                "-o", "%(title)s.%(ext)s",
                 "\"" + url + "\"");
         Process process = pb.start();
 
