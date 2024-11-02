@@ -1,6 +1,7 @@
 package org.autoTagger;
 
 import java.io.*;
+import java.util.Date;
 
 /**
  * Class that gets called whenever a critical error occurs and reviewing a stacktrace
@@ -22,6 +23,7 @@ public class ErrorLogger {
             FileWriter fileWriter = new FileWriter("errorLog.log");
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
+            sw.write("\nThis log has been generated at " + new Date());
             fileWriter.write(sw.toString());
             fileWriter.close();
         } catch (IOException ex) {
