@@ -25,6 +25,7 @@ public class guiTagger extends JFrame {
     protected JTextField filePathSong;
     protected JTextField vIdThumbnail;
     protected JButton addCoverForIndividualButton;
+    private JTabbedPane tabbedPane1;
     protected JTextField artistNameInput = new JTextField(10);
     protected JTextField songNameInput = new JTextField(10);
     protected final Logger logger;
