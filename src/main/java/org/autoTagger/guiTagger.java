@@ -18,19 +18,22 @@ import static org.autoTagger.Tagger.getAllFiles;
 public class guiTagger extends JFrame {
     protected JButton tagAllFilesInButton;
     protected JPanel MainPanel;
-    protected JCheckBox fileRename;
+    protected JCheckBox fileRename1;
+    protected JCheckBox fileRename2;
+    protected JCheckBox fileRename3;
     protected JTextField songPlaylistURLTextField;
     protected JButton downloadAndTagSongButton;
     protected JTextPane loadingText;
     protected JTextField filePathSong;
     protected JTextField vIdThumbnail;
     protected JButton addCoverForIndividualButton;
-    private JTabbedPane tabbedPane1;
+    protected JTabbedPane tabbedPane;
     protected JTextField artistNameInput = new JTextField(10);
     protected JTextField songNameInput = new JTextField(10);
     protected final Logger logger;
     protected final Tagger tagger;
     protected final Downloader downloader;
+    protected boolean renameState = true;
 
     // Constructor that considers testing
     public guiTagger(boolean testing) {
@@ -61,6 +64,28 @@ public class guiTagger extends JFrame {
         tagAllFilesInButton.addActionListener(e -> invokeTagAllFiles());
         downloadAndTagSongButton.addActionListener(e -> invokeDownloadAndTag());
         addCoverForIndividualButton.addActionListener(e -> invokeIndividualTag());
+        linkCheckboxes();
+    }
+
+    protected void linkCheckboxes() {
+        fileRename1.addActionListener(e -> {
+            renameState = fileRename1.isSelected();
+            refreshCheckboxes();
+        });
+        fileRename2.addActionListener(e -> {
+            renameState = fileRename2.isSelected();
+            refreshCheckboxes();
+        });
+        fileRename3.addActionListener(e -> {
+            renameState = fileRename3.isSelected();
+            refreshCheckboxes();
+        });
+    }
+
+    protected void refreshCheckboxes() {
+        fileRename1.setSelected(renameState);
+        fileRename2.setSelected(renameState);
+        fileRename3.setSelected(renameState);
     }
 
     protected void addCoverForIndividualFile() {
@@ -70,7 +95,7 @@ public class guiTagger extends JFrame {
             return;
         }
         String vId = vIdThumbnail.getText();
-        if (fileRename.isSelected()) {
+        if (renameState) {
             File song = new File(filePath);
             JPanel fields = getFields(song.getName());
 
@@ -122,7 +147,7 @@ public class guiTagger extends JFrame {
     }
 
     protected void tagAllFiles() {
-        if (fileRename.isSelected()) {
+        if (renameState) {
             File[] songs = getAllFiles();
             for (File song : songs) {
                 JPanel fields = getFields(song.getName());

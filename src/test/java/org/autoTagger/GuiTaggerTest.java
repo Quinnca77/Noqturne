@@ -56,7 +56,7 @@ class GuiTaggerTest {
         guiTagger.filePathSong = mockFilePathSong;
         guiTagger.vIdThumbnail = mockVIdThumbnail;
         guiTagger.loadingText = mockLoadingText;
-        guiTagger.fileRename = mockFileRename;
+        guiTagger.fileRename1 = mockFileRename;
 
         Mockito.doNothing().when(guiTagger).showMessageDialog(any(), anyString());
         when(mockFileRename.isSelected()).thenReturn(false);
