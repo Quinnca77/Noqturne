@@ -131,7 +131,7 @@ public class guiTagger extends JFrame {
                 tagger.tagIndividualFile(song.getPath(), vId);
             }
             showMD(guiTagger.this, "Tagging successful!");
-        } catch (IOException | NotSupportedException | InterruptedException | VideoIdEmptyException e) {
+        } catch (IOException | NotSupportedException | InterruptedException e) {
             ErrorLogger.runtimeExceptionOccurred(e);
             showMD(guiTagger.this, "Something went wrong, please contact the developer.\nError code 01");
             throw new RuntimeException(e);
@@ -158,8 +158,6 @@ public class guiTagger extends JFrame {
             throw new RuntimeException(e);
         } catch (NoSongFoundException e) {
             showMD(guiTagger.this, "No songs found in Downloads folder!");
-        } catch (VideoIdEmptyException e) {
-            showMD(guiTagger.this, "No song online found that corresponds with the given vId!");
         }
     }
 

@@ -43,10 +43,8 @@ public class Tagger {
      *
      * @throws IOException if file permissions are not configured as expected
      * @throws NoSongFoundException if there is no mp3 file in the Downloads folder
-     * @throws VideoIdEmptyException if the cover art finder fails and finds
-     * no video IDs with an appropriate cover art
      */
-    public void tagAllFiles() throws IOException, InterruptedException, NotSupportedException, NoSongFoundException, VideoIdEmptyException {
+    public void tagAllFiles() throws IOException, InterruptedException, NotSupportedException, NoSongFoundException {
         File file = new File(PATH_TO_SONGS);
         File[] songs = file.listFiles(filter);
         if (songs != null && songs.length != 0) {
@@ -65,10 +63,8 @@ public class Tagger {
      *
      * @param filePath file path to the mp3 file to be tagged
      * @throws IOException if file permissions are not configured as expected
-     * @throws VideoIdEmptyException if the cover art finder fails and finds
-     * no video IDs with an appropriate cover art
      */
-    public void genericTagFile(String filePath) throws IOException, InterruptedException, NotSupportedException, VideoIdEmptyException {
+    public void genericTagFile(String filePath) throws IOException, InterruptedException, NotSupportedException {
         Mp3File mp3file = loadMp3File(filePath);
         String songName = mp3file.getFilename().substring(PATH_TO_SONGS.length(), mp3file.getFilename().length() - 4);
 
@@ -80,7 +76,7 @@ public class Tagger {
         try {
             img = getCoverArt(songName);
             id3v2Tag.setAlbumImage(img, MIME_TYPE);
-        } catch (VIdException e) {
+        } catch (VIdException | VideoIdEmptyException e) {
             this.logger.println("Couldn't find valid cover art, skipping cover art for " + songName);
         }
 
