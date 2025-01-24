@@ -49,17 +49,15 @@ class GuiTaggerTest {
         mockVIdThumbnail = Mockito.mock(JTextField.class);
         JTextPane mockLoadingText = Mockito.mock(JTextPane.class);
         StyledDocument mockStyledDocument = Mockito.mock(StyledDocument.class);
-        JCheckBox mockFileRename = Mockito.mock(JCheckBox.class);
 
         // Set mock objects in guiTagger
         guiTagger.songPlaylistURLTextField = mockSongPlaylistURLTextField;
         guiTagger.filePathSong = mockFilePathSong;
         guiTagger.vIdThumbnail = mockVIdThumbnail;
         guiTagger.loadingText = mockLoadingText;
-        guiTagger.fileRename1 = mockFileRename;
 
-        Mockito.doNothing().when(guiTagger).showMessageDialog(any(), anyString());
-        when(mockFileRename.isSelected()).thenReturn(false);
+        Mockito.doNothing().when(guiTagger).showMD(any(), anyString());
+        guiTagger.renameState = false;
         when(mockLoadingText.getStyledDocument()).thenReturn(mockStyledDocument);
         Mockito.doNothing().when(mockStyledDocument).insertString(anyInt(), anyString(), any());
     }
@@ -100,8 +98,7 @@ class GuiTaggerTest {
 
     @Test
     void downloadAndTagTest() throws InvalidDataException, UnsupportedTagException, IOException, InterruptedException {
-        when(mockSongPlaylistURLTextField.getText()).thenReturn(TEST_SONG_URL);
-        guiTagger.downloadSongs();
+        new Downloader().downloadSongs(TEST_SONG_URL);
 
         // Test if mp3 file is as expected after method is called
         File song = new File(PATH_TO_SONGS + TEST_SONG_TITLE + ".mp3");

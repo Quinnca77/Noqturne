@@ -43,7 +43,7 @@ public class Tagger {
      *
      * @throws IOException if file permissions are not configured as expected
      * @throws NoSongFoundException if there is no mp3 file in the Downloads folder
-     * @throws VideoIdEmptyException if the cover art finder fails and find
+     * @throws VideoIdEmptyException if the cover art finder fails and finds
      * no video IDs with an appropriate cover art
      */
     public void tagAllFiles() throws IOException, InterruptedException, NotSupportedException, NoSongFoundException, VideoIdEmptyException {
