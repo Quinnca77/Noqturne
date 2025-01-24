@@ -19,7 +19,6 @@ That's not all. When converting the video downloaded from YouTube to `mp3` forma
 
 ## Installation
 You have a few options to choose from when installing this application:
-- Cloning this repository and running Main.java (needs a valid java installation to run)
 - Downloading the latest stable release
   - Download the .exe file in the latest release together with the python file
   - Download the .jar file in the latest release together with the python file (needs a valid java installation to run)
@@ -72,12 +71,8 @@ download the custom one made by the maintainers of `yt-dlp` which can be found [
 > I recommend downloading the one from `yt-dlp` themselves, since they mention it works better with their software.
 
 That being said, I will also only specify installation instructions for the `yt-dlp` ffmpeg build. Navigate to their releases and download the zip file applicable to your Windows machine 
-(when in doubt, just pick the one that has both "win" and "64" in there). Unzip this zip file *anywhere* on your machine, but be sure to remember where you did because this will be important
-in the next step.
-
-Now, add the `bin` folder from the just unzipped files to your PATH environment variable. This can be done by pressing Windows + Start and typing "path". You will see something about editing 
-system environment variables. Click on it, and then click on `Environment variables...`. Here, edit your PATH variable by clicking on it and pressing `Edit...` and then `New`. This will open
-a textbox. In this textbox, you type the filepath to the bin folder of the ffmpeg build. Afterwards, press OK on all opened windows.
+(when in doubt, just pick the one that has both "win" and "64" in there). Unzip this zip file somewhere on your device and open the `bin` folder. Copy the executable files within to the 
+source directory of the auto-tagger project.
 
 Now you're done installing and ready to use this application!
 
