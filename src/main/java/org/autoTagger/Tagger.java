@@ -2,6 +2,7 @@ package org.autoTagger;
 
 import com.mpatric.mp3agic.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -30,23 +31,29 @@ public class Tagger {
      *
      * @return a File array with mp3 files
      */
-    public static File[] getAllFiles() {
+    public static File[] getAllMp3Files() {
         File file = new File(PATH_TO_SONGS);
         return file.listFiles(filter);
     }
 
     /**
-     * Most important function of this application. When this function is called,
-     * it iterates over all mp3 files in the Downloads folder and tags them with
-     * an artist tag, title tag, and cover art, of which the last is always performed
-     * automatically.
+     * When this function is called, it iterates over all mp3 files in the Downloads folder and tags them with
+     * an artist tag, title tag, and cover art, of which the last is always performed automatically.
      *
+     * @param arrayOfSongs <code>null</code> in case you simply want all files in the Downloads folder to
+     *                     be tagged, otherwise they can be specified as a <code>File</code> array and
+     *                     then only those files will be tagged
      * @throws IOException if file permissions are not configured as expected
      * @throws NoSongFoundException if there is no mp3 file in the Downloads folder
      */
-    public void tagAllFiles() throws IOException, InterruptedException, NotSupportedException, NoSongFoundException {
-        File file = new File(PATH_TO_SONGS);
-        File[] songs = file.listFiles(filter);
+    public void tagAllFiles(@Nullable File[] arrayOfSongs) throws IOException, InterruptedException, NotSupportedException, NoSongFoundException {
+        File[] songs;
+        if (arrayOfSongs == null) {
+            File file = new File(PATH_TO_SONGS);
+            songs = file.listFiles(filter);
+        } else {
+            songs = arrayOfSongs;
+        }
         if (songs != null && songs.length != 0) {
             for (File mp3 : songs) {
                 genericTagFile(mp3.getAbsolutePath());

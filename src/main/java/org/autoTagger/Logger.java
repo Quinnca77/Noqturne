@@ -4,7 +4,7 @@ package org.autoTagger;
  * Singleton class for handling all status updates in the program.
  */
 public class Logger {
-    private final guiTagger gui;
+    private final GuiTagger gui;
     private static Logger logger;
 
     /**
@@ -13,7 +13,7 @@ public class Logger {
      *
      * @param gui the GUI for the logger to attach to
      */
-    public Logger(guiTagger gui) {
+    public Logger(GuiTagger gui) {
         this.gui = gui;
         logger = this;
     }

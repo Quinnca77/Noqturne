@@ -1,9 +1,9 @@
 package org.autoTagger;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,8 +31,10 @@ public class Downloader {
      * @param url The URL to the YouTube video (so not only a vId!) which represents the song.
      * @throws IOException If an I/O error occurs.
      * @throws InterruptedException if the current Thread is interrupted while waiting.
+     * @return an array of <code>File</code> objects that points to the downloaded songs.
      */
-    public void downloadSongs(String url) throws IOException, InterruptedException {
+    public File[] downloadSongs(String url) throws IOException, InterruptedException {
+        HashSet<File> filesNotToTag = new HashSet<>(Arrays.asList(Tagger.getAllMp3Files()));
         ProcessBuilder pb = new ProcessBuilder("yt-dlp.exe",
                 "--replace-in-metadata", "\"title\"", "\"[\\\"]\"", "\"\"",
                 "-x",
@@ -49,6 +51,14 @@ public class Downloader {
         errorGobbler.start();
 
         process.waitFor();
+        ArrayList<File> filesToTag = new ArrayList<>();
+        for (File file : Tagger.getAllMp3Files()) {
+            if (!filesNotToTag.contains(file)) {
+                filesToTag.add(file);
+            }
+        }
+        File[] output = new File[0];
+        return filesToTag.toArray(output);
     }
 
     /**
@@ -80,9 +90,9 @@ public class Downloader {
         public void run() {
             try {
                 String line;
-                Pattern pattern = Pattern.compile("Downloading item (\\d+) of (\\d+)");
+                Pattern downloadPattern = Pattern.compile("Downloading item (\\d+) of (\\d+)");
                 while ((line = reader.readLine()) != null) {
-                    Matcher matcher = pattern.matcher(line);
+                    Matcher matcher = downloadPattern.matcher(line);
                     if (matcher.find()) {
                         String currentItem = matcher.group(1);
                         String totalItems = matcher.group(2);

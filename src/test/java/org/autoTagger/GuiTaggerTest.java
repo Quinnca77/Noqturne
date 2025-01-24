@@ -18,6 +18,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static org.autoTagger.Tagger.PATH_TO_SONGS;
@@ -27,7 +31,7 @@ import static org.mockito.Mockito.when;
 
 class GuiTaggerTest {
 
-    private guiTagger guiTagger;
+    private GuiTagger guiTagger;
     private JTextField mockSongPlaylistURLTextField;
     private JTextField mockFilePathSong;
     private JTextField mockVIdThumbnail;
@@ -41,7 +45,7 @@ class GuiTaggerTest {
 
     @BeforeEach
     void setUp() throws BadLocationException {
-        guiTagger = spy(new guiTagger(true));
+        guiTagger = spy(new GuiTagger(true));
 
         // Mock dependencies
         mockSongPlaylistURLTextField = Mockito.mock(JTextField.class);
@@ -87,7 +91,7 @@ class GuiTaggerTest {
         File copied = copyTestFileToTagFolder();
 
         // Test if mp3 file is as expected after method is called
-        guiTagger.tagAllFiles();
+        guiTagger.tagAllFiles(new File[]{copied});
         testResultingFile(TEST_COVER_ART);
 
         // Clean up
@@ -98,14 +102,17 @@ class GuiTaggerTest {
 
     @Test
     void downloadAndTagTest() throws InvalidDataException, UnsupportedTagException, IOException, InterruptedException {
-        new Downloader().downloadSongs(TEST_SONG_URL);
+        File[] testFile = new Downloader().downloadSongs(TEST_SONG_URL);
 
         // Test if mp3 file is as expected after method is called
         File song = new File(PATH_TO_SONGS + TEST_SONG_TITLE + ".mp3");
-        if (!song.renameTo(new File(PATH_TO_SONGS + TEST_SONG_ARTIST + " - " + TEST_SONG_TITLE + ".mp3"))) {
+        Path songPath = song.toPath();
+        try {
+            song = Files.move(songPath, songPath.resolveSibling(TEST_SONG_ARTIST + " - " + TEST_SONG_TITLE + ".mp3")).toFile();
+        } catch (IOException e) {
             throw new RuntimeException("Song rename failed!");
         }
-        guiTagger.tagAllFiles();
+        guiTagger.tagAllFiles(new File[]{song});
         testResultingFile(TEST_COVER_ART);
 
         // Clean up

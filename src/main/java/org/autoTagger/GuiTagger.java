@@ -2,6 +2,7 @@ package org.autoTagger;
 
 import com.mpatric.mp3agic.NotSupportedException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
@@ -13,12 +14,12 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.autoTagger.Tagger.getAllFiles;
+import static org.autoTagger.Tagger.getAllMp3Files;
 
 /**
  * Class for the GUI of the app. Everything is made with Java swing.
  */
-public class guiTagger extends JFrame {
+public class GuiTagger extends JFrame {
     protected JButton tagAllFilesInButton;
     protected JPanel MainPanel;
     protected JCheckBox fileRename1;
@@ -45,7 +46,7 @@ public class guiTagger extends JFrame {
      *                if it is set to true, the GUI will not be shown, and instead only the
      *                necessary fields are initialized.
      */
-    public guiTagger(boolean testing) {
+    public GuiTagger(boolean testing) {
         new Logger(this);
         this.logger = Logger.getLogger();
         this.tagger = new Tagger();
@@ -71,7 +72,7 @@ public class guiTagger extends JFrame {
             this.setIconImage(icon.getImage());
         }
 
-        tagAllFilesInButton.addActionListener(e -> invokeTagAllFiles());
+        tagAllFilesInButton.addActionListener(e -> invokeTagAllFiles(null));
         downloadAndTagSongButton.addActionListener(e -> invokeDownloadAndTag());
         addCoverForIndividualButton.addActionListener(e -> invokeIndividualTag());
         linkCheckboxes();
@@ -116,7 +117,7 @@ public class guiTagger extends JFrame {
     protected void addCoverForIndividualFile() {
         String filePath = filePathSong.getText().replaceAll("\"", "");
         if (filePath.isEmpty()) {
-            showMD(guiTagger.this, "Please put in a file path when using this option");
+            showMD(GuiTagger.this, "Please put in a file path when using this option");
             return;
         }
         String vId = vIdThumbnail.getText();
@@ -130,34 +131,45 @@ public class guiTagger extends JFrame {
             } else {
                 tagger.tagIndividualFile(song.getPath(), vId);
             }
-            showMD(guiTagger.this, "Tagging successful!");
+            showMD(GuiTagger.this, "Tagging successful!");
         } catch (IOException | NotSupportedException | InterruptedException e) {
             ErrorLogger.runtimeExceptionOccurred(e);
-            showMD(guiTagger.this, "Something went wrong, please contact the developer.\nError code 01");
+            showMD(GuiTagger.this, "Something went wrong, please contact the developer.\nError code 01");
             throw new RuntimeException(e);
         }
     }
 
     /**
-     * Tags all mp3 files in user's "Downloads" folder.
+     * Tags all mp3 files in user's "Downloads" folder. Different file locations can be specified in the
+     * parameter by making each file to be tagged a <code>File</code> object.
+     *
+     * @param arrayOfSongs array of <code>File</code> objects to tag.
+     *                    <code>null</code> to tag all files in "Downloads" folder.
      */
-    protected void tagAllFiles() {
+    protected void tagAllFiles(@Nullable File[] arrayOfSongs) {
+        File[] songs = arrayOfSongs;
         if (renameState) {
-            File[] songs = getAllFiles();
-            for (File song : songs) {
-                renameSong(song);
+            if (arrayOfSongs == null) {
+                songs = getAllMp3Files();
+            }
+            for (int i = 0; i < songs.length; i++) {
+                songs[i] = renameSong(songs[i]);
             }
         }
         try {
-            this.tagger.tagAllFiles();
-            showMD(guiTagger.this, "Tagging successful!");
+            if (renameState || arrayOfSongs != null) {
+                this.tagger.tagAllFiles(songs);
+            } else {
+                this.tagger.tagAllFiles(null);
+            }
+            showMD(GuiTagger.this, "Tagging successful!");
         } catch (IOException |
                  InterruptedException | NotSupportedException e) {
             ErrorLogger.runtimeExceptionOccurred(e);
-            showMD(guiTagger.this, "Something went wrong, please contact the developer.\nError code 02");
+            showMD(GuiTagger.this, "Something went wrong, please contact the developer.\nError code 02");
             throw new RuntimeException(e);
         } catch (NoSongFoundException e) {
-            showMD(guiTagger.this, "No songs found in Downloads folder!");
+            showMD(GuiTagger.this, "No songs found in Downloads folder!");
         }
     }
 
@@ -173,7 +185,7 @@ public class guiTagger extends JFrame {
         JPanel fields = getFieldsRenameDialog(song.getName());
         Path songPath = song.toPath();
 
-        int result = JOptionPane.showConfirmDialog(guiTagger.this, fields, "Rename file", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+        int result = JOptionPane.showConfirmDialog(GuiTagger.this, fields, "Rename file", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
         switch (result) {
             case JOptionPane.OK_OPTION:
                 if (!(artistNameInput.getText().isEmpty() && songNameInput.getText().isEmpty())) {
@@ -221,10 +233,13 @@ public class guiTagger extends JFrame {
 
     /**
      * Method runs when the "tag all files" button is pressed. This runs the associated
-     * functionality {@link #tagAllFiles()} but also makes sure the user is informed on the progress
+     * functionality {@link #tagAllFiles(File[])} but also makes sure the user is informed on the progress
      * via the console on the right of the UI.
+     *
+     * @param arrayOfSongs if applicable, the array of <code>File</code> objects that points to
+     *                    the songs to be tagged. <code>null</code> to tag all songs in "Downloads" folder.
      */
-    protected void invokeTagAllFiles() {
+    protected void invokeTagAllFiles(@Nullable File[] arrayOfSongs) {
         new AbstractWorker(this) {
             @Override
             protected void beginTask() {
@@ -232,7 +247,7 @@ public class guiTagger extends JFrame {
             }
             @Override
             protected void executeTask() {
-                tagAllFiles();
+                tagAllFiles(arrayOfSongs);
             }
             @Override
             protected void taskCompleted() {
@@ -243,7 +258,7 @@ public class guiTagger extends JFrame {
 
     /**
      * Method runs when the "download and tag" button is pressed. This downloads all the songs by
-     * calling the associated function, and afterward calls {@link #invokeTagAllFiles()} to
+     * calling the associated function, and afterward calls {@link #invokeTagAllFiles(File[])} to
      * tag the recently downloaded files. While doing this, it will report its progress via
      * the console on the right of the UI.
      * <p>
@@ -252,6 +267,7 @@ public class guiTagger extends JFrame {
      */
     protected void invokeDownloadAndTag() {
         new AbstractWorker(this) {
+            private File[] arrayOfSongs;
             @Override
             protected void beginTask() {
                 logger.println("Starting download...");
@@ -259,10 +275,10 @@ public class guiTagger extends JFrame {
             @Override
             protected void executeTask() {
                 try {
-                    downloader.downloadSongs(songPlaylistURLTextField.getText());
+                    arrayOfSongs = downloader.downloadSongs(songPlaylistURLTextField.getText());
                 } catch (IOException | InterruptedException e) {
                     ErrorLogger.runtimeExceptionOccurred(e);
-                    showMD(guiTagger.this,
+                    showMD(GuiTagger.this,
                             "Something went wrong, please contact the developer.\nError code 03");
                     throw new RuntimeException(e);
                 }
@@ -270,7 +286,7 @@ public class guiTagger extends JFrame {
             @Override
             protected void taskCompleted() {
                 logger.println("Download complete.");
-                invokeTagAllFiles();
+                invokeTagAllFiles(arrayOfSongs);
             }
         }.execute();
     }
@@ -318,7 +334,7 @@ public class guiTagger extends JFrame {
                 doc.insertString(doc.getLength(), string, null);
             } catch (BadLocationException e) {
                 ErrorLogger.runtimeExceptionOccurred(e);
-                showMD(guiTagger.this, "Something went wrong, please contact the developer.\nError code 04");
+                showMD(GuiTagger.this, "Something went wrong, please contact the developer.\nError code 04");
             }
         });
     }
