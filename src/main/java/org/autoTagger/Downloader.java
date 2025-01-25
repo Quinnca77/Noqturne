@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -91,7 +92,12 @@ public class Downloader {
             try {
                 String line;
                 Pattern downloadPattern = Pattern.compile("Downloading item (\\d+) of (\\d+)");
+                StringBuilder errorText = new StringBuilder();
                 while ((line = reader.readLine()) != null) {
+                    if (streamType.equals("ERROR") && line.contains("ERROR")) {
+                        this.logger.println("yt-dlp ran into an error!!!");
+                        errorText.append(line).append("\n");
+                    }
                     Matcher matcher = downloadPattern.matcher(line);
                     if (matcher.find()) {
                         String currentItem = matcher.group(1);
@@ -99,6 +105,9 @@ public class Downloader {
                         this.logger.println("Song download progress: " + currentItem + " out of " + totalItems);
                     }
                     System.out.println(streamType + "> " + line);
+                }
+                if (!errorText.isEmpty()) {
+                    ErrorLogger.runtimeExceptionOccurred(errorText.toString());
                 }
             } catch (IOException e) {
                 ErrorLogger.runtimeExceptionOccurred(e);
