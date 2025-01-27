@@ -37,7 +37,7 @@
           <grid id="9be3d" layout-manager="GridLayoutManager" row-count="3" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
-              <tabbedpane title="Download and Tag"/>
+              <tabbedpane title-resource-bundle="string" title-key="tab.title.download.and.tag"/>
             </constraints>
             <properties/>
             <border type="none"/>
@@ -83,7 +83,7 @@
           <grid id="f0f1c" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
-              <tabbedpane title="Tag all in Downloads folder"/>
+              <tabbedpane title-resource-bundle="string" title-key="tab.title.tag.all.in.downloads.folder"/>
             </constraints>
             <properties/>
             <border type="none"/>
@@ -113,7 +113,7 @@
           <grid id="8859b" layout-manager="GridLayoutManager" row-count="4" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
-              <tabbedpane title="Tag individual file"/>
+              <tabbedpane title-resource-bundle="string" title-key="tab.title.tag.individual.file"/>
             </constraints>
             <properties/>
             <border type="none"/>

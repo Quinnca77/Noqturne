@@ -20,8 +20,6 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import static org.autoTagger.Tagger.PATH_TO_SONGS;
@@ -32,7 +30,6 @@ import static org.mockito.Mockito.when;
 class GuiTaggerTest {
 
     private GuiTagger guiTagger;
-    private JTextField mockSongPlaylistURLTextField;
     private JTextField mockFilePathSong;
     private JTextField mockVIdThumbnail;
     private static final String TEST_SONG_URL = "https://youtu.be/ISjNj_-4_QI?si=RlNW2TaIEU_SuvOn";
@@ -48,7 +45,7 @@ class GuiTaggerTest {
         guiTagger = spy(new GuiTagger(true));
 
         // Mock dependencies
-        mockSongPlaylistURLTextField = Mockito.mock(JTextField.class);
+        JTextField mockSongPlaylistURLTextField = Mockito.mock(JTextField.class);
         mockFilePathSong = Mockito.mock(JTextField.class);
         mockVIdThumbnail = Mockito.mock(JTextField.class);
         JTextPane mockLoadingText = Mockito.mock(JTextPane.class);
@@ -102,7 +99,7 @@ class GuiTaggerTest {
 
     @Test
     void downloadAndTagTest() throws InvalidDataException, UnsupportedTagException, IOException, InterruptedException {
-        File[] testFile = new Downloader().downloadSongs(TEST_SONG_URL);
+        new Downloader().downloadSongs(TEST_SONG_URL);
 
         // Test if mp3 file is as expected after method is called
         File song = new File(PATH_TO_SONGS + TEST_SONG_TITLE + ".mp3");
