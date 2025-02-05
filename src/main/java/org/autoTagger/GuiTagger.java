@@ -30,7 +30,7 @@ public class GuiTagger extends JFrame {
     protected JTextPane loadingText;
     protected JTextField filePathSong;
     protected JTextField vIdThumbnail;
-    protected JButton addCoverForIndividualButton;
+    protected JButton tagIndividualButton;
     protected JTabbedPane tabbedPane;
     protected JTextField artistNameInput = new JTextField(10);
     protected JTextField songNameInput = new JTextField(10);
@@ -74,7 +74,9 @@ public class GuiTagger extends JFrame {
 
         tagAllFilesInButton.addActionListener(e -> invokeTagAllFiles(null));
         downloadAndTagSongButton.addActionListener(e -> invokeDownloadAndTag());
-        addCoverForIndividualButton.addActionListener(e -> invokeIndividualTag());
+        tagIndividualButton.addActionListener(e -> invokeIndividualTag());
+        ToolTipManager.sharedInstance().setInitialDelay(0);
+        ToolTipManager.sharedInstance().setDismissDelay(1000 * 60 * 10);
         linkCheckboxes();
         setVisible(true);
     }
