@@ -32,6 +32,8 @@ public class GuiTagger extends JFrame {
     protected JTextField vIdThumbnail;
     protected JButton tagIndividualButton;
     protected JTabbedPane tabbedPane;
+    private JButton openFileButton;
+    private JTextField textField1;
     protected JTextField artistNameInput = new JTextField(10);
     protected JTextField songNameInput = new JTextField(10);
     protected final Logger logger;
@@ -77,6 +79,7 @@ public class GuiTagger extends JFrame {
         tagIndividualButton.addActionListener(e -> invokeIndividualTag());
         ToolTipManager.sharedInstance().setInitialDelay(0);
         ToolTipManager.sharedInstance().setDismissDelay(1000 * 60 * 10);
+
         linkCheckboxes();
         setVisible(true);
     }
