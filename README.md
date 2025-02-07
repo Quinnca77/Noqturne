@@ -113,6 +113,9 @@ This started out as a hobby project and I keep my Downloads folder clean. This m
 of relocating the songs to a different directory before tagging them.
 #### My Downloads folder is a mess. Can I specify a different folder?
 Currently, no. I do not see this being implemented in the near future either, so maybe consider cleaning it up?
+#### I want to tag a song that is not an mp3 file. Can I do this?
+Unfortunately, this application is made with only mp3 files in mind. Adding support for other extensions as well would be a big endeavour, and although I wouldn't exclude the possibility of this
+being added in the future, I wouldn't count on it.
 #### Will there ever be a Linux or Mac release?
 No.
 
