@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 import java.awt.*;
@@ -28,18 +29,18 @@ public class GuiTagger extends JFrame {
     protected JTextField songPlaylistURLTextField;
     protected JButton downloadAndTagSongButton;
     protected JTextPane loadingText;
-    protected JTextField filePathSong;
     protected JTextField vIdThumbnail;
     protected JButton tagIndividualButton;
     protected JTabbedPane tabbedPane;
-    private JButton openFileButton;
-    private JTextField textField1;
+    protected JButton openFileButton;
+    protected JTextField filePathSong;
     protected JTextField artistNameInput = new JTextField(10);
     protected JTextField songNameInput = new JTextField(10);
     protected final Logger logger;
     protected final Tagger tagger;
     protected final Downloader downloader;
     protected boolean renameState = true;
+    protected File chosenSongFile;
 
     /**
      * Calling this constructor will create and show the GUI of the auto-tagger.
@@ -80,6 +81,20 @@ public class GuiTagger extends JFrame {
         ToolTipManager.sharedInstance().setInitialDelay(0);
         ToolTipManager.sharedInstance().setDismissDelay(1000 * 60 * 10);
 
+        JFileChooser chooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                "MP3 Songs", "mp3");
+        chooser.setFileFilter(filter);
+        openFileButton.addActionListener(e -> {
+            int returnVal = chooser.showOpenDialog(this);
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                System.out.println("You chose to open this file: " + chooser.getSelectedFile().getName());
+                chosenSongFile = chooser.getSelectedFile();
+                filePathSong.setText(chooser.getSelectedFile().getName());
+            }
+        });
+
+
         linkCheckboxes();
         setVisible(true);
     }
@@ -114,19 +129,21 @@ public class GuiTagger extends JFrame {
     /**
      * Tags a single file, even if it isn't in the user's "Downloads" folder.
      * Prerequisites: <ul>
-     *     <li>Absolute filepath to file on computer</li>
+     *     <li>Absolute filepath to file on computer or choosing it through the file chooser button</li>
      *     <li>vId of the cover you want the individual file to have. If this isn't
      *     specified, it will instead use automatic cover art searching.</li>
      * </ul>
      */
     protected void addCoverForIndividualFile() {
-        String filePath = filePathSong.getText().replaceAll("\"", "");
-        if (filePath.isEmpty()) {
-            showMD(GuiTagger.this, "Please put in a file path when using this option");
+        File song = chosenSongFile;
+        if (song == null && !(new File(filePathSong.getText()).exists())) {
+            showMD(GuiTagger.this, "Please choose a valid file");
             return;
         }
+        if (song == null) {
+            song = new File(filePathSong.getText());
+        }
         String vId = vIdThumbnail.getText();
-        File song = new File(filePath);
         if (renameState) {
             song = renameSong(song);
         }
