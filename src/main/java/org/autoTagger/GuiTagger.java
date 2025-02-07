@@ -214,6 +214,7 @@ public class GuiTagger extends JFrame {
                     try {
                         song = Files.move(songPath, songPath.resolveSibling(artistNameInput.getText() + " - " + songNameInput.getText() + ".mp3")).toFile();
                     } catch (IOException e) {
+                        ErrorLogger.runtimeExceptionOccurred(e);
                         this.logger.println("Renaming song failed!");
                     }
                 }
