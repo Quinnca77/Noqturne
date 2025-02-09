@@ -34,6 +34,7 @@ public class GuiTagger extends JFrame {
     protected JTabbedPane tabbedPane;
     protected JButton openFileButton;
     protected JTextField filePathSong;
+    private JScrollPane filePathScrollPane;
     protected JTextField artistNameInput = new JTextField(10);
     protected JTextField songNameInput = new JTextField(10);
     protected final Logger logger;
@@ -93,6 +94,11 @@ public class GuiTagger extends JFrame {
             }
         });
 
+        // This line is used to hide the scrollbar since it overlays the text and looked ugly
+        filePathScrollPane.getHorizontalScrollBar().setPreferredSize(new Dimension(0,0));
+        // Without this line, the scroll pane shows that its size is slightly bigger than the JTextField
+        // it encompasses. This depended on the UI resizing, and thus I got rid of it entirely
+        filePathScrollPane.setBorder(null);
 
         linkCheckboxes();
         setVisible(true);
