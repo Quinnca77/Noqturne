@@ -90,7 +90,7 @@ public class GuiTagger extends JFrame {
             int returnVal = chooser.showOpenDialog(this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 chosenSongFile = chooser.getSelectedFile();
-                filePathSong.setText(chooser.getSelectedFile().getName());
+                filePathSong.setText(chooser.getSelectedFile().getAbsolutePath());
             }
         });
 
