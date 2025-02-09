@@ -88,7 +88,6 @@ public class GuiTagger extends JFrame {
         openFileButton.addActionListener(e -> {
             int returnVal = chooser.showOpenDialog(this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
-                System.out.println("You chose to open this file: " + chooser.getSelectedFile().getName());
                 chosenSongFile = chooser.getSelectedFile();
                 filePathSong.setText(chooser.getSelectedFile().getName());
             }
