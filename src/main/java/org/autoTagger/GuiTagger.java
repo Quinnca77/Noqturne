@@ -216,8 +216,10 @@ public class GuiTagger extends JFrame {
         switch (result) {
             case JOptionPane.OK_OPTION:
                 if (!(artistNameInput.getText().isEmpty() && songNameInput.getText().isEmpty())) {
+                    String artistText = artistNameInput.getText().replaceAll("[\\\\/:*?\"<>|]", "_");
+                    String songText = songNameInput.getText().replaceAll("[\\\\/:*?\"<>|]", "_");
                     try {
-                        song = Files.move(songPath, songPath.resolveSibling(artistNameInput.getText() + " - " + songNameInput.getText() + ".mp3")).toFile();
+                        song = Files.move(songPath, songPath.resolveSibling(artistText + " - " + songText + ".mp3")).toFile();
                     } catch (IOException e) {
                         ErrorLogger.runtimeExceptionOccurred(e);
                         this.logger.println("Renaming song failed!");
