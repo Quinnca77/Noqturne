@@ -83,7 +83,7 @@ public class Tagger {
         try {
             img = getCoverArt(songName);
             id3v2Tag.setAlbumImage(img, MIME_TYPE);
-        } catch (VIdException | VideoIdEmptyException e) {
+        } catch (VIdException | CoverArtSearchEmptyException e) {
             this.logger.println("Couldn't find valid cover art, skipping cover art for " + songName);
         }
 
@@ -176,11 +176,11 @@ public class Tagger {
      *
      * @param songName the name of the song you want to find a cover art of
      * @return cover art byte[] (mimeType jpeg) associated to the corresponding song name
-     * @throws VideoIdEmptyException if the cover art finder fails and find
+     * @throws CoverArtSearchEmptyException if the cover art finder fails and find
      * no video IDs with an appropriate cover art
      * @throws VIdException if the cover art finder would error on a cover art instance
      */
-    public byte[] getCoverArt(String songName) throws IOException, InterruptedException, VideoIdEmptyException, VIdException {
+    public byte[] getCoverArt(String songName) throws IOException, InterruptedException, CoverArtSearchEmptyException, VIdException {
         String filePath = "coverArt.py";
         ProcessBuilder pb = new ProcessBuilder()
                 .command("python", "-u", filePath, songName);
@@ -194,7 +194,9 @@ public class Tagger {
         }
         p.waitFor();
         if (fullOutput.isEmpty()) {
-            throw new VideoIdEmptyException();
+            ErrorLogger.runtimeExceptionOccurred("Cover art searching failed with the Python script returning no stdout output, " +
+                    "have you pip installed ytmusicapi?");
+            throw new CoverArtSearchEmptyException();
         }
         in.close();
         for (String vId : fullOutput) {
