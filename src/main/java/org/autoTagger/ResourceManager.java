@@ -27,25 +27,24 @@ public class ResourceManager {
         Path ytDlpPath = binDir.resolve("yt-dlp.exe");
         if (!Files.exists(ytDlpPath)) {
             logger.println("yt-dlp dependency not found, downloading now...");
-            downloadFromUrl("https://github.com/yt-dlp/yt-dlp/releases/download/latest/yt-dlp.exe", ytDlpPath);
+            downloadFromUrl("https://github.com/yt-dlp/yt-dlp/releases/download/2025.03.31/yt-dlp.exe", ytDlpPath);
+            logger.println("yt-dlp.exe downloaded!");
 
             // Update yt-dlp
-            ProcessBuilder pb = new ProcessBuilder("yt-dlp.exe", "-U");
+            ProcessBuilder pb = new ProcessBuilder(ytDlpPath.toString(), "-U");
             pb.inheritIO();
             Process process = pb.start();
             try {
                 int exitCode = process.waitFor();
 
                 if (exitCode == 0) {
-                    System.out.println("yt-dlp updated successfully!");
+                    logger.println("yt-dlp updated successfully!");
                 } else {
-                    System.err.println("yt-dlp update failed with exit code " + exitCode);
+                    logger.println("yt-dlp update failed with exit code " + exitCode);
                 }
-
-                logger.println("yt-dlp.exe downloaded!");
             } catch (InterruptedException e) {
                 ErrorLogger.runtimeExceptionOccurred(e);
-                logger.println("Something went wrong while downloading yt-dlp!");
+                logger.println("Something went wrong while updating yt-dlp!");
             }
         }
 
@@ -58,7 +57,7 @@ public class ResourceManager {
             logger.println("ffmpeg.zip downloaded!");
 
             logger.println("Unzipping...");
-            unzip("ffmpeg.zip", "ffmpeg_temp");
+            unzip(ffmpegZipPath.toString(), "ffmpeg_temp");
             logger.println("Unzipped!");
 
             logger.println("Moving files...");

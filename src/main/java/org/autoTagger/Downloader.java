@@ -35,7 +35,8 @@ public class Downloader {
      */
     public File[] downloadSongs(String url) throws IOException, InterruptedException {
         HashSet<File> filesNotToTag = new HashSet<>(Arrays.asList(Tagger.getAllMp3Files()));
-        ProcessBuilder pb = new ProcessBuilder("yt-dlp.exe",
+        ProcessBuilder pb = new ProcessBuilder(
+                "yt-dlp.exe",
                 "--replace-in-metadata", "\"title\"", "\"[\\\"]\"", "\"\"",
                 "-x",
                 "--audio-format", "mp3",
