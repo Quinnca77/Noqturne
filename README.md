@@ -4,7 +4,7 @@
 ![OS](https://img.shields.io/badge/OS-Windows-blue)
 ![Apache Maven](https://img.shields.io/badge/Apache_Maven-red?logo=apachemaven)
 ![Python](https://img.shields.io/badge/Python-v3.9-blue?logo=python)
-![License](https://img.shields.io/badge/License-GPL--3.0-yellow)
+![License](https://img.shields.io/badge/License-MIT-A31F34)
 [![Ko-fi](https://img.shields.io/badge/Ko--Fi-Buy_me_a_coffee-ff5f5f?logo=ko-fi&style=for-the-badgeKofi)](https://ko-fi.com/quinnca77)
 
 This Windows application aims to provide an automated way of downloading and tagging your songs from YouTube. By just supplying it with a playlist URL, it can download all of its songs
