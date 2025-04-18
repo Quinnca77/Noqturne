@@ -57,11 +57,11 @@ public class ResourceManager {
             logger.println("ffmpeg.zip downloaded!");
 
             logger.println("Unzipping...");
-            unzip(ffmpegZipPath.toString(), "ffmpeg_temp");
+            Path ffmpegUnzippedDirectory = binDir.resolve("ffmpeg_temp");
+            unzip(ffmpegZipPath.toString(), ffmpegUnzippedDirectory.toString());
             logger.println("Unzipped!");
 
             logger.println("Moving files...");
-            Path ffmpegUnzippedDirectory = binDir.resolve("ffmpeg_temp");
             searchAndMoveFile("ffmpeg.exe", ffmpegUnzippedDirectory, binDir.resolve("ffmpeg.exe"));
             searchAndMoveFile("ffprobe.exe", ffmpegUnzippedDirectory, binDir.resolve("ffprobe.exe"));
             searchAndMoveFile("ffplay.exe", ffmpegUnzippedDirectory, binDir.resolve("ffplay.exe"));
@@ -82,6 +82,7 @@ public class ResourceManager {
         }
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static void unzip(String zipFile, String destFolder) throws IOException {
         try (ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile))) {
             ZipEntry entry;
@@ -89,12 +90,15 @@ public class ResourceManager {
             while ((entry = zis.getNextEntry()) != null) {
                 File newFile = new File(destFolder + File.separator + entry.getName());
                 if (entry.isDirectory()) {
-                    if (!newFile.mkdirs() && !newFile.isDirectory()) {
-                        throw new IOException();
+                    if (!newFile.exists()) {
+                        if (!newFile.mkdirs()) {
+                            throw new IOException("Failed to create directory: " + newFile.getAbsolutePath());
+                        }
                     }
                 } else {
-                    if (!(new File(newFile.getParent()).mkdirs()) && !newFile.isDirectory()) {
-                        throw new IOException();
+                    File parentDir = newFile.getParentFile();
+                    if (parentDir != null && !parentDir.exists() && !parentDir.mkdirs()) {
+                        throw new IOException("Failed to create directory: " + parentDir.getAbsolutePath());
                     }
                     try (FileOutputStream fos = new FileOutputStream(newFile)) {
                         int length;
