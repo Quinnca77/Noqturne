@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 /**
@@ -181,9 +182,9 @@ public class Tagger {
      * @throws VIdException if the cover art finder would error on a cover art instance
      */
     public byte[] getCoverArt(String songName) throws IOException, InterruptedException, CoverArtSearchEmptyException, VIdException {
-        String filePath = "coverArt.py";
+        Path filePath = ResourceManager.getCoverArtPy();
         ProcessBuilder pb = new ProcessBuilder()
-                .command("python", "-u", filePath, songName);
+                .command("python", "-u", filePath.toString(), songName);
         Process p = pb.start();
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(p.getInputStream()));

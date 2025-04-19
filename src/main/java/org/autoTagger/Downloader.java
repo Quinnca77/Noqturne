@@ -1,6 +1,9 @@
 package org.autoTagger;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.*;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -35,15 +38,7 @@ public class Downloader {
      */
     public File[] downloadSongs(String url) throws IOException, InterruptedException {
         HashSet<File> filesNotToTag = new HashSet<>(Arrays.asList(Tagger.getAllMp3Files()));
-        ProcessBuilder pb = new ProcessBuilder(
-                "yt-dlp.exe",
-                "--replace-in-metadata", "\"title\"", "\"[\\\"]\"", "\"\"",
-                "-x",
-                "--audio-format", "mp3",
-                "-P \"%USERPROFILE%/Downloads\"",
-                "-o", "%(title)s.%(ext)s",
-                "\"" + url + "\"");
-        Process process = pb.start();
+        Process process = getProcess(url);
 
         StreamGobbler outputGobbler = new StreamGobbler(process.getInputStream(), "OUTPUT", this.logger);
         StreamGobbler errorGobbler = new StreamGobbler(process.getErrorStream(), "ERROR", this.logger);
@@ -60,6 +55,19 @@ public class Downloader {
         }
         File[] output = new File[0];
         return filesToTag.toArray(output);
+    }
+
+    private static @NotNull Process getProcess(String url) throws IOException {
+        Path ytDlpPath = ResourceManager.getYtDlpPath();
+        ProcessBuilder pb = new ProcessBuilder(
+                ytDlpPath.toString(),
+                "--replace-in-metadata", "\"title\"", "\"[\\\"]\"", "\"\"",
+                "-x",
+                "--audio-format", "mp3",
+                "-P \"%USERPROFILE%/Downloads\"", // TODO hard-coded for now, will change in later iterations
+                "-o", "%(title)s.%(ext)s",
+                "\"" + url + "\"");
+        return pb.start();
     }
 
     /**

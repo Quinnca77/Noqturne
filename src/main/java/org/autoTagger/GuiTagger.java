@@ -102,6 +102,7 @@ public class GuiTagger extends JFrame {
 
         linkCheckboxes();
         setVisible(true);
+        ResourceManager.ensureYtMusicApiInstallation();
     }
 
     /**
