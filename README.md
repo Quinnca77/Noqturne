@@ -1,11 +1,13 @@
 # Auto-tagger 
-[![Github Quinnca77](https://img.shields.io/badge/Github-Quinnca77-black?logo=github)](https://github.com/Quinnca77)
-![IDE](https://img.shields.io/badge/IDE-IntelliJ-blue?logo=intellijidea)
-![OS](https://img.shields.io/badge/OS-Windows-blue)
-![Apache Maven](https://img.shields.io/badge/Apache_Maven-red?logo=apachemaven)
-![Python](https://img.shields.io/badge/Python-v3.9-blue?logo=python)
-![License](https://img.shields.io/badge/License-MIT-A31F34)
-[![Ko-fi](https://img.shields.io/badge/Ko--Fi-Buy_me_a_coffee-ff5f5f?logo=ko-fi&style=for-the-badgeKofi)](https://ko-fi.com/quinnca77)
+![Build](https://img.shields.io/github/actions/workflow/status/Quinnca77/Auto-tagger/build.yml?label=Build&style=for-the-badge
+)
+[![Github Quinnca77](https://img.shields.io/badge/Github-Quinnca77-black?logo=github&style=for-the-badge)](https://github.com/Quinnca77)
+![IDE](https://img.shields.io/badge/IDE-IntelliJ-blue?logo=intellijidea&style=for-the-badge)
+![OS](https://img.shields.io/badge/OS-Windows-blue?style=for-the-badge)
+![Apache Maven](https://img.shields.io/badge/Apache_Maven-red?logo=apachemaven&style=for-the-badge)
+![Python](https://img.shields.io/badge/Python-v3.9-blue?logo=python&style=for-the-badge)
+![License](https://img.shields.io/badge/License-MIT-A31F34?style=for-the-badge)
+[![Ko-fi](https://img.shields.io/badge/Ko--Fi-Buy_me_a_coffee-ff5f5f?logo=ko-fi&style=for-the-badge)](https://ko-fi.com/quinnca77)
 
 This Windows application aims to provide an automated way of downloading and tagging your songs from YouTube. By just supplying it with a playlist URL, it can download all of its songs
 and give them the appropriate cover art quickly without needing any user interaction.
