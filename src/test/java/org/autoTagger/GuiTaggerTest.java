@@ -106,6 +106,7 @@ class GuiTaggerTest {
 
     private void testResultingFile() throws InvalidDataException, UnsupportedTagException, IOException {
         Mp3File song = new Mp3File(PATH_TO_SONGS + TEST_SONG_ARTIST + " - " + TEST_SONG_TITLE + ".mp3");
+        System.out.println(song);
         if (song.hasId3v2Tag()){
             ID3v2 id3v2tag = song.getId3v2Tag();
             byte[] img = id3v2tag.getAlbumImage();
