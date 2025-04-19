@@ -21,13 +21,10 @@ That's not all. When converting the video downloaded from YouTube to `mp3` forma
 
 ## Installation
 You have a few options to choose from when installing this application:
-- Downloading the latest stable release
-  - Download the .exe file in the latest release together with the python file
-  - Download the .jar file in the latest release together with the python file (needs a valid java installation to run)
+- Downloading the latest stable release by downloading the .jar file in the latest release
 
-As long as you have both Python and Java installed on your machine, you can simply run the file [installation.bat](installation.bat). This is strongly recommended in order to set up your environment
-exactly in the intended way. Do not be alarmed by the command prompt that gets opened by the program. If you wish to install things manually anyway (or still need to install Python and/or Java), 
-you can go through the steps below.
+As long as you have both Python and Java installed on your machine, the application will ensure other dependencies are present
+when it needs them.
 ### Installing Python
 You can skip this step if you already have Python installed.
 
@@ -41,13 +38,6 @@ python --version
 ```
 If this does not return an error, you're good.
 
-### Installing necessary Python dependencies
-Fortunately, this project only has one. If you already know what you are doing, you can create a virtual environment within the project directory which has `ytmusicapi` installed
-as a Python library, but if you don't know what that means, running the following line in a command prompt will do the job for you as well:
-```
-pip install ytmusicapi
-```
-
 
 ### Installing Java
 Go to the [Java Download page](https://www.java.com/en/download/) and follow the installation instructions. In case you struggle with this you can follow this guide 
@@ -57,25 +47,6 @@ java --version
 ```
 Once again, if it doesn't return an error you're good.
 
-### Installing yt-dlp
-Now we are getting to the interesting stuff. Go to their [repository releases](https://github.com/yt-dlp/yt-dlp/releases) and from their latest release, download the `yt-dlp.exe` file. 
-Drop this file in the same directory that you installed this repository in (whichever way of installing this repository you chose above doesn't matter). To verify you did this correctly,
-go to the directory of this project and open a command prompt (this can be done quickly by going to the directory in File Explorer and typing `cmd` in the filepath textbox). Run:
-```
-yt-dlp --version
-```
-Once again, if this doesn't return an error, you get the drill.
-
-### Installing ffmpeg
-We have arrived at the last dependency! I hope you stuck with me so far. You can either download the official `ffmpeg` build from their [official website](https://www.ffmpeg.org/) or you can
-download the custom one made by the maintainers of `yt-dlp` which can be found [here](https://github.com/yt-dlp/FFmpeg-Builds/releases).
-> [!NOTE]
-> I recommend downloading the one from `yt-dlp` themselves, since they mention it works better with their software.
-
-That being said, I will also only specify installation instructions for the `yt-dlp` ffmpeg build. Navigate to their releases and download the zip file applicable to your Windows machine 
-(when in doubt, just pick the one that has both "win" and "64" in there). Unzip this zip file somewhere on your device and open the `bin` folder. Copy the executable files within to the 
-source directory of the auto-tagger project.
-
 Now you're done installing and ready to use this application!
 
 ## Usage
@@ -84,7 +55,7 @@ This application has three main use cases:
 - Download a song or playlist of songs and tag them immediately after
 - Tag an individual song (any directory) with the thumbnail of a specified YouTube video
 
-All of these are very straight-forward, but be aware that the cover art finding is done on the **mp3 file title!**. If your mp3 file title is complete nonsense, expect for the found cover art
+All of these are very straight-forward, but be aware that the cover art finding is done on the **mp3 file title!** If your mp3 file title is complete nonsense, expect for the found cover art
 to match that nonsense. 
 
 > [!TIP]
@@ -114,7 +85,7 @@ So I went with YouTube instead, which seems to have a way bigger database of son
 This started out as a hobby project and I keep my Downloads folder clean. This made it a prime location for tagging `mp3` files in since they will be downloaded there anyway, saving me the effort
 of relocating the songs to a different directory before tagging them.
 #### My Downloads folder is a mess. Can I specify a different folder?
-Currently, no. I do not see this being implemented in the near future either, so maybe consider cleaning it up?
+Currently, no. This will get implemented soon though, but maybe consider cleaning it up in the meanwhile?
 #### I want to tag a song that is not an mp3 file. Can I do this?
 Unfortunately, this application is made with only mp3 files in mind. Adding support for other extensions as well would be a big endeavour, and although I wouldn't exclude the possibility of this
 being added in the future, I wouldn't count on it.
