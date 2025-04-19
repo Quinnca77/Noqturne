@@ -32,13 +32,12 @@ class GuiTaggerTest {
     private GuiTagger guiTagger;
     private JTextField mockFilePathSong;
     private JTextField mockVIdThumbnail;
-    private static final String TEST_SONG_URL = "https://youtu.be/ISjNj_-4_QI?si=RlNW2TaIEU_SuvOn";
-    private static final String TEST_SONG_NAME = "Noa Klay - I Need Your Love (feat. Dayana).mp3";
-    private static final String TEST_SONG_ARTIST = "Noa Klay";
-    private static final String TEST_SONG_TITLE = "I Need Your Love (feat. Dayana)";
+    private static final String TEST_SONG_URL = "https://www.youtube.com/watch?v=U0TXIXTzJEY";
+    private static final String TEST_SONG_NAME = "il vento d'oro.mp3";
+    private static final String TEST_SONG_ARTIST = "Yugo Kanno";
+    private static final String TEST_SONG_TITLE = "il vento d'oro";
     private static final String TEST_SONG_VID = "U0TXIXTzJEY";
-    private static final String TEST_COVER_ART = "Coverart.jpg";
-    private static final String TEST_SPECIFIED_COVER_ART = "SpecifiedCoverArt.jpg";
+    private static final String TEST_COVER_ART = "CoverArt.jpg";
 
     @BeforeEach
     void setUp() throws BadLocationException {
@@ -69,12 +68,14 @@ class GuiTaggerTest {
         File copied = copyTestFileToTagFolder();
 
         // Set up mock behavior
-        when(mockFilePathSong.getText()).thenReturn(PATH_TO_SONGS + TEST_SONG_NAME);
+        when(mockFilePathSong.getText()).thenReturn(PATH_TO_SONGS + TEST_SONG_ARTIST + " - " + TEST_SONG_TITLE + ".mp3");
         when(mockVIdThumbnail.getText()).thenReturn(TEST_SONG_VID);
+
+        copied = Files.move(copied.toPath(), copied.toPath().resolveSibling(TEST_SONG_ARTIST + " - " + TEST_SONG_TITLE + ".mp3")).toFile();
 
         // Test if mp3 file is as expected after method is called
         guiTagger.addCoverForIndividualFile();
-        testResultingFile(TEST_SPECIFIED_COVER_ART);
+        testResultingFile();
 
         // Clean up
         if (!copied.delete()) {
@@ -86,10 +87,11 @@ class GuiTaggerTest {
     void batchTagTest() throws InvalidDataException, UnsupportedTagException, IOException {
         // Copy test mp3 file to Downloads folder to test application
         File copied = copyTestFileToTagFolder();
+        copied = Files.move(copied.toPath(), copied.toPath().resolveSibling(TEST_SONG_ARTIST + " - " + TEST_SONG_TITLE + ".mp3")).toFile();
 
         // Test if mp3 file is as expected after method is called
         guiTagger.tagAllFiles(new File[]{copied});
-        testResultingFile(TEST_COVER_ART);
+        testResultingFile();
 
         // Clean up
         if (!copied.delete()) {
@@ -104,13 +106,9 @@ class GuiTaggerTest {
         // Test if mp3 file is as expected after method is called
         File song = new File(PATH_TO_SONGS + TEST_SONG_TITLE + ".mp3");
         Path songPath = song.toPath();
-        try {
-            song = Files.move(songPath, songPath.resolveSibling(TEST_SONG_ARTIST + " - " + TEST_SONG_TITLE + ".mp3")).toFile();
-        } catch (IOException e) {
-            throw new RuntimeException("Song rename failed!");
-        }
+        song = Files.move(songPath, songPath.resolveSibling(TEST_SONG_ARTIST + " - " + TEST_SONG_TITLE + ".mp3")).toFile();
         guiTagger.tagAllFiles(new File[]{song});
-        testResultingFile(TEST_COVER_ART);
+        testResultingFile();
 
         // Clean up
         if (!(new File(PATH_TO_SONGS + TEST_SONG_ARTIST + " - " + TEST_SONG_TITLE + ".mp3")).delete()) {
@@ -128,15 +126,15 @@ class GuiTaggerTest {
         return copied;
     }
 
-    private void testResultingFile(String coverArt) throws InvalidDataException, UnsupportedTagException, IOException {
-        Mp3File song = new Mp3File(PATH_TO_SONGS + TEST_SONG_NAME);
+    private void testResultingFile() throws InvalidDataException, UnsupportedTagException, IOException {
+        Mp3File song = new Mp3File(PATH_TO_SONGS + TEST_SONG_ARTIST + " - " + TEST_SONG_TITLE + ".mp3");
         if (song.hasId3v2Tag()){
             ID3v2 id3v2tag = song.getId3v2Tag();
             byte[] img = id3v2tag.getAlbumImage();
             String title = id3v2tag.getTitle();
             String artist = id3v2tag.getArtist();
             File coverArtFile = new File(URLDecoder.decode(
-                    Objects.requireNonNull(getClass().getResource("/" + coverArt)).getPath(),
+                    Objects.requireNonNull(getClass().getResource("/" + GuiTaggerTest.TEST_COVER_ART)).getPath(),
                     StandardCharsets.UTF_8));
             byte[] correctCoverArt = FileUtils.readFileToByteArray(coverArtFile);
             Assertions.assertArrayEquals(img, correctCoverArt);
