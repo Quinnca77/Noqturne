@@ -16,7 +16,7 @@ public class ResourceManager {
 
     private static final Path appDir = Paths.get(System.getenv("APPDATA"), "AutoTagger");
     private static final Logger logger = Logger.getLogger();
-    private static final String PY_FILE = "coverArt.py";
+    private static final String PY_FILE = "/coverArt.py";
     private static final String PY_FILE_PREFIX = "coverArt";
     private static final String PY_FILE_SUFFIX = ".py";
     private static Path tempPyFilePath;
@@ -164,8 +164,9 @@ public class ResourceManager {
             }
             File tempPyFile = File.createTempFile(PY_FILE_PREFIX, PY_FILE_SUFFIX);
             tempPyFile.deleteOnExit();
-            Files.copy(in, tempPyFilePath, StandardCopyOption.REPLACE_EXISTING);
-            tempPyFilePath = tempPyFile.toPath();
+            Path tempPath = tempPyFile.toPath();
+            Files.copy(in, tempPath, StandardCopyOption.REPLACE_EXISTING);
+            tempPyFilePath = tempPath;
         }
         return tempPyFilePath;
     }
