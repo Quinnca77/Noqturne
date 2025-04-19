@@ -106,19 +106,14 @@ class GuiTaggerTest {
 
     private void testResultingFile() throws InvalidDataException, UnsupportedTagException, IOException {
         Mp3File song = new Mp3File(PATH_TO_SONGS + TEST_SONG_ARTIST + " - " + TEST_SONG_TITLE + ".mp3");
-        System.out.println(song);
         if (song.hasId3v2Tag()){
             ID3v2 id3v2tag = song.getId3v2Tag();
             byte[] img = id3v2tag.getAlbumImage();
             String title = id3v2tag.getTitle();
             String artist = id3v2tag.getArtist();
-            System.out.println("ID3v2 Title: " + id3v2tag.getTitle());
-            System.out.println("ID3v2 Artist: " + id3v2tag.getArtist());
-            System.out.println("ID3v2 Album Image: " + (id3v2tag.getAlbumImage() != null));
             File coverArtFile = new File(URLDecoder.decode(
                     Objects.requireNonNull(getClass().getResource("/" + GuiTaggerTest.TEST_COVER_ART)).getPath(),
                     StandardCharsets.UTF_8));
-            System.out.println("Cover art file exists? " + coverArtFile.exists());
             byte[] correctCoverArt = FileUtils.readFileToByteArray(coverArtFile);
             Assertions.assertArrayEquals(img, correctCoverArt);
             Assertions.assertEquals(title, TEST_SONG_TITLE);
