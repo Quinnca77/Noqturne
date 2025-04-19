@@ -112,9 +112,13 @@ class GuiTaggerTest {
             byte[] img = id3v2tag.getAlbumImage();
             String title = id3v2tag.getTitle();
             String artist = id3v2tag.getArtist();
+            System.out.println("ID3v2 Title: " + id3v2tag.getTitle());
+            System.out.println("ID3v2 Artist: " + id3v2tag.getArtist());
+            System.out.println("ID3v2 Album Image: " + (id3v2tag.getAlbumImage() != null));
             File coverArtFile = new File(URLDecoder.decode(
                     Objects.requireNonNull(getClass().getResource("/" + GuiTaggerTest.TEST_COVER_ART)).getPath(),
                     StandardCharsets.UTF_8));
+            System.out.println("Cover art file exists? " + coverArtFile.exists());
             byte[] correctCoverArt = FileUtils.readFileToByteArray(coverArtFile);
             Assertions.assertArrayEquals(img, correctCoverArt);
             Assertions.assertEquals(title, TEST_SONG_TITLE);
