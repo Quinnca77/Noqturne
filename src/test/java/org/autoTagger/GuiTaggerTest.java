@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 import org.mockito.Mockito;
 
 import java.io.File;
@@ -75,6 +76,7 @@ class GuiTaggerTest {
         }
     }
 
+    @DisabledIfEnvironmentVariable(named = "CI", matches = "true") // Due to bot-flagging of yt-dlp
     @Test
     void downloadAndTagTest() throws InvalidDataException, UnsupportedTagException, IOException, InterruptedException, NoSongFoundException, NotSupportedException {
         downloader.downloadSongs(TEST_SONG_URL);
