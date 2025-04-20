@@ -1,7 +1,6 @@
 # Auto-tagger TODO Section
 
 ### To-do
-- [ ] Make input fields for the rename song window vertically bigger
 - [ ] Add settings menu
 - [ ] Add option for the user to select the folder to download songs in
 - [ ] With longer logs the UI on the left gets too wide vertically, button goes out of window
@@ -11,3 +10,4 @@
 - [x] Make TODO.md
 - [x] Bundle dependencies to make installation easier
 - [x] Implement simple CI/CD
+- [x] Make input fields for the rename song window vertically bigger
