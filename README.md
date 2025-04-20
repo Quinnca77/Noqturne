@@ -22,6 +22,7 @@ That's not all. When converting the video downloaded from YouTube to `mp3` forma
 ## Installation
 You have a few options to choose from when installing this application:
 - Downloading the latest stable release by downloading the .jar file in the latest release
+- Cloning the repository and running src/main/java/org/autoTagger/Main
 
 As long as you have both Python and Java installed on your machine, the application will ensure other dependencies are present
 when it needs them.
