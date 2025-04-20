@@ -35,8 +35,8 @@ public class GuiTagger extends JFrame {
     protected JButton openFileButton;
     protected JTextField filePathSong;
     private JScrollPane filePathScrollPane;
-    protected JTextField artistNameInput = new JTextField(10);
-    protected JTextField songNameInput = new JTextField(10);
+    protected JTextField artistNameInput = new JTextField();
+    protected JTextField songNameInput = new JTextField();
     protected final Logger logger;
     protected final Tagger tagger;
     protected final Downloader downloader;
@@ -243,7 +243,7 @@ public class GuiTagger extends JFrame {
     private @NotNull JPanel getFieldsRenameDialog(String fileName) {
         JPanel mainPanel = new JPanel(new BorderLayout());
         JPanel title = new JPanel();
-        JPanel fields = new JPanel(new GridLayout(2, 2));
+        JPanel fields = new JPanel(new GridLayout(2, 2, 5, 5));
         JLabel artistName = new JLabel("Artist name:");
         JLabel songName = new JLabel("Song name:");
         JTextField song = new JTextField(fileName);
@@ -258,7 +258,7 @@ public class GuiTagger extends JFrame {
         fields.add(songNameInput);
         mainPanel.add(title, BorderLayout.NORTH);
         mainPanel.add(fields, BorderLayout.CENTER);
-        mainPanel.setPreferredSize(new Dimension(800,60));
+        mainPanel.setPreferredSize(new Dimension(800,80));
         return mainPanel;
     }
 
