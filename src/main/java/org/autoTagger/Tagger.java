@@ -10,6 +10,7 @@ import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 /**
@@ -74,12 +75,9 @@ public class Tagger {
      */
     public void genericTagFile(String filePath) throws IOException, InterruptedException, NotSupportedException {
         Mp3File mp3file = loadMp3File(filePath);
-        String songName = mp3file.getFilename().substring(PATH_TO_SONGS.length(), mp3file.getFilename().length() - 4);
+        ID3v2 id3v2Tag = getId3v2Tag(filePath, mp3file);
 
-        this.logger.println("Tagging " + songName + " now...");
-        String[] splitSong = songName.split(" - ");
-        ID3v2 id3v2Tag = getId3v2Tag(splitSong, mp3file);
-
+        String songName = getSongName(filePath);
         byte[] img;
         try {
             img = getCoverArt(songName);
@@ -101,11 +99,7 @@ public class Tagger {
      */
     public void tagIndividualFile(String filePath, String vId) throws IOException, NotSupportedException {
         Mp3File mp3file = loadMp3File(filePath);
-        String songName = mp3file.getFilename().substring(PATH_TO_SONGS.length(), mp3file.getFilename().length() - 4);
-
-        this.logger.println("Tagging " + songName + " now...");
-        String[] splitSong = songName.split(" - ");
-        ID3v2 id3v2Tag = getId3v2Tag(splitSong, mp3file);
+        ID3v2 id3v2Tag = getId3v2Tag(filePath, mp3file);
 
         byte[] img = getCroppedImageFromVID(vId);
         id3v2Tag.setAlbumImage(img, MIME_TYPE);
@@ -121,7 +115,11 @@ public class Tagger {
         Files.move(tempMp3File.toPath(), new File(filePath).toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
     }
 
-    private static ID3v2 getId3v2Tag(String[] splitSong, Mp3File mp3file) {
+    private static ID3v2 getId3v2Tag(String filePath, Mp3File mp3file) {
+        String songName = getSongName(filePath);
+
+        Logger.getLogger().println("Tagging " + songName + " now...");
+        String[] splitSong = songName.split(" - ");
         ID3v2 id3v2Tag = addArtistAndSongname(splitSong, mp3file);
         if (id3v2Tag == null) {
             if (mp3file.hasId3v2Tag()) {
@@ -133,6 +131,11 @@ public class Tagger {
             }
         }
         return id3v2Tag;
+    }
+
+    private static @NotNull String getSongName(String filePath) {
+        String fullSongName = Paths.get(filePath).getFileName().toString();
+        return fullSongName.substring(0, fullSongName.length() - 4);
     }
 
     private static @NotNull Mp3File loadMp3File(String filePath) throws IOException {
