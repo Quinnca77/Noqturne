@@ -155,9 +155,3 @@ buildNumber.properties
 .project
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
-
-# Auto-tagger specific
-ffmpeg.exe
-ffprobe.exe
-ffplay.exe
-yt-dlp.exe
