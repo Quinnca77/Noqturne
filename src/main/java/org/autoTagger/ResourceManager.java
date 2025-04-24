@@ -12,6 +12,9 @@ import java.util.Stack;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+/**
+ * Class used for interfacing with runtime dependency files.
+ */
 public class ResourceManager {
 
     private static final Path appDir = Paths.get(System.getenv("APPDATA"), "AutoTagger");
@@ -42,53 +45,73 @@ public class ResourceManager {
             downloadFromUrl("https://github.com/yt-dlp/yt-dlp/releases/download/2025.03.31/yt-dlp.exe", ytDlpPath);
             logger.println("yt-dlp.exe downloaded!");
 
-            // Update yt-dlp
-            ProcessBuilder pb = new ProcessBuilder(ytDlpPath.toString(), "-U");
-            pb.inheritIO();
-            Process process = pb.start();
-            try {
-                int exitCode = process.waitFor();
-
-                if (exitCode == 0) {
-                    logger.println("yt-dlp updated successfully!");
-                } else {
-                    logger.println("yt-dlp update failed with exit code " + exitCode);
-                }
-            } catch (InterruptedException e) {
-                ErrorLogger.runtimeExceptionOccurred(e);
-                logger.println("Something went wrong while updating yt-dlp!");
-            }
+            updateYtDlp(ytDlpPath);
         }
 
         // Checks whether ffmpeg dependencies are present
         Path ffmpegDependencyPath = binDir.resolve("ffmpeg.exe");
         if (!Files.exists(ffmpegDependencyPath)) {
-            logger.println("ffmpeg not found, downloading now...");
-            Path ffmpegZipPath = binDir.resolve("ffmpeg.zip");
-            downloadFromUrl("https://github.com/yt-dlp/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip",
-                    ffmpegZipPath);
-            logger.println("ffmpeg.zip downloaded!");
-
-            // Unzips downloaded zip file
-            logger.println("Unzipping...");
-            Path ffmpegUnzippedDirectory = binDir.resolve("ffmpeg_temp");
-            unzip(ffmpegZipPath.toString(), ffmpegUnzippedDirectory.toString());
-            logger.println("Unzipped!");
-
-            // Move files from extracted zip to desired location for yt-dlp
-            logger.println("Moving files...");
-            searchAndMoveFile("ffmpeg.exe", ffmpegUnzippedDirectory, binDir.resolve("ffmpeg.exe"));
-            searchAndMoveFile("ffprobe.exe", ffmpegUnzippedDirectory, binDir.resolve("ffprobe.exe"));
-            searchAndMoveFile("ffplay.exe", ffmpegUnzippedDirectory, binDir.resolve("ffplay.exe"));
-            logger.println("Moving files successful!");
-
-            // Deleting files that will not be used anymore
-            logger.println("Removing remnants...");
-            Files.delete(ffmpegZipPath);
-            FileUtils.deleteDirectory(ffmpegUnzippedDirectory.toFile());
-            logger.println("Removed remnants! Ffmpeg successfully installed!");
+            downloadLatestFfmpeg(binDir);
         }
         return ytDlpPath;
+    }
+
+    /**
+     * Downloads latest ffmpeg builds and puts them in the right folder. Will replace existing builds
+     * if they already exist in that location.
+     *
+     * @param binDir Path object pointing to the binary folder of this app's AppData folder
+     * @throws IOException if an I/O error occurs
+     */
+    private static void downloadLatestFfmpeg(Path binDir) throws IOException {
+        logger.println("Downloading ffmpeg now...");
+        Path ffmpegZipPath = binDir.resolve("ffmpeg.zip");
+        downloadFromUrl("https://github.com/yt-dlp/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip",
+                ffmpegZipPath);
+        logger.println("ffmpeg.zip downloaded!");
+
+        // Unzips downloaded zip file
+        logger.println("Unzipping...");
+        Path ffmpegUnzippedDirectory = binDir.resolve("ffmpeg_temp");
+        unzip(ffmpegZipPath.toString(), ffmpegUnzippedDirectory.toString());
+        logger.println("Unzipped!");
+
+        // Move files from extracted zip to desired location for yt-dlp
+        logger.println("Moving files...");
+        searchAndMoveFile("ffmpeg.exe", ffmpegUnzippedDirectory, binDir.resolve("ffmpeg.exe"));
+        searchAndMoveFile("ffprobe.exe", ffmpegUnzippedDirectory, binDir.resolve("ffprobe.exe"));
+        searchAndMoveFile("ffplay.exe", ffmpegUnzippedDirectory, binDir.resolve("ffplay.exe"));
+        logger.println("Moving files successful!");
+
+        // Deleting files that will not be used anymore
+        logger.println("Removing remnants...");
+        Files.delete(ffmpegZipPath);
+        FileUtils.deleteDirectory(ffmpegUnzippedDirectory.toFile());
+        logger.println("Removed remnants! Ffmpeg successfully installed!");
+    }
+
+    /**
+     * Updates the existing yt-dlp binary with its own update command.
+     *
+     * @param ytDlpPath Path object pointing to the yt-dlp binary
+     * @throws IOException if an I/O error occurs
+     */
+    private static void updateYtDlp(Path ytDlpPath) throws IOException {
+        ProcessBuilder pb = new ProcessBuilder(ytDlpPath.toString(), "-U");
+        pb.inheritIO();
+        Process process = pb.start();
+        try {
+            int exitCode = process.waitFor();
+
+            if (exitCode == 0) {
+                logger.println("yt-dlp updated successfully!");
+            } else {
+                logger.println("yt-dlp update failed with exit code " + exitCode);
+            }
+        } catch (InterruptedException e) {
+            ErrorLogger.runtimeExceptionOccurred(e);
+            logger.println("Something went wrong while updating yt-dlp!");
+        }
     }
 
     /**
@@ -168,7 +191,7 @@ public class ResourceManager {
             for (File file : list) {
                 if (file.isFile() && (file.getName().equals(fileName))) {
                     System.out.println(file.getAbsolutePath());
-                    Files.move(file.toPath(), pathToMove);
+                    Files.move(file.toPath(), pathToMove, StandardCopyOption.REPLACE_EXISTING);
                     return;
                 }
                 if (file.isDirectory()) {
@@ -203,6 +226,27 @@ public class ResourceManager {
     }
 
     /**
+     * Updates the ytmusicapi python dependency.
+     * Before updating will ensure ytmusicapi has already been installed.
+     */
+    private static void updateYtMusicApi() {
+        ensureYtMusicApiInstallation();
+        try {
+            Process process = new ProcessBuilder("python", "-m", "pip", "install", "ytmusicapi", "-U").start();
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                logger.println("Updating ytmusicapi failed!");
+            } else {
+                logger.println("Updating ytmusicapi successful!");
+            }
+        } catch (IOException | InterruptedException e) {
+            ErrorLogger.runtimeExceptionOccurred(e);
+            logger.println("Something went wrong while checking Python dependency ytmusicapi.");
+        }
+
+    }
+
+    /**
      * Gets the Path to the coverArt.py file used for getting the vId of a song.
      * This file is located in the resources folder but for a compiled jar we have
      * to first extract it to a temporary file from which we can invoke it from the
@@ -226,5 +270,22 @@ public class ResourceManager {
             tempPyFilePath = tempPath;
         }
         return tempPyFilePath;
+    }
+
+    /**
+     * Updates the runtime dependencies of this application.
+     * Specifically, this method will update:
+     * <ul>
+     *     <li>yt-dlp</li>
+     *     <li>ffmpeg builds</li>
+     *     <li>ytmusicapi</li>
+     * </ul>
+     *
+     * @throws IOException if an I/O error occurs
+     */
+    public static void updateDependencies() throws IOException {
+        updateYtDlp(getYtDlpPath());
+        downloadLatestFfmpeg(appDir.resolve("bin"));
+        updateYtMusicApi();
     }
 }
