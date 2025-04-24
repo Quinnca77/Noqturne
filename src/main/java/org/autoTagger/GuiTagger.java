@@ -4,13 +4,17 @@ import com.mpatric.mp3agic.NotSupportedException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.RescaleOp;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,6 +40,7 @@ public class GuiTagger extends JFrame {
     protected JTextField filePathSong;
     private JScrollPane filePathScrollPane;
     private JSplitPane splitPane;
+    private JButton settingsButton;
     protected JTextField artistNameInput = new JTextField();
     protected JTextField songNameInput = new JTextField();
     protected final Logger logger;
@@ -43,6 +48,9 @@ public class GuiTagger extends JFrame {
     protected final Downloader downloader;
     protected boolean renameState = true;
     protected File chosenSongFile;
+
+    private static final int SETTINGS_BUTTON_SIZE = 32;
+    private static final float BRIGHTNESS_FACTOR = 1.2f;
 
     /**
      * Calling this constructor will create and show the GUI of the auto-tagger.
@@ -103,8 +111,49 @@ public class GuiTagger extends JFrame {
         filePathScrollPane.setBorder(null);
 
         linkCheckboxes();
+        settingsButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        try {
+            InputStream imageStream = getClass().getResourceAsStream("/settings_gear_icon.png");
+            if (imageStream == null) {
+                ErrorLogger.runtimeExceptionOccurred("Image not found in resources");
+                throw new RuntimeException("Image not found in resources");
+            }
+            BufferedImage originalImage = ImageIO.read(imageStream);
+            Image resizedImage = originalImage.getScaledInstance(SETTINGS_BUTTON_SIZE, SETTINGS_BUTTON_SIZE, Image.SCALE_SMOOTH);
+            BufferedImage resizedBufferedImage = toBufferedImage(resizedImage);
+            settingsButton.setIcon(new ImageIcon(resizedBufferedImage));
+            BufferedImage hoverImage = new BufferedImage(
+                    resizedBufferedImage.getWidth(), resizedBufferedImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
+
+            RescaleOp op = new RescaleOp(
+                    new float[] {BRIGHTNESS_FACTOR, BRIGHTNESS_FACTOR, BRIGHTNESS_FACTOR, 1f }, // R, G, B, A scale
+                    new float[] { 0f, 0f, 0f, 0f }, // no offset
+                    null);
+
+            op.filter(resizedBufferedImage, hoverImage);
+            settingsButton.setRolloverIcon(new ImageIcon(hoverImage));
+        } catch (IOException e) {
+            ErrorLogger.runtimeExceptionOccurred(e);
+            this.logger.println("An error occurred while setting the settings button icon, " +
+                    "see errorLog.log for more details");
+        }
+
         setVisible(true);
         ResourceManager.ensureYtMusicApiInstallation();
+    }
+
+    /**
+     * Simple helper method to convert an Image object to a BufferedImage the size of a default icon.
+     *
+     * @param img Image object to be converted
+     * @return BufferedImage representation of the input
+     */
+    private BufferedImage toBufferedImage(Image img) {
+        BufferedImage buffered = new BufferedImage(SETTINGS_BUTTON_SIZE, SETTINGS_BUTTON_SIZE, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = buffered.createGraphics();
+        g2.drawImage(img, 0, 0, null);
+        g2.dispose();
+        return buffered;
     }
 
     /**
