@@ -280,12 +280,18 @@ public class ResourceManager {
      *     <li>ffmpeg builds</li>
      *     <li>ytmusicapi</li>
      * </ul>
-     *
-     * @throws IOException if an I/O error occurs
      */
-    public static void updateDependencies() throws IOException {
-        updateYtDlp(getYtDlpPath());
-        downloadLatestFfmpeg(appDir.resolve("bin"));
-        updateYtMusicApi();
+    public static void updateDependencies() {
+        try {
+            updateYtDlp(getYtDlpPath());
+            downloadLatestFfmpeg(appDir.resolve("bin"));
+            updateYtMusicApi();
+        } catch (IOException e) {
+            logger.println("Could not update dependencies due to an I/O error");
+            ErrorLogger.runtimeExceptionOccurred(e);
+            return;
+        }
+        logger.println("Dependencies successfully updated!");
+
     }
 }

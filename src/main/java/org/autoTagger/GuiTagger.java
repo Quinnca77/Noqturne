@@ -137,6 +137,7 @@ public class GuiTagger extends JFrame {
             this.logger.println("An error occurred while setting the settings button icon, " +
                     "see errorLog.log for more details");
         }
+        settingsButton.addActionListener(e -> openSettings());
 
         setVisible(true);
         ResourceManager.ensureYtMusicApiInstallation();
@@ -416,5 +417,42 @@ public class GuiTagger extends JFrame {
                 showMD(GuiTagger.this, "Something went wrong, please contact the developer.\nError code 04");
             }
         });
+    }
+
+    /**
+     * Will open the Settings dialog menu of Auto-tagger.
+     */
+    public void openSettings() {
+        JDialog settingsDialog = new JDialog(this, "Settings", true);
+        settingsDialog.setSize(200, 150);
+        settingsDialog.setLayout(new FlowLayout());
+        JButton updateDependenciesButton = new JButton("Update Dependencies");
+        updateDependenciesButton.addActionListener(e -> invokeUpdateDependencies());
+        settingsDialog.add(updateDependenciesButton);
+        settingsDialog.setLocationRelativeTo(this);
+        settingsDialog.setVisible(true);
+    }
+
+    /**
+     * Method runs when the "Update Dependencies" button is pressed. This updates
+     * all runtime dependencies of this application by calling {@link ResourceManager#updateDependencies()}
+     * on a different thread. While doing this, it will report its progress via
+     * the console on the right of the UI.
+     */
+    protected void invokeUpdateDependencies() {
+        new AbstractWorker(this) {
+            @Override
+            protected void beginTask() {
+                logger.println("Starting update...");
+            }
+            @Override
+            protected void executeTask() {
+                ResourceManager.updateDependencies();
+            }
+            @Override
+            protected void taskCompleted() {
+                logger.println("Update complete!");
+            }
+        }.execute();
     }
 }
