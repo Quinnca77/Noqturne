@@ -343,9 +343,6 @@ public class GuiTagger extends JFrame {
      * calling the associated function, and afterward calls {@link #invokeTagAllFiles(File[])} to
      * tag the recently downloaded files. While doing this, it will report its progress via
      * the console on the right of the UI.
-     * <p>
-     * Note that if a user already has mp3 files in their "Downloads" folder before calling this function,
-     * they will be re-tagged!!!
      */
     protected void invokeDownloadAndTag() {
         new AbstractWorker(this) {
