@@ -208,7 +208,6 @@ public class ResourceManager {
             }
             for (File file : list) {
                 if (file.isFile() && (file.getName().equals(fileName))) {
-                    System.out.println(file.getAbsolutePath());
                     Files.move(file.toPath(), pathToMove, StandardCopyOption.REPLACE_EXISTING);
                     return;
                 }
