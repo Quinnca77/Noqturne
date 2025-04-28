@@ -47,7 +47,6 @@ public class ResourceManager {
             try {
                 ytDlpDownloader.get();
             } catch (InterruptedException | ExecutionException e) {
-                logger.println("Something went wrong while downloading yt-dlp");
                 ErrorLogger.runtimeExceptionOccurred(e);
             }
             logger.println("yt-dlp.exe downloaded!");
@@ -61,7 +60,6 @@ public class ResourceManager {
             try {
                 ffmpegDownloader.get();
             } catch (InterruptedException | ExecutionException e) {
-                logger.println("Something went wrong while downloading ffmpeg dependencies");
                 ErrorLogger.runtimeExceptionOccurred(e);
             }
             onFfmpegDownloaded(binDir.resolve("ffmpeg.zip"));
@@ -142,7 +140,6 @@ public class ResourceManager {
             }
         } catch (InterruptedException | IOException e) {
             ErrorLogger.runtimeExceptionOccurred(e);
-            logger.println("Something went wrong while updating yt-dlp!");
         }
     }
 
@@ -238,7 +235,6 @@ public class ResourceManager {
             }
         } catch (IOException | InterruptedException e) {
             ErrorLogger.runtimeExceptionOccurred(e);
-            logger.println("Something went wrong while checking Python dependency ytmusicapi.");
         }
     }
 
@@ -258,7 +254,6 @@ public class ResourceManager {
             }
         } catch (IOException | InterruptedException e) {
             ErrorLogger.runtimeExceptionOccurred(e);
-            logger.println("Something went wrong while checking Python dependency ytmusicapi.");
         }
 
     }
@@ -314,7 +309,6 @@ public class ResourceManager {
                     ffmpegDownloader.get();
                     onFfmpegDownloaded(binDir.resolve("ffmpeg.zip"));
                 } catch (IOException | ExecutionException | InterruptedException e) {
-                    logger.println("Could not update dependencies due to a runtime error");
                     ErrorLogger.runtimeExceptionOccurred(e);
                 }
             }

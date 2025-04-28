@@ -48,7 +48,7 @@ public class Tagger {
      * @param arrayOfSongs <code>null</code> in case you simply want all files in the Downloads folder to
      *                     be tagged, otherwise they can be specified as a <code>File</code> array and
      *                     then only those files will be tagged
-     * @throws IOException if file permissions are not configured as expected
+     * @throws IOException if an I/O error occurs
      * @throws NoSongFoundException if there is no mp3 file in the Downloads folder
      */
     public void tagAllFiles(@Nullable File[] arrayOfSongs) throws IOException, InterruptedException, NotSupportedException, NoSongFoundException {
@@ -74,7 +74,7 @@ public class Tagger {
      * based on the name of the song.
      *
      * @param filePath file path to the mp3 file to be tagged
-     * @throws IOException if file permissions are not configured as expected
+     * @throws IOException if an I/O error occurs
      */
     public void genericTagFile(String filePath) throws IOException, InterruptedException, NotSupportedException {
         Mp3File mp3file = loadMp3File(filePath);
@@ -86,7 +86,7 @@ public class Tagger {
             img = getCoverArt(songName);
             id3v2Tag.setAlbumImage(img, MIME_TYPE);
         } catch (VIdException | CoverArtSearchEmptyException e) {
-            this.logger.println("Couldn't find valid cover art, skipping cover art for " + songName);
+            this.logger.printError("Couldn't find valid cover art, skipping cover art for " + songName);
         }
 
         saveMP3FileWithCover(filePath, mp3file);
@@ -98,7 +98,7 @@ public class Tagger {
      *
      * @param filePath file path to the mp3 file to be tagged
      * @param vId vId of the cover art the file is to be tagged with
-     * @throws IOException if file permissions are not configured as expected
+     * @throws IOException if an I/O error occurs
      */
     public void tagIndividualFile(String filePath, String vId) throws IOException, NotSupportedException {
         Mp3File mp3file = loadMp3File(filePath);
@@ -148,7 +148,7 @@ public class Tagger {
         } catch (InvalidDataException | UnsupportedTagException e) {
             // This should never happen, as this function is only ever called with MP3 files.
             ErrorLogger.runtimeExceptionOccurred(e);
-            throw new RuntimeException(e);
+            throw new RuntimeException();
         }
         return mp3file;
     }
@@ -209,8 +209,8 @@ public class Tagger {
         for (String vId : fullOutput) {
             try {
                 return getCroppedImageFromVID(vId);
-            } catch (IOException ignored) {
-
+            } catch (IOException e) {
+                ErrorLogger.runtimeExceptionOccurred(e);
             }
         }
         this.logger.println("No vId found without error-causing image, skipping this song.");
@@ -222,7 +222,7 @@ public class Tagger {
      *
      * @param vId the vId of the cover art to be extracted
      * @return byte[] with the cropped cover art (mimeType jpeg)
-     * @throws IOException if file permissions are not configured as expected
+     * @throws IOException if an I/O error occurs
      */
     private byte[] getCroppedImageFromVID(String vId) throws IOException {
         URL url = new URL("https://i.ytimg.com/vi/" + vId + "/maxresdefault.jpg");

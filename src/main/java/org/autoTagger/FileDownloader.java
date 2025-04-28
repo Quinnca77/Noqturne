@@ -42,7 +42,6 @@ public class FileDownloader extends AbstractWorker {
             downloadFromUrl(url, path);
         } catch (IOException e) {
             ErrorLogger.runtimeExceptionOccurred(e);
-            Logger.getLogger().println("Something went wrong while downloading " + name);
         }
     }
 

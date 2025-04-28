@@ -120,7 +120,6 @@ public class SongDownloader {
                 }
             } catch (IOException e) {
                 ErrorLogger.runtimeExceptionOccurred(e);
-                this.logger.println("Ran into IOException in StreamGobbler. See errorLog.log for more details.");
             }
         }
     }

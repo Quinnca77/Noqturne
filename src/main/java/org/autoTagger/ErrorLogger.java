@@ -34,7 +34,7 @@ public class ErrorLogger {
      */
     public static void runtimeExceptionOccurred(String text) {
         logToFile(text);
-        Logger.getLogger().printError("A runtime error occurred, check errorLog.log for more details");
+        Logger.getLogger().printError("The following error occurred: " + text);
     }
 
     private static void logToFile(Object e) {

@@ -140,8 +140,6 @@ public class GuiTagger extends JFrame {
             settingsButton.setRolloverIcon(new ImageIcon(hoverImage));
         } catch (IOException e) {
             ErrorLogger.runtimeExceptionOccurred(e);
-            this.logger.println("An error occurred while setting the settings button icon, " +
-                    "see errorLog.log for more details");
         }
         settingsButton.addActionListener(e -> openSettings());
 
@@ -220,8 +218,6 @@ public class GuiTagger extends JFrame {
             showMD(GuiTagger.this, "Tagging successful!");
         } catch (IOException | NotSupportedException | InterruptedException e) {
             ErrorLogger.runtimeExceptionOccurred(e);
-            showMD(GuiTagger.this, "Something went wrong, please contact the developer.\nError code 01");
-            throw new RuntimeException(e);
         }
     }
 
@@ -252,8 +248,6 @@ public class GuiTagger extends JFrame {
         } catch (IOException |
                  InterruptedException | NotSupportedException e) {
             ErrorLogger.runtimeExceptionOccurred(e);
-            showMD(GuiTagger.this, "Something went wrong, please contact the developer.\nError code 02");
-            throw new RuntimeException(e);
         } catch (NoSongFoundException e) {
             showMD(GuiTagger.this, "No songs found in Downloads folder!");
         }
@@ -281,7 +275,6 @@ public class GuiTagger extends JFrame {
                         song = Files.move(songPath, songPath.resolveSibling(artistText + " - " + songText + ".mp3")).toFile();
                     } catch (IOException e) {
                         ErrorLogger.runtimeExceptionOccurred(e);
-                        this.logger.println("Renaming song failed!");
                     }
                 }
                 break;
@@ -364,9 +357,6 @@ public class GuiTagger extends JFrame {
                     arrayOfSongs = songDownloader.downloadSongs(songPlaylistURLTextField.getText());
                 } catch (IOException | InterruptedException e) {
                     ErrorLogger.runtimeExceptionOccurred(e);
-                    showMD(GuiTagger.this,
-                            "Something went wrong, please contact the developer.\nError code 03");
-                    throw new RuntimeException(e);
                 }
             }
             @Override
@@ -430,7 +420,6 @@ public class GuiTagger extends JFrame {
                 doc.insertString(doc.getLength(), string, style);
             } catch (BadLocationException e) {
                 ErrorLogger.runtimeExceptionOccurred(e);
-                showMD(GuiTagger.this, "Something went wrong, please contact the developer.\nError code 04");
             }
         });
     }
