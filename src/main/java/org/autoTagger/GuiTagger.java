@@ -453,6 +453,7 @@ public class GuiTagger extends JFrame {
         progressDialog.setLayout(new FlowLayout());
         JProgressBar bar = new JProgressBar();
         bar.setIndeterminate(true);
+        JLabel progressText = new JLabel("0/100");
         task.addPropertyChangeListener(e -> {
             switch (e.getPropertyName()) {
                 case "progress" -> {
@@ -461,6 +462,7 @@ public class GuiTagger extends JFrame {
                     }
                     int progress = (Integer) e.getNewValue();
                     bar.setValue(progress);
+                    progressText.setText(progress + "/100");
                 }
                 case "state" -> {
                     if (e.getNewValue() == SwingWorker.StateValue.DONE) {
@@ -470,6 +472,7 @@ public class GuiTagger extends JFrame {
             }
         });
         progressDialog.add(bar);
+        progressDialog.add(progressText);
         progressDialog.setLocationRelativeTo(this);
         progressDialog.setAlwaysOnTop(true);
         progressDialog.setVisible(true);
