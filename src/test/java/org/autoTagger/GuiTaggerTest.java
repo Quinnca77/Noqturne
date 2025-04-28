@@ -3,6 +3,7 @@ package org.autoTagger;
 import com.mpatric.mp3agic.*;
 import org.apache.commons.io.FileUtils;
 import org.autoTagger.exceptions.NoSongFoundException;
+import org.autoTagger.exceptions.TaggingFolderException;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +19,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 
-import static org.autoTagger.Tagger.PATH_TO_SONGS;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 
@@ -32,14 +32,16 @@ class GuiTaggerTest {
     private static final String TEST_SONG_TITLE = "il vento d'oro";
     private static final String TEST_SONG_VID = "U0TXIXTzJEY";
     private static final String TEST_COVER_ART = "CoverArt.jpg";
+    private static String PATH_TO_SONGS;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws TaggingFolderException, IOException {
 
         GuiTagger mockGui = Mockito.mock(GuiTagger.class);
         Logger mockLogger = new Logger(mockGui);
         this.tagger = new Tagger();
         this.songDownloader = new SongDownloader();
+        PATH_TO_SONGS = ResourceManager.getTaggingDirectory() + "/";
 
         Mockito.doNothing().when(mockGui).displayText(anyString(), anyBoolean());
 
