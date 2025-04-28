@@ -9,6 +9,8 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -35,7 +37,7 @@ public class GuiTagger extends JFrame {
     protected JCheckBox fileRename3;
     protected JTextField songPlaylistURLTextField;
     protected JButton downloadAndTagSongButton;
-    protected JTextPane loadingText;
+    protected JTextPane consoleText;
     protected JTextField vIdThumbnail;
     protected JButton tagIndividualButton;
     protected JTabbedPane tabbedPane;
@@ -408,14 +410,24 @@ public class GuiTagger extends JFrame {
      * Displays the given string into the console on the right of the UI.
      * This function should <b>only</b> be used for informing the user of relevant progress.
      * No technical details should be shared via this function for a better UX.
+     * Error messages will be printed in red.
+     * <p>
+     * Called in {@link Logger#println(String)}.
      *
      * @param string the text to be displayed to the user.
+     * @param isError determines whether the text to display is an error or not
      */
-    public void displayText(String string) {
+    public void displayText(String string, boolean isError) {
         SwingUtilities.invokeLater(() -> {
-            StyledDocument doc = loadingText.getStyledDocument();
+            StyledDocument doc = consoleText.getStyledDocument();
+            Style style = consoleText.addStyle("Style", null);
+
+            if (isError) {
+                StyleConstants.setForeground(style, Color.RED);
+            }
+
             try {
-                doc.insertString(doc.getLength(), string, null);
+                doc.insertString(doc.getLength(), string, style);
             } catch (BadLocationException e) {
                 ErrorLogger.runtimeExceptionOccurred(e);
                 showMD(GuiTagger.this, "Something went wrong, please contact the developer.\nError code 04");

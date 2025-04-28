@@ -211,7 +211,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="f4d8d" class="javax.swing.JTextPane" binding="loadingText">
+              <component id="f4d8d" class="javax.swing.JTextPane" binding="consoleText">
                 <constraints/>
                 <properties>
                   <editable value="false"/>

@@ -27,6 +27,7 @@ public class ErrorLogger {
      */
     public static void runtimeExceptionOccurred(String text) {
         logToFile(text);
+        Logger.getLogger().printError("A runtime error occurred, check errorLog.log for more details");
     }
 
     private static void logToFile(Object e) {
@@ -45,7 +46,7 @@ public class ErrorLogger {
             fileWriter.write(sw.toString());
             fileWriter.close();
         } catch (IOException ex) {
-            Logger.getLogger().println("A runtime error occurred, but could not be logged due to an IOException");
+            Logger.getLogger().printError("A runtime error occurred, but could not be logged due to an IOException");
         }
     }
 

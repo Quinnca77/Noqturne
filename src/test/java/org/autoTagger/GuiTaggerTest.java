@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.util.Objects;
 
 import static org.autoTagger.Tagger.PATH_TO_SONGS;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 
 class GuiTaggerTest {
@@ -40,7 +41,7 @@ class GuiTaggerTest {
         this.tagger = new Tagger();
         this.songDownloader = new SongDownloader();
 
-        Mockito.doNothing().when(mockGui).displayText(anyString());
+        Mockito.doNothing().when(mockGui).displayText(anyString(), anyBoolean());
 
     }
 

@@ -30,10 +30,24 @@ public class Logger {
     /**
      * Prints a string to the GUI for the user to see. Only meant for user-friendly
      * language, no technical specifics.
+     * <p>
+     * Simply calls {@link GuiTagger#displayText(String, boolean)}.
      *
      * @param string the string to be displayed to the user via the GUI textbox
      */
     public void println(String string) {
-        SwingUtilities.invokeLater(() -> gui.displayText(string + "\n"));
+        SwingUtilities.invokeLater(() -> gui.displayText(string + "\n", false));
+    }
+
+    /**
+     * Prints an error string to the GUI for the user to see. Only meant for user-friendly
+     * language, no technical specifics. Will display the text in red.
+     * <p>
+     * Simply calls {@link GuiTagger#displayText(String, boolean)}.
+     *
+     * @param string the string to be displayed to the user via the GUI textbox
+     */
+    public void printError(String string) {
+        SwingUtilities.invokeLater(() -> gui.displayText(string + "\n", true));
     }
 }
