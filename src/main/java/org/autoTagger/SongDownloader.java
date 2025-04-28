@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-// TODO maybe add progress bar here too
 
 /**
  * This class handles the entire flow of downloading a song with yt-dlp.
