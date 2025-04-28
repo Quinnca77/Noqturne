@@ -1,6 +1,7 @@
 package org.autoTagger;
 
 import com.mpatric.mp3agic.NotSupportedException;
+import org.autoTagger.exceptions.NoSongFoundException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

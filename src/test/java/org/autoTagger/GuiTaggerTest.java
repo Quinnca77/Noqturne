@@ -2,6 +2,7 @@ package org.autoTagger;
 
 import com.mpatric.mp3agic.*;
 import org.apache.commons.io.FileUtils;
+import org.autoTagger.exceptions.NoSongFoundException;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
