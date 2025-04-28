@@ -3,6 +3,7 @@
 ### To-do
 - [ ] Add option for the user to select the folder to download songs in
 - [ ] Implement loading bar for downloading ffmpeg, it takes very long
+- [ ] Improve error handling (consistency, stderr output on console log)
 
 ### Done
 - [x] Make TODO.md
