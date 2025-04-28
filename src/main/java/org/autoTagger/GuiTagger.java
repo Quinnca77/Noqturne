@@ -249,7 +249,7 @@ public class GuiTagger extends JFrame {
                  InterruptedException | NotSupportedException e) {
             ErrorLogger.runtimeExceptionOccurred(e);
         } catch (NoSongFoundException e) {
-            showMD(GuiTagger.this, "No songs found in Downloads folder!");
+            showMD(GuiTagger.this, "No songs found in tagging folder!");
         }
     }
 

@@ -1,5 +1,6 @@
 package org.autoTagger;
 
+import org.autoTagger.exceptions.TaggingFolderException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -39,7 +40,14 @@ public class SongDownloader {
      */
     public File[] downloadSongs(String url) throws IOException, InterruptedException {
         HashSet<File> filesNotToTag = new HashSet<>(Arrays.asList(Tagger.getAllMp3Files()));
-        Process process = getProcess(url);
+
+        Process process;
+        try {
+            process = getProcess(url);
+        } catch (TaggingFolderException e) {
+            ErrorLogger.runtimeExceptionOccurred("Could not find folder to tag mp3 files in");
+            throw new RuntimeException(e);
+        }
 
         StreamGobbler outputGobbler = new StreamGobbler(process.getInputStream(), "OUTPUT", this.logger);
         StreamGobbler errorGobbler = new StreamGobbler(process.getErrorStream(), "ERROR", this.logger);
@@ -58,14 +66,14 @@ public class SongDownloader {
         return filesToTag.toArray(output);
     }
 
-    private static @NotNull Process getProcess(String url) throws IOException {
+    private static @NotNull Process getProcess(String url) throws IOException, TaggingFolderException {
         Path ytDlpPath = ResourceManager.getYtDlpPath();
         ProcessBuilder pb = new ProcessBuilder(
                 ytDlpPath.toString(),
                 "--replace-in-metadata", "\"title\"", "\"[\\\"]\"", "\"\"",
                 "-x",
                 "--audio-format", "mp3",
-                "-P \"%USERPROFILE%/Downloads\"", // TODO hard-coded for now, will change in later iterations
+                "-P", ResourceManager.getTaggingDirectory().toString(),
                 "-o", "%(title)s.%(ext)s",
                 "\"" + url + "\"");
         return pb.start();

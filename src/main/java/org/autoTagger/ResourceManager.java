@@ -1,9 +1,13 @@
 package org.autoTagger;
 
 import org.apache.commons.io.FileUtils;
+import org.autoTagger.exceptions.TaggingFolderException;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.nio.file.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.ExecutionException;
 import java.util.zip.ZipEntry;
@@ -20,6 +24,7 @@ public class ResourceManager {
     private static final String PY_FILE = "/coverArt.py";
     private static final String PY_FILE_PREFIX = "coverArt";
     private static final String PY_FILE_SUFFIX = ".py";
+    private static final String TAG_FOLDER_KEY = "TAGGING_FOLDER=";
     private static Path tempPyFilePath;
 
     /**
@@ -74,9 +79,11 @@ public class ResourceManager {
      *
      * @param binDir Path object pointing to the binary folder of this app's AppData folder
      * @return AbstractWorker denoting the download progress
+     * @throws IOException if an I/O error occurs
      */
-    private static AbstractWorker downloadLatestFfmpeg(Path binDir) {
+    private static AbstractWorker downloadLatestFfmpeg(Path binDir) throws IOException {
         logger.println("Downloading ffmpeg now...");
+        Files.createDirectories(binDir);
         Path ffmpegZipPath = binDir.resolve("ffmpeg.zip");
 
         FileDownloader ffmpegDownloader = new FileDownloader(GuiTagger.getInstance(),
@@ -317,5 +324,71 @@ public class ResourceManager {
                 logger.println("Update complete!");
             }
         }.execute();
+    }
+
+    /**
+     * Gets the folder to tag mp3 files in. This is saved in a config file at %APPDATA%/Roaming.
+     *
+     * @return File object denoting the directory of where the tagging directory is located
+     * @throws IOException if an I/O error occurs
+     * @throws TaggingFolderException if the tagging folder filepath does not exist
+     */
+    public static File getTaggingDirectory() throws IOException, TaggingFolderException {
+        Path configFile = appDir.resolve("config.txt");
+        Files.createDirectories(appDir);
+        if (!Files.exists(configFile)) {
+            setTaggingDirectory(null);
+        }
+        List<String> lines = Files.readAllLines(configFile);
+        for (String line : lines) {
+            if (line.startsWith(TAG_FOLDER_KEY)) {
+                Path taggingFolderPath = Paths.get(line.substring(TAG_FOLDER_KEY.length()));
+                if (!Files.exists(taggingFolderPath)) {
+                    throw new TaggingFolderException();
+                }
+                return taggingFolderPath.toFile();
+            }
+        }
+        throw new IOException("config file found but without expected key");
+    }
+
+    /**
+     * Sets the directory of where to tag songs in. This will be saved in a config file at
+     * %APPDATA%/Roaming for future use.
+     *
+     * @param directory Path object denoting where to tag songs in. If this parameter is null,
+     *                  it will set the Windows Downloads folder as its default
+     * @throws IOException if an I/O error occurs
+     */
+    public static void setTaggingDirectory(@Nullable Path directory) throws IOException {
+        Path configFile = appDir.resolve("config.txt");
+        Files.createDirectories(appDir);
+        List<String> lines = new ArrayList<>();
+        if (Files.exists(configFile)) {
+            lines = Files.readAllLines(configFile);
+        }
+
+        boolean updated = false;
+        for (int i = 0; i < lines.size(); i++) {
+            if (lines.get(i).startsWith(TAG_FOLDER_KEY)) {
+                if (directory == null) {
+                    lines.set(i, TAG_FOLDER_KEY + Paths.get(System.getProperty("user.home"), "Downloads"));
+                } else {
+                    lines.set(i, TAG_FOLDER_KEY + directory.toAbsolutePath());
+                }
+                updated = true;
+                break;
+            }
+        }
+
+        if (!updated) {
+            if (directory == null) {
+                lines.add(TAG_FOLDER_KEY + Paths.get(System.getProperty("user.home"), "Downloads"));
+            } else {
+                lines.add(TAG_FOLDER_KEY + directory.toAbsolutePath());
+            }
+        }
+
+        Files.write(configFile, lines, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
     }
 }

@@ -3,6 +3,7 @@ package org.autoTagger;
 import com.mpatric.mp3agic.*;
 import org.autoTagger.exceptions.CoverArtSearchEmptyException;
 import org.autoTagger.exceptions.NoSongFoundException;
+import org.autoTagger.exceptions.TaggingFolderException;
 import org.autoTagger.exceptions.VIdException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,7 +22,6 @@ import java.util.ArrayList;
  */
 public class Tagger {
 
-    public final static String PATH_TO_SONGS = "C:\\Users\\" + System.getProperty("user.name") + "\\Downloads\\";
     // File filter for sorting mp3 files
     private final static FileFilter filter = file -> file.getName().endsWith(".mp3");
     public static final String MIME_TYPE = "image/jpeg";
@@ -37,7 +37,16 @@ public class Tagger {
      * @return a File array with mp3 files
      */
     public static File[] getAllMp3Files() {
-        File file = new File(PATH_TO_SONGS);
+        File file;
+        try {
+            file = ResourceManager.getTaggingDirectory();
+        } catch (IOException e) {
+            ErrorLogger.runtimeExceptionOccurred(e);
+            throw new RuntimeException(e);
+        } catch (TaggingFolderException e) {
+            ErrorLogger.runtimeExceptionOccurred("Could not find folder to tag mp3 files in");
+            throw new RuntimeException(e);
+        }
         return file.listFiles(filter);
     }
 
@@ -54,7 +63,16 @@ public class Tagger {
     public void tagAllFiles(@Nullable File[] arrayOfSongs) throws IOException, InterruptedException, NotSupportedException, NoSongFoundException {
         File[] songs;
         if (arrayOfSongs == null) {
-            File file = new File(PATH_TO_SONGS);
+            File file;
+            try {
+                file = ResourceManager.getTaggingDirectory();
+            } catch (IOException e) {
+                ErrorLogger.runtimeExceptionOccurred(e);
+                throw new RuntimeException(e);
+            } catch (TaggingFolderException e) {
+                ErrorLogger.runtimeExceptionOccurred("Could not find folder to tag mp3 files in");
+                throw new RuntimeException(e);
+            }
             songs = file.listFiles(filter);
         } else {
             songs = arrayOfSongs;
