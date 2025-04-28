@@ -1,5 +1,7 @@
 package org.autoTagger;
 
+import javax.swing.*;
+
 /**
  * Singleton class for handling all status updates in the program.
  */
@@ -32,6 +34,6 @@ public class Logger {
      * @param string the string to be displayed to the user via the GUI textbox
      */
     public void println(String string) {
-        gui.displayText(string + "\n");
+        SwingUtilities.invokeLater(() -> gui.displayText(string + "\n"));
     }
 }

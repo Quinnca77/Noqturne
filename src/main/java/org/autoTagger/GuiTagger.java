@@ -22,9 +22,11 @@ import java.nio.file.Path;
 import static org.autoTagger.Tagger.getAllMp3Files;
 
 /**
- * Class for the GUI of the app. Everything is made with Java swing.
+ * Class for the GUI of the app. Everything is made with Java Swing.
  */
 public class GuiTagger extends JFrame {
+
+    private static GuiTagger instance;
     protected JButton tagAllFilesInButton;
     protected JPanel MainPanel;
     protected JCheckBox fileRename1;
@@ -45,7 +47,7 @@ public class GuiTagger extends JFrame {
     protected JTextField songNameInput = new JTextField();
     protected final Logger logger;
     protected final Tagger tagger;
-    protected final Downloader downloader;
+    protected final SongDownloader songDownloader;
     protected boolean renameState = true;
     protected File chosenSongFile;
 
@@ -63,7 +65,8 @@ public class GuiTagger extends JFrame {
         new Logger(this);
         this.logger = Logger.getLogger();
         this.tagger = new Tagger();
-        this.downloader = new Downloader();
+        this.songDownloader = new SongDownloader();
+        instance = this;
         if (!testing) {
             initializeGUI();
         }
@@ -355,7 +358,7 @@ public class GuiTagger extends JFrame {
             @Override
             protected void executeTask() {
                 try {
-                    arrayOfSongs = downloader.downloadSongs(songPlaylistURLTextField.getText());
+                    arrayOfSongs = songDownloader.downloadSongs(songPlaylistURLTextField.getText());
                 } catch (IOException | InterruptedException e) {
                     ErrorLogger.runtimeExceptionOccurred(e);
                     showMD(GuiTagger.this,
@@ -454,5 +457,37 @@ public class GuiTagger extends JFrame {
                 logger.println("Update complete!");
             }
         }.execute();
+    }
+
+    public void showProgressBar(AbstractWorker task, String progressName) {
+        JDialog progressDialog = new JDialog(this, progressName);
+        progressDialog.setSize(300, 100);
+        progressDialog.setLayout(new FlowLayout());
+        JProgressBar bar = new JProgressBar();
+        bar.setIndeterminate(true);
+        task.addPropertyChangeListener(e -> {
+            switch (e.getPropertyName()) {
+                case "progress" -> {
+                    if (bar.isIndeterminate()) {
+                        bar.setIndeterminate(false);
+                    }
+                    int progress = (Integer) e.getNewValue();
+                    bar.setValue(progress);
+                }
+                case "state" -> {
+                    if (e.getNewValue() == SwingWorker.StateValue.DONE) {
+                        progressDialog.dispose();
+                    }
+                }
+            }
+        });
+        progressDialog.add(bar);
+        progressDialog.setLocationRelativeTo(this);
+        progressDialog.setAlwaysOnTop(true);
+        progressDialog.setVisible(true);
+    }
+
+    public static GuiTagger getInstance() {
+        return instance;
     }
 }

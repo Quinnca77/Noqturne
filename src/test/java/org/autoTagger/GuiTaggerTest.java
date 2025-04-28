@@ -23,7 +23,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 class GuiTaggerTest {
 
     private Tagger tagger;
-    private Downloader downloader;
+    private SongDownloader songDownloader;
     private static final String TEST_SONG_URL = "https://www.youtube.com/watch?v=U0TXIXTzJEY";
     private static final String TEST_SONG_NAME = "il vento d'oro.mp3";
     private static final String TEST_SONG_ARTIST = "Yugo Kanno";
@@ -37,7 +37,7 @@ class GuiTaggerTest {
         GuiTagger mockGui = Mockito.mock(GuiTagger.class);
         Logger mockLogger = new Logger(mockGui);
         this.tagger = new Tagger();
-        this.downloader = new Downloader();
+        this.songDownloader = new SongDownloader();
 
         Mockito.doNothing().when(mockGui).displayText(anyString());
 
@@ -79,7 +79,7 @@ class GuiTaggerTest {
     @DisabledIfEnvironmentVariable(named = "CI", matches = "true") // Due to bot-flagging of yt-dlp
     @Test
     void downloadAndTagTest() throws InvalidDataException, UnsupportedTagException, IOException, InterruptedException, NoSongFoundException, NotSupportedException {
-        downloader.downloadSongs(TEST_SONG_URL);
+        songDownloader.downloadSongs(TEST_SONG_URL);
 
         // Test if mp3 file is as expected after method is called
         File song = new File(PATH_TO_SONGS + TEST_SONG_TITLE + ".mp3");

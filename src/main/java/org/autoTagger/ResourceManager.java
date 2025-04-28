@@ -2,13 +2,11 @@ package org.autoTagger;
 
 import org.apache.commons.io.FileUtils;
 
+import javax.swing.*;
 import java.io.*;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.util.Stack;
+import java.util.concurrent.ExecutionException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -42,10 +40,35 @@ public class ResourceManager {
         // If yt-dlp has not previously been copied to %APPDATA%/Roaming
         if (!Files.exists(ytDlpPath)) {
             logger.println("yt-dlp dependency not found, downloading now...");
-            downloadFromUrl("https://github.com/yt-dlp/yt-dlp/releases/download/2025.03.31/yt-dlp.exe", ytDlpPath);
-            logger.println("yt-dlp.exe downloaded!");
+            FileDownloader ytDlpDownloader = new FileDownloader(GuiTagger.getInstance(),
+                    "https://github.com/yt-dlp/yt-dlp/releases/download/2025.03.31/yt-dlp.exe",
+                    ytDlpPath,
+                    "yt-dlp");
+            ytDlpDownloader.execute();
+            ytDlpDownloader.addPropertyChangeListener(evt -> {
+                if ("state".equals(evt.getPropertyName()) && evt.getNewValue() == SwingWorker.StateValue.DONE) {
+                    try {
+                        ytDlpDownloader.get();
+                        logger.println("yt-dlp.exe downloaded!");
+                        new AbstractWorker(GuiTagger.getInstance()) {
+                            @Override
+                            protected void beginTask() {
 
-            updateYtDlp(ytDlpPath);
+                            }
+                            @Override
+                            protected void executeTask() {
+                                updateYtDlp(ytDlpPath);
+                            }
+                            @Override
+                            protected void taskCompleted() {
+
+                            }
+                        }.execute();
+                    } catch (InterruptedException | ExecutionException e) {
+                        ErrorLogger.runtimeExceptionOccurred(e);
+                    }
+                }
+            });
         }
 
         // Checks whether ffmpeg dependencies are present
@@ -61,46 +84,87 @@ public class ResourceManager {
      * if they already exist in that location.
      *
      * @param binDir Path object pointing to the binary folder of this app's AppData folder
-     * @throws IOException if an I/O error occurs
      */
-    private static void downloadLatestFfmpeg(Path binDir) throws IOException {
+    private static void downloadLatestFfmpeg(Path binDir) {
         logger.println("Downloading ffmpeg now...");
         Path ffmpegZipPath = binDir.resolve("ffmpeg.zip");
-        downloadFromUrl("https://github.com/yt-dlp/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip",
-                ffmpegZipPath);
-        logger.println("ffmpeg.zip downloaded!");
 
-        // Unzips downloaded zip file
-        logger.println("Unzipping...");
-        Path ffmpegUnzippedDirectory = binDir.resolve("ffmpeg_temp");
-        unzip(ffmpegZipPath.toString(), ffmpegUnzippedDirectory.toString());
-        logger.println("Unzipped!");
+        FileDownloader ffmpegDownloader = new FileDownloader(GuiTagger.getInstance(),
+                "https://github.com/yt-dlp/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip",
+                ffmpegZipPath,
+                "ffmpeg");
 
-        // Move files from extracted zip to desired location for yt-dlp
-        logger.println("Moving files...");
-        searchAndMoveFile("ffmpeg.exe", ffmpegUnzippedDirectory, binDir.resolve("ffmpeg.exe"));
-        searchAndMoveFile("ffprobe.exe", ffmpegUnzippedDirectory, binDir.resolve("ffprobe.exe"));
-        searchAndMoveFile("ffplay.exe", ffmpegUnzippedDirectory, binDir.resolve("ffplay.exe"));
-        logger.println("Moving files successful!");
+        ffmpegDownloader.addPropertyChangeListener(evt -> {
+            if ("state".equals(evt.getPropertyName()) && evt.getNewValue() == SwingWorker.StateValue.DONE) {
+                try {
+                    ffmpegDownloader.get();
+                    new AbstractWorker(GuiTagger.getInstance()) {
+                        @Override
+                        protected void beginTask() {
 
-        // Deleting files that will not be used anymore
-        logger.println("Removing remnants...");
-        Files.delete(ffmpegZipPath);
-        FileUtils.deleteDirectory(ffmpegUnzippedDirectory.toFile());
-        logger.println("Removed remnants! Ffmpeg successfully installed!");
+                        }
+                        @Override
+                        protected void executeTask() {
+                            onFfmpegDownloaded(binDir, ffmpegZipPath);
+                        }
+                        @Override
+                        protected void taskCompleted() {
+
+                        }
+                    }.execute();
+                } catch (InterruptedException | ExecutionException e) {
+                    ErrorLogger.runtimeExceptionOccurred(e);
+                }
+            }
+        });
+
+        ffmpegDownloader.execute();
+    }
+
+    /**
+     * Called asynchronously after ffmpeg has been downloaded. Handles the file location and unzipping
+     * of ffmpeg binaries.
+     *
+     * @param binDir Path object pointing to the binary folder of this app's AppData folder
+     * @param ffmpegZipPath Path where the zip file of ffmpeg is located
+     */
+    private static void onFfmpegDownloaded(Path binDir, Path ffmpegZipPath) {
+        try {
+            logger.println("ffmpeg.zip downloaded!");
+
+            // Unzips downloaded zip file
+            logger.println("Unzipping...");
+            Path ffmpegUnzippedDirectory = binDir.resolve("ffmpeg_temp");
+            unzip(ffmpegZipPath.toString(), ffmpegUnzippedDirectory.toString());
+            logger.println("Unzipped!");
+
+            // Move files from extracted zip to desired location for yt-dlp
+            logger.println("Moving files...");
+            searchAndMoveFile("ffmpeg.exe", ffmpegUnzippedDirectory, binDir.resolve("ffmpeg.exe"));
+            searchAndMoveFile("ffprobe.exe", ffmpegUnzippedDirectory, binDir.resolve("ffprobe.exe"));
+            searchAndMoveFile("ffplay.exe", ffmpegUnzippedDirectory, binDir.resolve("ffplay.exe"));
+            logger.println("Moving files successful!");
+
+            // Deleting files that will not be used anymore
+            logger.println("Removing remnants...");
+            Files.delete(ffmpegZipPath);
+            FileUtils.deleteDirectory(ffmpegUnzippedDirectory.toFile());
+            logger.println("Removed remnants! Ffmpeg successfully installed!");
+        } catch (IOException e) {
+            ErrorLogger.runtimeExceptionOccurred(e);
+        }
     }
 
     /**
      * Updates the existing yt-dlp binary with its own update command.
      *
      * @param ytDlpPath Path object pointing to the yt-dlp binary
-     * @throws IOException if an I/O error occurs
      */
-    private static void updateYtDlp(Path ytDlpPath) throws IOException {
+    private static void updateYtDlp(Path ytDlpPath) {
         ProcessBuilder pb = new ProcessBuilder(ytDlpPath.toString(), "-U");
         pb.inheritIO();
-        Process process = pb.start();
         try {
+            Process process = pb.start();
             int exitCode = process.waitFor();
 
             if (exitCode == 0) {
@@ -108,23 +172,9 @@ public class ResourceManager {
             } else {
                 logger.println("yt-dlp update failed with exit code " + exitCode);
             }
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | IOException e) {
             ErrorLogger.runtimeExceptionOccurred(e);
             logger.println("Something went wrong while updating yt-dlp!");
-        }
-    }
-
-    /**
-     * Downloads file from a website to a specified filepath
-     *
-     * @param url website to download from. Should directly point to the download link
-     * @param path Path object to download the file to
-     * @throws IOException if an I/O error occurs
-     */
-    private static void downloadFromUrl(String url, Path path) throws IOException {
-        URL urlObject = new URL(url);
-        try (InputStream in = urlObject.openStream()) {
-            Files.copy(in, path, StandardCopyOption.REPLACE_EXISTING);
         }
     }
 
@@ -292,6 +342,5 @@ public class ResourceManager {
             return;
         }
         logger.println("Dependencies successfully updated!");
-
     }
 }

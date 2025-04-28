@@ -10,19 +10,21 @@ import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+// TODO maybe add progress bar here too
+
 /**
  * This class handles the entire flow of downloading a song with yt-dlp.
  * It does this by calling yt-dlp from the command line and logging its
  * progress in the application window.
  */
-public class Downloader {
+public class SongDownloader {
 
     private final Logger logger;
 
     /**
      * Generic constructor for Downloader. Only attaches the Logger singleton to the class instance.
      */
-    public Downloader() {
+    public SongDownloader() {
         this.logger = Logger.getLogger();
     }
 
