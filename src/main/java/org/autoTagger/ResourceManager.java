@@ -2,7 +2,6 @@ package org.autoTagger;
 
 import org.apache.commons.io.FileUtils;
 
-import javax.swing.*;
 import java.io.*;
 import java.nio.file.*;
 import java.util.Stack;
@@ -16,6 +15,7 @@ import java.util.zip.ZipInputStream;
 public class ResourceManager {
 
     private static final Path appDir = Paths.get(System.getenv("APPDATA"), "AutoTagger");
+    private static final Path binDir = appDir.resolve("bin");
     private static final Logger logger = Logger.getLogger();
     private static final String PY_FILE = "/coverArt.py";
     private static final String PY_FILE_PREFIX = "coverArt";
@@ -33,7 +33,6 @@ public class ResourceManager {
      * @throws IOException if an I/O errors occurs
      */
     public static Path getYtDlpPath() throws IOException {
-        Path binDir = appDir.resolve("bin");
         Files.createDirectories(binDir);
         Path ytDlpPath = binDir.resolve("yt-dlp.exe");
 
@@ -45,47 +44,40 @@ public class ResourceManager {
                     ytDlpPath,
                     "yt-dlp");
             ytDlpDownloader.execute();
-            ytDlpDownloader.addPropertyChangeListener(evt -> {
-                if ("state".equals(evt.getPropertyName()) && evt.getNewValue() == SwingWorker.StateValue.DONE) {
-                    try {
-                        ytDlpDownloader.get();
-                        logger.println("yt-dlp.exe downloaded!");
-                        new AbstractWorker(GuiTagger.getInstance()) {
-                            @Override
-                            protected void beginTask() {
-
-                            }
-                            @Override
-                            protected void executeTask() {
-                                updateYtDlp(ytDlpPath);
-                            }
-                            @Override
-                            protected void taskCompleted() {
-
-                            }
-                        }.execute();
-                    } catch (InterruptedException | ExecutionException e) {
-                        ErrorLogger.runtimeExceptionOccurred(e);
-                    }
-                }
-            });
+            try {
+                ytDlpDownloader.get();
+            } catch (InterruptedException | ExecutionException e) {
+                logger.println("Something went wrong while downloading yt-dlp");
+                ErrorLogger.runtimeExceptionOccurred(e);
+            }
+            logger.println("yt-dlp.exe downloaded!");
+            updateYtDlp(ytDlpPath);
         }
 
         // Checks whether ffmpeg dependencies are present
         Path ffmpegDependencyPath = binDir.resolve("ffmpeg.exe");
         if (!Files.exists(ffmpegDependencyPath)) {
-            downloadLatestFfmpeg(binDir);
+            AbstractWorker ffmpegDownloader = downloadLatestFfmpeg(binDir);
+            try {
+                ffmpegDownloader.get();
+            } catch (InterruptedException | ExecutionException e) {
+                logger.println("Something went wrong while downloading ffmpeg dependencies");
+                ErrorLogger.runtimeExceptionOccurred(e);
+            }
+            onFfmpegDownloaded(binDir.resolve("ffmpeg.zip"));
         }
         return ytDlpPath;
     }
 
     /**
      * Downloads latest ffmpeg builds and puts them in the right folder. Will replace existing builds
-     * if they already exist in that location.
+     * if they already exist in that location. Be sure to call {@link ResourceManager#onFfmpegDownloaded(Path)}
+     * after the returned AbstractWorker has finished running.
      *
      * @param binDir Path object pointing to the binary folder of this app's AppData folder
+     * @return AbstractWorker denoting the download progress
      */
-    private static void downloadLatestFfmpeg(Path binDir) {
+    private static AbstractWorker downloadLatestFfmpeg(Path binDir) {
         logger.println("Downloading ffmpeg now...");
         Path ffmpegZipPath = binDir.resolve("ffmpeg.zip");
 
@@ -94,41 +86,17 @@ public class ResourceManager {
                 ffmpegZipPath,
                 "ffmpeg");
 
-        ffmpegDownloader.addPropertyChangeListener(evt -> {
-            if ("state".equals(evt.getPropertyName()) && evt.getNewValue() == SwingWorker.StateValue.DONE) {
-                try {
-                    ffmpegDownloader.get();
-                    new AbstractWorker(GuiTagger.getInstance()) {
-                        @Override
-                        protected void beginTask() {
-
-                        }
-                        @Override
-                        protected void executeTask() {
-                            onFfmpegDownloaded(binDir, ffmpegZipPath);
-                        }
-                        @Override
-                        protected void taskCompleted() {
-
-                        }
-                    }.execute();
-                } catch (InterruptedException | ExecutionException e) {
-                    ErrorLogger.runtimeExceptionOccurred(e);
-                }
-            }
-        });
-
         ffmpegDownloader.execute();
+        return ffmpegDownloader;
     }
 
     /**
      * Called asynchronously after ffmpeg has been downloaded. Handles the file location and unzipping
      * of ffmpeg binaries.
      *
-     * @param binDir Path object pointing to the binary folder of this app's AppData folder
      * @param ffmpegZipPath Path where the zip file of ffmpeg is located
      */
-    private static void onFfmpegDownloaded(Path binDir, Path ffmpegZipPath) {
+    private static void onFfmpegDownloaded(Path ffmpegZipPath) {
         try {
             logger.println("ffmpeg.zip downloaded!");
 
@@ -332,15 +300,29 @@ public class ResourceManager {
      * </ul>
      */
     public static void updateDependencies() {
-        try {
-            updateYtDlp(getYtDlpPath());
-            downloadLatestFfmpeg(appDir.resolve("bin"));
-            updateYtMusicApi();
-        } catch (IOException e) {
-            logger.println("Could not update dependencies due to an I/O error");
-            ErrorLogger.runtimeExceptionOccurred(e);
-            return;
-        }
-        logger.println("Dependencies successfully updated!");
+        new AbstractWorker(GuiTagger.getInstance()) {
+            @Override
+            protected void beginTask() {
+                logger.println("Starting update...");
+            }
+            @Override
+            protected void executeTask() {
+                try {
+                    updateYtDlp(getYtDlpPath());
+                    AbstractWorker ffmpegDownloader = downloadLatestFfmpeg(appDir.resolve("bin"));
+                    updateYtMusicApi();
+
+                    ffmpegDownloader.get();
+                    onFfmpegDownloaded(binDir.resolve("ffmpeg.zip"));
+                } catch (IOException | ExecutionException | InterruptedException e) {
+                    logger.println("Could not update dependencies due to a runtime error");
+                    ErrorLogger.runtimeExceptionOccurred(e);
+                }
+            }
+            @Override
+            protected void taskCompleted() {
+                logger.println("Update complete!");
+            }
+        }.execute();
     }
 }

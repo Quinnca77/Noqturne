@@ -444,20 +444,7 @@ public class GuiTagger extends JFrame {
      * the console on the right of the UI.
      */
     protected void invokeUpdateDependencies() {
-        new AbstractWorker(this) {
-            @Override
-            protected void beginTask() {
-                logger.println("Starting update...");
-            }
-            @Override
-            protected void executeTask() {
-                ResourceManager.updateDependencies();
-            }
-            @Override
-            protected void taskCompleted() {
-                logger.println("Update complete!");
-            }
-        }.execute();
+        ResourceManager.updateDependencies();
     }
 
     public void showProgressBar(AbstractWorker task, String progressName) {
