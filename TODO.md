@@ -2,7 +2,6 @@
 
 ### To-do
 - [ ] Add option for the user to select the folder to download songs in
-- [ ] Implement loading bar for downloading ffmpeg, it takes very long
 - [ ] Improve error handling (consistency, stderr output on console log)
 
 ### Done
@@ -13,3 +12,4 @@
 - [x] With longer logs the UI on the left gets too wide vertically, button goes out of window
 - [x] Tagging individual file anywhere else but in Downloads will mess up the file name
 - [x] Add settings menu
+- [x] Implement loading bar for downloading ffmpeg, it takes very long
