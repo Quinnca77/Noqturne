@@ -2,6 +2,7 @@ package org.autoTagger;
 
 import com.mpatric.mp3agic.NotSupportedException;
 import org.autoTagger.exceptions.NoSongFoundException;
+import org.autoTagger.exceptions.TaggingFolderException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,6 +22,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 
 import static org.autoTagger.Tagger.getAllMp3Files;
 
@@ -425,24 +427,80 @@ public class GuiTagger extends JFrame {
     }
 
     /**
-     * Will open the Settings dialog menu of Auto-tagger.
+     * Will open the Settings dialog menu of Auto-tagger. This menu contains
+     * a button to update the app's runtime dependencies, and contains the
+     * functionality to choose the folder in which to download and tag mp3
+     * files in.
      */
     public void openSettings() {
         JDialog settingsDialog = new JDialog(this, "Settings", true);
-        JPanel settingsPanel = new JPanel();
         settingsDialog.setSize(400, 300);
+
+        JPanel settingsPanel = new JPanel();
         settingsPanel.setLayout(new GridLayout(2, 1));
+
         JButton updateDependenciesButton = new JButton("Update Dependencies");
         updateDependenciesButton.addActionListener(e -> ResourceManager.updateDependencies());
         JPanel dependenciesButtonPanel = new JPanel(new GridBagLayout());
-        dependenciesButtonPanel.add(updateDependenciesButton, new GridBagConstraints());
+        GridBagConstraints gbc = new GridBagConstraints();
+        dependenciesButtonPanel.add(updateDependenciesButton, gbc);
         settingsPanel.add(dependenciesButtonPanel);
-        JPanel filePathPanel = new JPanel(new GridLayout(1, 2));
+
+        JPanel filePathRowPanel = new JPanel(new GridLayout(1, 2));
         JLabel filePathLabel = new JLabel("Filepath tagging folder", SwingConstants.CENTER);
-        JLabel test = new JLabel("test", SwingConstants.CENTER);
-        filePathPanel.add(filePathLabel);
-        filePathPanel.add(test);
-        settingsPanel.add(filePathPanel);
+        filePathRowPanel.add(filePathLabel);
+
+        JPanel filePathPanel = new JPanel(new GridBagLayout());
+
+        String taggingFolder = null;
+        try {
+            taggingFolder = ResourceManager.getTaggingDirectory().toString();
+        } catch (IOException e) {
+            ErrorLogger.runtimeExceptionOccurred(e);
+            throw new RuntimeException(e);
+        } catch (TaggingFolderException e) {
+            logger.printError("Could not find tagging folder");
+            ErrorLogger.runtimeExceptionOccurred(e);
+        }
+        JTextField filePathTextField = new JTextField(taggingFolder);
+
+        JScrollPane filePathTextScrollPane = new JScrollPane(filePathTextField);
+        filePathTextScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        filePathTextScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+
+        JButton fileChooserButton = new JButton();
+        fileChooserButton.setIcon(new ImageIcon(
+                Objects.requireNonNull(
+                        this.getClass().getResource("/open_file_icon.png"))));
+
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fileChooserButton.addActionListener(e -> {
+            int returnVal = chooser.showOpenDialog(settingsPanel);
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                try {
+                    ResourceManager.setTaggingDirectory(chooser.getSelectedFile().toPath());
+                } catch (IOException ex) {
+                    ErrorLogger.runtimeExceptionOccurred(ex);
+                }
+                filePathTextField.setText(chooser.getSelectedFile().getAbsolutePath());
+            }
+        });
+
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1;
+        filePathPanel.add(filePathTextScrollPane, gbc);
+
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.gridx = 1;
+        gbc.weightx = 0;
+        filePathPanel.add(fileChooserButton, gbc);
+
+        filePathRowPanel.add(filePathPanel);
+        settingsPanel.add(filePathRowPanel);
+
         settingsDialog.add(settingsPanel);
         settingsDialog.setLocationRelativeTo(this);
         settingsDialog.setVisible(true);

@@ -1,8 +1,7 @@
 # Auto-tagger TODO Section
 
 ### To-do
-- [ ] Add option for the user to select the folder to download songs in
-
+- [ ] Add help menu for tagging folder definition
 
 ### Done
 - [x] Make TODO.md
@@ -14,3 +13,4 @@
 - [x] Add settings menu
 - [x] Implement loading bar for downloading ffmpeg, it takes very long
 - [x] Improve error handling (consistency, stderr output on console log)
+- [x] Add option for the user to select the folder to download songs in
