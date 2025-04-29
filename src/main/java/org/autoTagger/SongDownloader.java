@@ -36,7 +36,7 @@ public class SongDownloader {
      * @param url The URL to the YouTube video (so not only a vId!) which represents the song.
      * @throws IOException If an I/O error occurs.
      * @throws InterruptedException if the current Thread is interrupted while waiting.
-     * @return an array of <code>File</code> objects that points to the downloaded songs.
+     * @return an array of <code>File</code> objects that point to the downloaded songs.
      */
     public File[] downloadSongs(String url) throws IOException, InterruptedException {
         HashSet<File> filesNotToTag = new HashSet<>(Arrays.asList(Tagger.getAllMp3Files()));
