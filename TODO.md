@@ -1,7 +1,8 @@
 # Auto-tagger TODO Section
 
 ### To-do
-- [ ] Add help menu for tagging folder definition
+- [ ] Adjust documentation in code to not only mention Downloads folder
+- [ ] Update README
 
 ### Done
 - [x] Make TODO.md
@@ -14,3 +15,4 @@
 - [x] Implement loading bar for downloading ffmpeg, it takes very long
 - [x] Improve error handling (consistency, stderr output on console log)
 - [x] Add option for the user to select the folder to download songs in
+- [x] Add help menu for tagging folder definition

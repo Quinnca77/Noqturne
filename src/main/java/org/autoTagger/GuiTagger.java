@@ -16,13 +16,12 @@ import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.Properties;
 
 import static org.autoTagger.Tagger.getAllMp3Files;
 
@@ -447,8 +446,25 @@ public class GuiTagger extends JFrame {
         settingsPanel.add(dependenciesButtonPanel);
 
         JPanel filePathRowPanel = new JPanel(new GridLayout(1, 2));
-        JLabel filePathLabel = new JLabel("Filepath tagging folder", SwingConstants.CENTER);
-        filePathRowPanel.add(filePathLabel);
+
+        JPanel filePathLabelPanel = new JPanel(new GridBagLayout());
+        JLabel filePathLabel = new JLabel("Filepath tagging folder");
+        Properties stringProps = new Properties();
+        try {
+            FileInputStream in = new FileInputStream(Objects.requireNonNull(
+                    this.getClass().getResource("/string.properties")).getFile());
+            stringProps.load(in);
+            in.close();
+        } catch (IOException e) {
+            ErrorLogger.runtimeExceptionOccurred(e);
+            throw new RuntimeException(e);
+        }
+        JLabel questionMark = new JLabel((String) stringProps.get("helpText"));
+        questionMark.setToolTipText((String) stringProps.get("taggingFolderToolTipText"));
+
+        filePathLabelPanel.add(filePathLabel);
+        filePathLabelPanel.add(questionMark);
+        filePathRowPanel.add(filePathLabelPanel);
 
         JPanel filePathPanel = new JPanel(new GridBagLayout());
 

@@ -158,7 +158,7 @@
                         <constraints/>
                         <properties>
                           <text resource-bundle="string" key="helpText"/>
-                          <toolTipText resource-bundle="string" key="toolTipText"/>
+                          <toolTipText resource-bundle="string" key="vIdToolTipText"/>
                         </properties>
                       </component>
                     </children>
