@@ -429,11 +429,21 @@ public class GuiTagger extends JFrame {
      */
     public void openSettings() {
         JDialog settingsDialog = new JDialog(this, "Settings", true);
-        settingsDialog.setSize(200, 150);
-        settingsDialog.setLayout(new FlowLayout());
+        JPanel settingsPanel = new JPanel();
+        settingsDialog.setSize(400, 300);
+        settingsPanel.setLayout(new BoxLayout(settingsPanel, BoxLayout.Y_AXIS));
         JButton updateDependenciesButton = new JButton("Update Dependencies");
         updateDependenciesButton.addActionListener(e -> ResourceManager.updateDependencies());
-        settingsDialog.add(updateDependenciesButton);
+        updateDependenciesButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        settingsPanel.add(updateDependenciesButton);
+        JPanel filePathPanel = new JPanel(new GridLayout());
+        filePathPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel filePathLabel = new JLabel("Filepath tagging folder");
+        JLabel test = new JLabel("test");
+        filePathPanel.add(test);
+        filePathPanel.add(filePathLabel);
+        settingsPanel.add(filePathPanel);
+        settingsDialog.add(settingsPanel);
         settingsDialog.setLocationRelativeTo(this);
         settingsDialog.setVisible(true);
     }
