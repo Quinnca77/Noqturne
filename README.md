@@ -22,13 +22,12 @@ That's not all. When converting the video downloaded from YouTube to `mp3` forma
 ## Installation
 You have a few options to choose from when installing this application:
 - Downloading the latest stable release by downloading the .jar file in the latest release
-- Cloning the repository and running src/main/java/org/autoTagger/Main
+- Cloning the repository and running src/main/java/org/autoTagger/Main in IntelliJ (Community edition can be found [here](https://www.jetbrains.com/idea/download/)).
+I do not recommend trying to build this project in a different IDE or configuration, since it uses IntelliJ's UI designer files to generate the Java code for most of the GUI.
 
 As long as you have both Python and Java installed on your machine, the application will ensure other dependencies are present
 when it needs them.
 ### Installing Python
-You can skip this step if you already have Python installed.
-
 Go to [Python's download page](https://www.python.org/downloads/) and download the latest version. If you prefer an older version, any version >=3.9 should be fine.
 > [!IMPORTANT]
 > **Be sure to check the box that says to add Python to the PATH variable!!!**
@@ -52,9 +51,9 @@ Now you're done installing and ready to use this application!
 
 ## Usage
 This application has three main use cases:
-- Tag all `mp3` files in the Downloads folder
+- Tag all `mp3` files in a specified folder (by default your Downloads folder)
 - Download a song or playlist of songs and tag them immediately after
-- Tag an individual song (any directory) with the thumbnail of a specified YouTube video
+- Tag an individual song with the thumbnail of a specified YouTube video
 
 All of these are very straight-forward, but be aware that the cover art finding is done on the **mp3 file title!** If your mp3 file title is complete nonsense, expect for the found cover art
 to match that nonsense. 
@@ -82,11 +81,6 @@ I used the [MusicBrainz API](https://musicbrainz.org/doc/MusicBrainz_API) to fin
 contents of the song, the actual music, to find the song in their database. The only reason I did not use this method is that I found their database to be extremely lacking in its
 coverage of songs. It seemed like the moment a song was even remotely unpopular, niche or unofficial in any way, MusicBrainz would not have an entry for it in their database. 
 So I went with YouTube instead, which seems to have a way bigger database of songs than MusicBrainz.
-#### Why the Downloads folder specifically?
-This started out as a hobby project and I keep my Downloads folder clean. This made it a prime location for tagging `mp3` files in since they will be downloaded there anyway, saving me the effort
-of relocating the songs to a different directory before tagging them.
-#### My Downloads folder is a mess. Can I specify a different folder?
-Currently, no. This will get implemented soon though, but maybe consider cleaning it up in the meanwhile?
 #### I want to tag a song that is not an mp3 file. Can I do this?
 Unfortunately, this application is made with only mp3 files in mind. Adding support for other extensions as well would be a big endeavour, and although I wouldn't exclude the possibility of this
 being added in the future, I wouldn't count on it.
