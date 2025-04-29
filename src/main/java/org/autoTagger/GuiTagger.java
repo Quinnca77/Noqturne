@@ -450,11 +450,8 @@ public class GuiTagger extends JFrame {
         JPanel filePathLabelPanel = new JPanel(new GridBagLayout());
         JLabel filePathLabel = new JLabel("Filepath tagging folder");
         Properties stringProps = new Properties();
-        try {
-            FileInputStream in = new FileInputStream(Objects.requireNonNull(
-                    this.getClass().getResource("/string.properties")).getFile());
+        try (InputStream in = this.getClass().getResourceAsStream("/string.properties")) {
             stringProps.load(in);
-            in.close();
         } catch (IOException e) {
             ErrorLogger.runtimeExceptionOccurred(e);
             throw new RuntimeException(e);
