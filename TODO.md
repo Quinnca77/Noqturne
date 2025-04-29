@@ -1,7 +1,7 @@
 # Auto-tagger TODO Section
 
 ### To-do
-- [ ] Update README
+No to-dos for now
 
 ### Done
 - [x] Make TODO.md
@@ -16,3 +16,4 @@
 - [x] Add option for the user to select the folder to download songs in
 - [x] Add help menu for tagging folder definition
 - [x] Adjust documentation in code to not only mention Downloads folder
+- [x] Update README
