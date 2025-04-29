@@ -432,20 +432,10 @@ public class GuiTagger extends JFrame {
         settingsDialog.setSize(200, 150);
         settingsDialog.setLayout(new FlowLayout());
         JButton updateDependenciesButton = new JButton("Update Dependencies");
-        updateDependenciesButton.addActionListener(e -> invokeUpdateDependencies());
+        updateDependenciesButton.addActionListener(e -> ResourceManager.updateDependencies());
         settingsDialog.add(updateDependenciesButton);
         settingsDialog.setLocationRelativeTo(this);
         settingsDialog.setVisible(true);
-    }
-
-    /**
-     * Method runs when the "Update Dependencies" button is pressed. This updates
-     * all runtime dependencies of this application by calling {@link ResourceManager#updateDependencies()}
-     * on a different thread. While doing this, it will report its progress via
-     * the console on the right of the UI.
-     */
-    protected void invokeUpdateDependencies() {
-        ResourceManager.updateDependencies();
     }
 
     public void showProgressBar(AbstractWorker task, String progressName) {
