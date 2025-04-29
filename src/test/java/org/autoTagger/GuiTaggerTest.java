@@ -49,7 +49,7 @@ class GuiTaggerTest {
 
     @Test
     void individualTagTest() throws IOException, InvalidDataException, UnsupportedTagException, NotSupportedException {
-        // Copy test mp3 file to Downloads folder to test application
+        // Copy test mp3 file to tagging folder to test application
         File copied = copyTestFileToTagFolder();
 
         copied = Files.move(copied.toPath(), copied.toPath().resolveSibling(TEST_SONG_ARTIST + " - " + TEST_SONG_TITLE + ".mp3")).toFile();
@@ -66,7 +66,7 @@ class GuiTaggerTest {
 
     @Test
     void batchTagTest() throws InvalidDataException, UnsupportedTagException, IOException, NoSongFoundException, NotSupportedException, InterruptedException {
-        // Copy test mp3 file to Downloads folder to test application
+        // Copy test mp3 file to tagging folder to test application
         File copied = copyTestFileToTagFolder();
         copied = Files.move(copied.toPath(), copied.toPath().resolveSibling(TEST_SONG_ARTIST + " - " + TEST_SONG_TITLE + ".mp3")).toFile();
 
@@ -99,7 +99,7 @@ class GuiTaggerTest {
     }
 
     private @NotNull File copyTestFileToTagFolder() throws IOException {
-        // Copy test mp3 file to Downloads folder to test application
+        // Copy test mp3 file to tagging folder to test application
         File original = new File(URLDecoder.decode(
                 Objects.requireNonNull(getClass().getResource("/" + TEST_SONG_NAME)).getPath(),
                 StandardCharsets.UTF_8));

@@ -190,7 +190,7 @@ public class GuiTagger extends JFrame {
     }
 
     /**
-     * Tags a single file, even if it isn't in the user's "Downloads" folder.
+     * Tags a single file, even if it isn't in the user's tagging folder.
      * Prerequisites: <ul>
      *     <li>Absolute filepath to file on computer or choosing it through the file chooser button</li>
      *     <li>vId of the cover you want the individual file to have. If this isn't
@@ -223,11 +223,11 @@ public class GuiTagger extends JFrame {
     }
 
     /**
-     * Tags all mp3 files in user's "Downloads" folder. Different file locations can be specified in the
+     * Tags all mp3 files in user's tagging folder. Different file locations can be specified in the
      * parameter by making each file to be tagged a <code>File</code> object.
      *
      * @param arrayOfSongs array of <code>File</code> objects to tag.
-     *                    <code>null</code> to tag all files in "Downloads" folder.
+     *                    <code>null</code> to tag all files in tagging folder.
      */
     protected void tagAllFiles(@Nullable File[] arrayOfSongs) {
         File[] songs = arrayOfSongs;
@@ -320,7 +320,7 @@ public class GuiTagger extends JFrame {
      * via the console on the right of the UI.
      *
      * @param arrayOfSongs if applicable, the array of <code>File</code> objects that points to
-     *                    the songs to be tagged. <code>null</code> to tag all songs in "Downloads" folder.
+     *                    the songs to be tagged. <code>null</code> to tag all songs in tagging folder.
      */
     protected void invokeTagAllFiles(@Nullable File[] arrayOfSongs) {
         new AbstractWorker(this) {

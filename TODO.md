@@ -1,7 +1,6 @@
 # Auto-tagger TODO Section
 
 ### To-do
-- [ ] Adjust documentation in code to not only mention Downloads folder
 - [ ] Update README
 
 ### Done
@@ -16,3 +15,4 @@
 - [x] Improve error handling (consistency, stderr output on console log)
 - [x] Add option for the user to select the folder to download songs in
 - [x] Add help menu for tagging folder definition
+- [x] Adjust documentation in code to not only mention Downloads folder

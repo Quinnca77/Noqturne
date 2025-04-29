@@ -18,7 +18,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 /**
- * Class for all functionalities associated with tagging an mp3 file in the Downloads folder.
+ * Class for all functionalities associated with tagging an mp3 file in the user's tagging folder.
  */
 public class Tagger {
 
@@ -32,7 +32,7 @@ public class Tagger {
     }
 
     /**
-     * Gets all mp3 files in the Downloads folder.
+     * Gets all mp3 files in the tagging folder.
      *
      * @return a File array with mp3 files
      */
@@ -82,7 +82,7 @@ public class Tagger {
                 genericTagFile(mp3.getAbsolutePath());
             }
         } else {
-            this.logger.println("There are no songs in your downloads folder!");
+            this.logger.println("There are no songs in your tagging folder!");
             throw new NoSongFoundException();
         }
     }
