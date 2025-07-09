@@ -1,6 +1,6 @@
-package org.autoTagger;
+package org.noqturne;
 
-import org.autoTagger.exceptions.TaggingFolderException;
+import org.noqturne.exceptions.TaggingFolderException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;

@@ -1,4 +1,4 @@
-package org.autoTagger.exceptions;
+package org.noqturne.exceptions;
 
 /**
  * Thrown when a vId is found, but it has erroneous behaviour when attempting extraction.

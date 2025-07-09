@@ -1,4 +1,4 @@
-package org.autoTagger.exceptions;
+package org.noqturne.exceptions;
 
 /**
  * Thrown when the tagging folder filepath does not exist.

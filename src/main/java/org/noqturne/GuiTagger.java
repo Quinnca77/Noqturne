@@ -1,8 +1,8 @@
-package org.autoTagger;
+package org.noqturne;
 
 import com.mpatric.mp3agic.NotSupportedException;
-import org.autoTagger.exceptions.NoSongFoundException;
-import org.autoTagger.exceptions.TaggingFolderException;
+import org.noqturne.exceptions.NoSongFoundException;
+import org.noqturne.exceptions.TaggingFolderException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,7 +23,7 @@ import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Properties;
 
-import static org.autoTagger.Tagger.getAllMp3Files;
+import static org.noqturne.Tagger.getAllMp3Files;
 
 /**
  * Class for the GUI of the app. Everything is made with Java Swing.
@@ -59,7 +59,7 @@ public class GuiTagger extends JFrame {
     private static final float BRIGHTNESS_FACTOR = 1.2f;
 
     /**
-     * Calling this constructor will create and show the GUI of the auto-tagger.
+     * Calling this constructor will create and show the GUI of Noqturne.
      *
      * @param testing boolean value of whether this class instance is being tested or not.
      *                if it is set to true, the GUI will not be shown, and instead only the
@@ -81,7 +81,7 @@ public class GuiTagger extends JFrame {
      */
     private void initializeGUI() {
         setContentPane(MainPanel);
-        setTitle("Auto-Tagger by Quinn Caris");
+        setTitle("Noqturne by Quinn Caris");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(800, 600);
         setLocationRelativeTo(null);
@@ -426,7 +426,7 @@ public class GuiTagger extends JFrame {
     }
 
     /**
-     * Will open the Settings dialog menu of Auto-tagger. This menu contains
+     * Will open the Settings dialog menu of Noqturne. This menu contains
      * a button to update the app's runtime dependencies, and contains the
      * functionality to choose the folder in which to download and tag mp3
      * files in.

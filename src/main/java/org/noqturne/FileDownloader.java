@@ -1,4 +1,4 @@
-package org.autoTagger;
+package org.noqturne;
 
 import javax.swing.*;
 import java.io.IOException;

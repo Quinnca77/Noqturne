@@ -1,4 +1,4 @@
-package org.autoTagger;
+package org.noqturne;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 

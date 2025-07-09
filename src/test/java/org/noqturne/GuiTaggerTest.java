@@ -1,9 +1,9 @@
-package org.autoTagger;
+package org.noqturne;
 
 import com.mpatric.mp3agic.*;
 import org.apache.commons.io.FileUtils;
-import org.autoTagger.exceptions.NoSongFoundException;
-import org.autoTagger.exceptions.TaggingFolderException;
+import org.noqturne.exceptions.NoSongFoundException;
+import org.noqturne.exceptions.TaggingFolderException;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

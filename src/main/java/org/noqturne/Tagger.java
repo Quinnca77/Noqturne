@@ -1,10 +1,10 @@
-package org.autoTagger;
+package org.noqturne;
 
 import com.mpatric.mp3agic.*;
-import org.autoTagger.exceptions.CoverArtSearchEmptyException;
-import org.autoTagger.exceptions.NoSongFoundException;
-import org.autoTagger.exceptions.TaggingFolderException;
-import org.autoTagger.exceptions.VIdException;
+import org.noqturne.exceptions.CoverArtSearchEmptyException;
+import org.noqturne.exceptions.NoSongFoundException;
+import org.noqturne.exceptions.TaggingFolderException;
+import org.noqturne.exceptions.VIdException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

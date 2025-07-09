@@ -1,4 +1,4 @@
-package org.autoTagger.exceptions;
+package org.noqturne.exceptions;
 
 /**
  * Thrown when no mp3 file can be found in the user's tagging folder.

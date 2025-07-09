@@ -1,7 +1,7 @@
-package org.autoTagger;
+package org.noqturne;
 
 import org.apache.commons.io.FileUtils;
-import org.autoTagger.exceptions.TaggingFolderException;
+import org.noqturne.exceptions.TaggingFolderException;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
@@ -282,7 +282,7 @@ public class ResourceManager {
                 throw new FileNotFoundException(PY_FILE);
             }
             File tempPyFile = File.createTempFile(PY_FILE_PREFIX, PY_FILE_SUFFIX);
-            // Once Auto-Tagger exits, this temporary python file gets deleted
+            // Once Noqturne exits, this temporary python file gets deleted
             tempPyFile.deleteOnExit();
             Path tempPath = tempPyFile.toPath();
             Files.copy(in, tempPath, StandardCopyOption.REPLACE_EXISTING);
