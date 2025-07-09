@@ -84,6 +84,9 @@ So I went with YouTube instead, which seems to have a way bigger database of son
 #### I want to tag a song that is not an mp3 file. Can I do this?
 Unfortunately, this application is made with only mp3 files in mind. Adding support for other extensions as well would be a big endeavour, and although I wouldn't exclude the possibility of this
 being added in the future, I wouldn't count on it.
+#### When downloading and tagging, something goes wrong with the download. What could this be?
+Since YouTube is an ever-changing platform, the downloader for it has to change with it. Yt-dlp often gets updated and previous versions might not work as well anymore. If something
+goes wrong while downloading, try to update the dependencies through the settings menu and do it again.
 #### Will there ever be a Linux or Mac release?
 No.
 
