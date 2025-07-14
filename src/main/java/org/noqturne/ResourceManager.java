@@ -18,7 +18,7 @@ import java.util.zip.ZipInputStream;
  */
 public class ResourceManager {
 
-    private static final Path appDir = Paths.get(System.getenv("APPDATA"), "AutoTagger");
+    private static final Path appDir = Paths.get(System.getenv("APPDATA"), "Noqturne");
     private static final Path binDir = appDir.resolve("bin");
     private static final Logger logger = Logger.getLogger();
     private static final String PY_FILE = "/coverArt.py";
