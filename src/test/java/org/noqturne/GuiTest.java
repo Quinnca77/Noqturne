@@ -22,7 +22,7 @@ import java.util.Objects;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 
-class GuiTaggerTest {
+class GuiTest {
 
     private Tagger tagger;
     private SongDownloader songDownloader;
@@ -37,7 +37,7 @@ class GuiTaggerTest {
     @BeforeEach
     void setUp() throws TaggingFolderException, IOException {
 
-        GuiTagger mockGui = Mockito.mock(GuiTagger.class);
+        Gui mockGui = Mockito.mock(Gui.class);
         Logger mockLogger = new Logger(mockGui);
         this.tagger = new Tagger();
         this.songDownloader = new SongDownloader();
@@ -116,7 +116,7 @@ class GuiTaggerTest {
             String title = id3v2tag.getTitle();
             String artist = id3v2tag.getArtist();
             File coverArtFile = new File(URLDecoder.decode(
-                    Objects.requireNonNull(getClass().getResource("/" + GuiTaggerTest.TEST_COVER_ART)).getPath(),
+                    Objects.requireNonNull(getClass().getResource("/" + GuiTest.TEST_COVER_ART)).getPath(),
                     StandardCharsets.UTF_8));
             byte[] correctCoverArt = FileUtils.readFileToByteArray(coverArtFile);
             Assertions.assertArrayEquals(img, correctCoverArt);

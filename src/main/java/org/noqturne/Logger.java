@@ -6,16 +6,16 @@ import javax.swing.*;
  * Singleton class for handling all status updates in the program.
  */
 public class Logger {
-    private final GuiTagger gui;
+    private final Gui gui;
     private static Logger logger;
 
     /**
-     * This constructor is never called except for the initialization of guiTagger.
+     * This constructor is never called except for the initialization of the GUI.
      * Keep it like that.
      *
      * @param gui the GUI for the logger to attach to
      */
-    public Logger(GuiTagger gui) {
+    public Logger(Gui gui) {
         this.gui = gui;
         logger = this;
     }
@@ -31,7 +31,7 @@ public class Logger {
      * Prints a string to the GUI for the user to see. Only meant for user-friendly
      * language, no technical specifics.
      * <p>
-     * Simply calls {@link GuiTagger#displayText(String, boolean)}.
+     * Simply calls {@link Gui#displayText(String, boolean)}.
      *
      * @param string the string to be displayed to the user via the GUI textbox
      */
@@ -43,7 +43,7 @@ public class Logger {
      * Prints an error string to the GUI for the user to see. Only meant for user-friendly
      * language, no technical specifics. Will display the text in red.
      * <p>
-     * Simply calls {@link GuiTagger#displayText(String, boolean)}.
+     * Simply calls {@link Gui#displayText(String, boolean)}.
      *
      * @param string the string to be displayed to the user via the GUI textbox
      */

@@ -44,7 +44,7 @@ public class ResourceManager {
         // If yt-dlp has not previously been copied to %APPDATA%/Roaming
         if (!Files.exists(ytDlpPath)) {
             logger.println("yt-dlp dependency not found, downloading now...");
-            FileDownloader ytDlpDownloader = new FileDownloader(GuiTagger.getInstance(),
+            FileDownloader ytDlpDownloader = new FileDownloader(Gui.getInstance(),
                     "https://github.com/yt-dlp/yt-dlp/releases/download/2025.03.31/yt-dlp.exe",
                     ytDlpPath,
                     "yt-dlp");
@@ -86,7 +86,7 @@ public class ResourceManager {
         Files.createDirectories(binDir);
         Path ffmpegZipPath = binDir.resolve("ffmpeg.zip");
 
-        FileDownloader ffmpegDownloader = new FileDownloader(GuiTagger.getInstance(),
+        FileDownloader ffmpegDownloader = new FileDownloader(Gui.getInstance(),
                 "https://github.com/yt-dlp/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip",
                 ffmpegZipPath,
                 "ffmpeg");
@@ -301,7 +301,7 @@ public class ResourceManager {
      * </ul>
      */
     public static void updateDependencies() {
-        new AbstractWorker(GuiTagger.getInstance()) {
+        new AbstractWorker(Gui.getInstance()) {
             @Override
             protected void beginTask() {
                 logger.println("Starting update...");

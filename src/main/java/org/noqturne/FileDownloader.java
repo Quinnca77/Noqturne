@@ -38,7 +38,7 @@ public class FileDownloader extends AbstractWorker {
     @Override
     protected void executeTask() {
         try {
-            GuiTagger.getInstance().showProgressBar(this, "Downloading " + name + "...");
+            Gui.getInstance().showProgressBar(this, "Downloading " + name + "...");
             downloadFromUrl(url, path);
         } catch (IOException e) {
             ErrorLogger.runtimeExceptionOccurred(e);

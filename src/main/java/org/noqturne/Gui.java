@@ -28,9 +28,9 @@ import static org.noqturne.Tagger.getAllMp3Files;
 /**
  * Class for the GUI of the app. Everything is made with Java Swing.
  */
-public class GuiTagger extends JFrame {
+public class Gui extends JFrame {
 
-    private static GuiTagger instance;
+    private static Gui instance;
     protected JButton tagAllFilesInButton;
     protected JPanel MainPanel;
     protected JCheckBox fileRename1;
@@ -65,7 +65,7 @@ public class GuiTagger extends JFrame {
      *                if it is set to true, the GUI will not be shown, and instead only the
      *                necessary fields are initialized.
      */
-    public GuiTagger(boolean testing) {
+    public Gui(boolean testing) {
         new Logger(this);
         this.logger = Logger.getLogger();
         this.tagger = new Tagger();
@@ -200,7 +200,7 @@ public class GuiTagger extends JFrame {
     protected void addCoverForIndividualFile() {
         File song = chosenSongFile;
         if (song == null && !(new File(filePathSong.getText()).exists())) {
-            showMD(GuiTagger.this, "Please choose a valid file");
+            showMD(Gui.this, "Please choose a valid file");
             return;
         }
         if (song == null) {
@@ -216,7 +216,7 @@ public class GuiTagger extends JFrame {
             } else {
                 tagger.tagIndividualFile(song.getPath(), vId);
             }
-            showMD(GuiTagger.this, "Tagging successful!");
+            showMD(Gui.this, "Tagging successful!");
         } catch (IOException | NotSupportedException | InterruptedException e) {
             ErrorLogger.runtimeExceptionOccurred(e);
         }
@@ -245,12 +245,12 @@ public class GuiTagger extends JFrame {
             } else {
                 this.tagger.tagAllFiles(null);
             }
-            showMD(GuiTagger.this, "Tagging successful!");
+            showMD(Gui.this, "Tagging successful!");
         } catch (IOException |
                  InterruptedException | NotSupportedException e) {
             ErrorLogger.runtimeExceptionOccurred(e);
         } catch (NoSongFoundException e) {
-            showMD(GuiTagger.this, "No songs found in tagging folder!");
+            showMD(Gui.this, "No songs found in tagging folder!");
         }
     }
 
@@ -266,7 +266,7 @@ public class GuiTagger extends JFrame {
         JPanel fields = getFieldsRenameDialog(song.getName());
         Path songPath = song.toPath();
 
-        int result = JOptionPane.showConfirmDialog(GuiTagger.this, fields, "Rename file", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+        int result = JOptionPane.showConfirmDialog(Gui.this, fields, "Rename file", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
         switch (result) {
             case JOptionPane.OK_OPTION:
                 if (!(artistNameInput.getText().isEmpty() && songNameInput.getText().isEmpty())) {
@@ -550,7 +550,7 @@ public class GuiTagger extends JFrame {
         progressDialog.setVisible(true);
     }
 
-    public static GuiTagger getInstance() {
+    public static Gui getInstance() {
         return instance;
     }
 }
