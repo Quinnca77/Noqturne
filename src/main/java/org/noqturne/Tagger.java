@@ -247,11 +247,11 @@ public class Tagger {
         BufferedImage img;
         try {
             img = ImageIO.read(url);
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             try {
                 url = new URL("https://i.ytimg.com/vi/" + vId + "/hq720.jpg");
                 img = ImageIO.read(url);
-            } catch (FileNotFoundException ex) {
+            } catch (IOException ex) {
                 url = new URL("https://i.ytimg.com/vi/" + vId + "/hqdefault.jpg");
                 img = ImageIO.read(url);
             }
