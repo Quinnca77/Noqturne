@@ -103,6 +103,8 @@ public class Tagger {
             CoverArtResult coverArtResult = getCoverArt(songName);
             byte[] img = coverArtResult.coverArt();
             id3v2Tag.setAlbumImage(img, MIME_TYPE);
+            String vId = coverArtResult.vId();
+            id3v2Tag.setComment("vId of cover art:" + vId);
         } catch (VIdException | CoverArtSearchEmptyException e) {
             this.logger.printError("Couldn't find valid cover art, skipping cover art for " + songName);
         }
@@ -124,6 +126,7 @@ public class Tagger {
 
         byte[] img = getCroppedImageFromVID(vId);
         id3v2Tag.setAlbumImage(img, MIME_TYPE);
+        id3v2Tag.setComment("vId of cover art:" + vId);
 
         saveMP3FileWithCover(filePath, mp3file);
     }
