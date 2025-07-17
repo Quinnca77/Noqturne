@@ -51,14 +51,14 @@ public class Tagger {
     }
 
     /**
-     * When this function is called, it iterates over all mp3 files in the Downloads folder and tags them with
+     * When this function is called, it iterates over all mp3 files in the tagging folder and tags them with
      * an artist tag, title tag, and cover art, of which the last is always performed automatically.
      *
-     * @param arrayOfSongs <code>null</code> in case you simply want all files in the Downloads folder to
+     * @param arrayOfSongs <code>null</code> in case you simply want all files in the tagging folder to
      *                     be tagged, otherwise they can be specified as a <code>File</code> array and
      *                     then only those files will be tagged
      * @throws IOException if an I/O error occurs
-     * @throws NoSongFoundException if there is no mp3 file in the Downloads folder
+     * @throws NoSongFoundException if there is no mp3 file in the tagging folder
      */
     public void tagAllFiles(@Nullable File[] arrayOfSongs) throws IOException, InterruptedException, NotSupportedException, NoSongFoundException {
         File[] songs;
