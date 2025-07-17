@@ -99,9 +99,9 @@ public class Tagger {
         ID3v2 id3v2Tag = getId3v2Tag(filePath, mp3file);
 
         String songName = getSongName(filePath);
-        byte[] img;
         try {
-            img = getCoverArt(songName);
+            CoverArtResult coverArtResult = getCoverArt(songName);
+            byte[] img = coverArtResult.coverArt();
             id3v2Tag.setAlbumImage(img, MIME_TYPE);
         } catch (VIdException | CoverArtSearchEmptyException e) {
             this.logger.printError("Couldn't find valid cover art, skipping cover art for " + songName);
@@ -197,15 +197,22 @@ public class Tagger {
     }
 
     /**
+     * Return type of cover art finding.
+     * @param coverArt Cover art used for the song in byte[] format.
+     * @param vId vId of the cover art of the song on YouTube.
+     */
+    private record CoverArtResult(byte[] coverArt, String vId) {}
+
+    /**
      * Finds cover art for a song.
      *
      * @param songName the name of the song you want to find a cover art of
-     * @return cover art byte[] (mimeType jpeg) associated to the corresponding song name
+     * @return {@link Tagger.CoverArtResult} cover art byte[] (mimeType jpeg) associated to the corresponding song name
      * @throws CoverArtSearchEmptyException if the cover art finder fails and find
      * no video IDs with an appropriate cover art
      * @throws VIdException if the cover art finder would error on a cover art instance
      */
-    public byte[] getCoverArt(String songName) throws IOException, InterruptedException, CoverArtSearchEmptyException, VIdException {
+    private CoverArtResult getCoverArt(String songName) throws IOException, InterruptedException, CoverArtSearchEmptyException, VIdException {
         Path filePath = ResourceManager.getCoverArtPy();
         ProcessBuilder pb = new ProcessBuilder()
                 .command("python", "-u", filePath.toString(), songName);
@@ -226,7 +233,8 @@ public class Tagger {
         in.close();
         for (String vId : fullOutput) {
             try {
-                return getCroppedImageFromVID(vId);
+                byte[] coverArt = getCroppedImageFromVID(vId);
+                return new CoverArtResult(coverArt, vId);
             } catch (IOException e) {
                 ErrorLogger.runtimeExceptionOccurred(e);
             }
