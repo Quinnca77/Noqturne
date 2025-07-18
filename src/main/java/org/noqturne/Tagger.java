@@ -195,6 +195,10 @@ public class Tagger {
             }
             id3v2Tag.setArtist(splitSong[0]);
             id3v2Tag.setTitle(splitSong[1]);
+        } else {
+            Logger.getLogger().printError("Could not tag artist and song fields of "
+                    + mp3file.getFilename()
+                    + " because filename is not in the format of artist - songname");
         }
         return id3v2Tag;
     }
