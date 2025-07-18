@@ -202,6 +202,72 @@
                   </grid>
                 </children>
               </grid>
+              <grid id="834bf" layout-manager="GridLayoutManager" row-count="7" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="0" left="0" bottom="0" right="0"/>
+                <constraints>
+                  <tabbedpane title-resource-bundle="string" title-key="listenAlong.title"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="4ed6b" class="javax.swing.JButton" binding="addQueueButton">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text resource-bundle="string" key="add.to.queue"/>
+                    </properties>
+                  </component>
+                  <component id="9bbd6" class="javax.swing.JButton" binding="removeQueueButton">
+                    <constraints>
+                      <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text resource-bundle="string" key="remove.from.queue"/>
+                    </properties>
+                  </component>
+                  <component id="d5baf" class="javax.swing.JButton" binding="pausePlayButton">
+                    <constraints>
+                      <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text resource-bundle="string" key="pause.play"/>
+                    </properties>
+                  </component>
+                  <component id="dfa73" class="javax.swing.JButton" binding="skipSongButton">
+                    <constraints>
+                      <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text resource-bundle="string" key="skip.this.song"/>
+                    </properties>
+                  </component>
+                  <component id="7d5e8" class="javax.swing.JButton" binding="startLobbyButton">
+                    <constraints>
+                      <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text resource-bundle="string" key="start.lobby"/>
+                    </properties>
+                  </component>
+                  <component id="bbab5" class="javax.swing.JLabel" binding="lobbyIdentifierLabel">
+                    <constraints>
+                      <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text resource-bundle="string" key="lobby.identifier"/>
+                    </properties>
+                  </component>
+                  <component id="379b6" class="javax.swing.JButton" binding="joinLobbyButton">
+                    <constraints>
+                      <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                    </constraints>
+                    <properties>
+                      <text resource-bundle="string" key="join.lobby"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
             </children>
           </tabbedpane>
           <grid id="ce23" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -268,5 +334,6 @@
   </grid>
   <inspectionSuppressions>
     <suppress inspection="NoLabelFor"/>
+    <suppress inspection="FormSpellChecking"/>
   </inspectionSuppressions>
 </form>

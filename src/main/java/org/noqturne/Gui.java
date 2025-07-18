@@ -47,6 +47,13 @@ public class Gui extends JFrame {
     private JScrollPane filePathScrollPane;
     private JSplitPane splitPane;
     private JButton settingsButton;
+    private JButton addQueueButton;
+    private JButton removeQueueButton;
+    private JButton pausePlayButton;
+    private JButton skipSongButton;
+    private JButton startLobbyButton;
+    private JLabel lobbyIdentifierLabel;
+    private JButton joinLobbyButton;
     protected JTextField artistNameInput = new JTextField();
     protected JTextField songNameInput = new JTextField();
     protected final Logger logger;
