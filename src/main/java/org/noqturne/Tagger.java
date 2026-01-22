@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -95,9 +96,15 @@ public class Tagger {
      * @throws IOException if an I/O error occurs
      */
     public void genericTagFile(String filePath) throws IOException, InterruptedException, NotSupportedException {
-        Mp3File mp3file = loadMp3File(filePath);
-        ID3v2 id3v2Tag = getId3v2Tag(filePath, mp3file);
+        Mp3File mp3file;
+        try {
+            mp3file = loadMp3File(filePath);
+        } catch (Exception e) {
+            this.logger.printError("Couldn't find valid cover art, skipping cover art for this file.");
+            return;
+        }
 
+        ID3v2 id3v2Tag = getId3v2Tag(filePath, mp3file);
         String songName = getSongName(filePath);
         byte[] img;
         try {
@@ -243,19 +250,28 @@ public class Tagger {
      * @throws IOException if an I/O error occurs
      */
     private byte[] getCroppedImageFromVID(String vId) throws IOException {
-        URL url = new URL("https://i.ytimg.com/vi/" + vId + "/maxresdefault.jpg");
-        BufferedImage img;
-        try {
-            img = ImageIO.read(url);
-        } catch (FileNotFoundException e) {
+        final String BASE_URL = "https://i.ytimg.com/vi/" + vId;
+        String[] urls = {
+                BASE_URL + "/maxresdefault.jpg",
+                BASE_URL + "/hq720.jpg",
+                BASE_URL + "/hqdefault.jpg"
+        };
+
+        IOException last = null;
+        BufferedImage img = null;
+        for (String u : urls) {
             try {
-                url = new URL("https://i.ytimg.com/vi/" + vId + "/hq720.jpg");
-                img = ImageIO.read(url);
-            } catch (FileNotFoundException ex) {
-                url = new URL("https://i.ytimg.com/vi/" + vId + "/hqdefault.jpg");
-                img = ImageIO.read(url);
+                img = ImageIO.read(new URL(u));
+            } catch (IOException e) {
+                last = e;
             }
         }
+
+        if (last != null || img == null) {
+            ErrorLogger.runtimeExceptionOccurred(last, "Could not get image from YouTube URL");
+            throw new IOException(last);
+        }
+
         int targetWidth = img.getHeight();
         int startX = (img.getWidth() / 2) - (targetWidth / 2);
         BufferedImage croppedImg = img.getSubimage(startX, 0, targetWidth, targetWidth);

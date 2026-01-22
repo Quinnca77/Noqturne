@@ -30,6 +30,21 @@ public class ErrorLogger {
      * <p>
      * When calling this function, be sure not to duplicate the error logging to the UI console!
      *
+     * @param e the error to log
+     * @param text the description of the error that occurred, which gets displayed to the user.
+     */
+    public static void runtimeExceptionOccurred(Throwable e, String text) {
+        logToFile(e);
+        Logger.getLogger().printError("The following error occurred: " + text);
+    }
+
+    /**
+     * Called when a critical error occurs. Dumps the details of the error to a log file
+     * for debugging purposes.
+     * Also calls {@link Gui#displayText(String, boolean)} to tell the user an error occurred.
+     * <p>
+     * When calling this function, be sure not to duplicate the error logging to the UI console!
+     *
      * @param text the description of the error that occurred.
      */
     public static void runtimeExceptionOccurred(String text) {
