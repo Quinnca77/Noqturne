@@ -40,7 +40,7 @@ If this does not return an error, you're good.
 
 
 ### Installing Java
-Go to the [Java Download page](https://www.java.com/en/download/) and follow the installation instructions. In case you struggle with this you can follow this guide 
+Download a Java version you like (I like to use [Adoptium](https://adoptium.net/en-GB)) and follow the installation instructions. In case you struggle with this you can follow this guide 
 [here](https://phoenixnap.com/kb/install-java-windows). To verify your installation, you can run the following line in a command prompt:
 ```
 java --version
