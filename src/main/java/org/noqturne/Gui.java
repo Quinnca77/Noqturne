@@ -200,12 +200,12 @@ public class Gui extends JFrame {
      */
     protected void addCoverForIndividualFile() {
         File song = chosenSongFile;
-        if (song == null && !(new File(filePathSong.getText()).exists())) {
+        if (song == null) {
+            song = new File(filePathSong.getText().replaceAll("\"", ""));
+        }
+        if (!song.exists()) {
             showMD(Gui.this, "Please choose a valid file");
             return;
-        }
-        if (song == null) {
-            song = new File(filePathSong.getText());
         }
         String vId = vIdThumbnail.getText();
         if (renameState) {
