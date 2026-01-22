@@ -276,6 +276,7 @@ public class Tagger {
         for (String u : urls) {
             try {
                 img = ImageIO.read(new URL(u));
+                break;
             } catch (IOException e) {
                 last = e;
             }
