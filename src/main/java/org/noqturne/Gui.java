@@ -1,6 +1,7 @@
 package org.noqturne;
 
 import com.mpatric.mp3agic.NotSupportedException;
+import org.apache.commons.io.FilenameUtils;
 import org.noqturne.exceptions.NoSongFoundException;
 import org.noqturne.exceptions.TaggingFolderException;
 import org.jetbrains.annotations.NotNull;
@@ -263,7 +264,7 @@ public class Gui extends JFrame {
      * @return a File object representing the new renamed song file.
      */
     private File renameSong(File song) {
-        JPanel fields = getFieldsRenameDialog(song.getName());
+        JPanel fields = getFieldsRenameDialog(FilenameUtils.getBaseName(song.getName()));
         Path songPath = song.toPath();
 
         int result = JOptionPane.showConfirmDialog(Gui.this, fields, "Rename file", JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
