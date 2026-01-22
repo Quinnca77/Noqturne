@@ -282,7 +282,7 @@ public class Tagger {
             }
         }
 
-        if (last != null || img == null) {
+        if (img == null) {
             ErrorLogger.runtimeExceptionOccurred(last, "Could not get image from YouTube URL");
             throw new IOException(last);
         }
