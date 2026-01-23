@@ -361,6 +361,10 @@ public class ResourceManager {
      * @throws IOException if an I/O error occurs
      */
     public static void setTaggingDirectory(@Nullable Path directory) throws IOException {
+        if (directory != null && !Files.exists(directory)) {
+            throw new IOException("Directory does not exist: " + directory);
+        }
+
         Path configFile = appDir.resolve("config.txt");
         Files.createDirectories(appDir);
         List<String> lines = new ArrayList<>();
@@ -368,27 +372,31 @@ public class ResourceManager {
             lines = Files.readAllLines(configFile);
         }
 
+        Path effectiveDir;
+        if (directory == null) {
+            effectiveDir = Paths.get(System.getProperty("user.home"), "Downloads");
+        } else {
+            effectiveDir = directory.toAbsolutePath();
+        }
+
         boolean updated = false;
         for (int i = 0; i < lines.size(); i++) {
             if (lines.get(i).startsWith(TAG_FOLDER_KEY)) {
-                if (directory == null) {
-                    lines.set(i, TAG_FOLDER_KEY + Paths.get(System.getProperty("user.home"), "Downloads"));
-                } else {
-                    lines.set(i, TAG_FOLDER_KEY + directory.toAbsolutePath());
+                String previousDirectory = lines.get(i).substring(TAG_FOLDER_KEY.length());
+                if (previousDirectory.equals(effectiveDir.toString())) {
+                    return;
                 }
+                lines.set(i, TAG_FOLDER_KEY + effectiveDir);
                 updated = true;
                 break;
             }
         }
 
         if (!updated) {
-            if (directory == null) {
-                lines.add(TAG_FOLDER_KEY + Paths.get(System.getProperty("user.home"), "Downloads"));
-            } else {
-                lines.add(TAG_FOLDER_KEY + directory.toAbsolutePath());
-            }
+            lines.add(TAG_FOLDER_KEY + effectiveDir);
         }
 
         Files.write(configFile, lines, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        logger.println("Tagging folder set to: " + effectiveDir);
     }
 }
