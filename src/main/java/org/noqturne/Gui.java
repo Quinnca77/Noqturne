@@ -85,7 +85,7 @@ public class Gui extends JFrame {
         setContentPane(MainPanel);
         setTitle("Noqturne by Quinn Caris");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(800, 600);
+        setSize(1000, 600);
         setLocationRelativeTo(null);
 
         URL iconURL = getClass().getResource("/icon.png");
