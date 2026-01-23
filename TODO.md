@@ -2,7 +2,7 @@
 
 ### To-do
 - [ ] Update tagging folder on settings close
-- [ ] Clean up tag all files function in GUI class
+- [ ] Support pasting of full youtube url in vid fields. see [this](https://stackoverflow.com/questions/11733500/getting-url-parameter-in-java-and-extract-a-specific-text-from-that-url)
 
 ### Done
 - [x] Make TODO.md
@@ -18,3 +18,4 @@
 - [x] Add help menu for tagging folder definition
 - [x] Adjust documentation in code to not only mention Downloads folder
 - [x] Update README
+- [x] Clean up tag all files function in GUI class

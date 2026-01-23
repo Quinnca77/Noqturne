@@ -66,7 +66,7 @@ public class Tagger {
         if (arrayOfSongs != null) {
             songs = arrayOfSongs;
         } else {
-            songs = getSongsInTaggingDirectory();
+            songs = getAllMp3Files();
         }
         if (songs != null && songs.length != 0) {
             for (File mp3 : songs) {
@@ -76,20 +76,6 @@ public class Tagger {
             this.logger.println("There are no songs in your tagging folder!");
             throw new NoSongFoundException();
         }
-    }
-
-    public static File @Nullable [] getSongsInTaggingDirectory() {
-        File file;
-        try {
-            file = ResourceManager.getTaggingDirectory();
-        } catch (IOException e) {
-            ErrorLogger.runtimeExceptionOccurred(e);
-            throw new RuntimeException(e);
-        } catch (TaggingFolderException e) {
-            ErrorLogger.runtimeExceptionOccurred("Could not find folder to tag mp3 files in");
-            throw new RuntimeException(e);
-        }
-        return file.listFiles(filter);
     }
 
     /**

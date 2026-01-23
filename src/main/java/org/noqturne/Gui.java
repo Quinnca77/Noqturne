@@ -232,37 +232,14 @@ public class Gui extends JFrame {
      *                    <code>null</code> to tag all files in tagging folder.
      */
     protected void tagAllFiles(@Nullable File[] arrayOfSongs) {
-        File[] songs = arrayOfSongs;
-        if (renameState) {
-            if (arrayOfSongs == null) {
-                songs = getAllMp3Files();
-            }
-            for (int i = 0; i < songs.length; i++) {
-                songs[i] = renameSong(songs[i]);
-            }
-        }
         try {
-            if (!vIdThumbnail2.getText().isEmpty()) {
-                if (arrayOfSongs != null) {
-                    for (File song : songs) {
-                        this.tagger.tagIndividualFile(song.getAbsolutePath(), vIdThumbnail2.getText());
-                    }
-                } else {
-                    songs = Tagger.getSongsInTaggingDirectory();
-                    if (songs == null) {
-                        this.logger.println("Is your tagging directory a valid directory? Are there any files there?");
-                        throw new IOException("Something wrong with tagging directory");
-                    }
-                    for (File song : songs) {
-                        this.tagger.tagIndividualFile(song.getAbsolutePath(), vIdThumbnail2.getText());
-                    }
-                }
+            File[] songs = resolveSongs(arrayOfSongs);
+            maybeRename(songs);
+            String thumbnailVIdStr = vIdThumbnail2.getText();
+            if (!thumbnailVIdStr.isEmpty()) {
+                tagWithThumbnail(songs, thumbnailVIdStr);
             } else {
-                if (arrayOfSongs != null) {
-                    this.tagger.tagAllFiles(songs);
-                } else {
-                    this.tagger.tagAllFiles(null);
-                }
+                this.tagger.tagAllFiles(songs);
             }
             showMD(Gui.this, "Tagging successful!");
         } catch (IOException |
@@ -270,6 +247,35 @@ public class Gui extends JFrame {
             ErrorLogger.runtimeExceptionOccurred(e);
         } catch (NoSongFoundException e) {
             showMD(Gui.this, "No songs found in tagging folder!");
+        }
+    }
+
+    private File[] resolveSongs(@Nullable File[] arrayOfSongs) throws NoSongFoundException {
+        if (arrayOfSongs != null) {
+            return arrayOfSongs;
+        }
+
+        File[] songs = getAllMp3Files();
+        if (songs == null || songs.length == 0) {
+            throw new NoSongFoundException();
+        }
+
+        return songs;
+    }
+
+    private void maybeRename(File[] songs) {
+        if (!renameState) {
+            return;
+        }
+
+        for (int i = 0; i < songs.length; i++) {
+            songs[i] = renameSong(songs[i]);
+        }
+    }
+
+    private void tagWithThumbnail(File[] songs, String thumbnailVId) throws IOException, NotSupportedException {
+        for (File song : songs) {
+            this.tagger.tagIndividualFile(song.getAbsolutePath(), thumbnailVId);
         }
     }
 
