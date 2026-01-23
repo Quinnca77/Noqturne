@@ -15,6 +15,8 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.RescaleOp;
 import java.io.*;
@@ -519,7 +521,7 @@ public class Gui extends JFrame {
                 try {
                     ResourceManager.setTaggingDirectory(chooser.getSelectedFile().toPath());
                 } catch (IOException ex) {
-                    ErrorLogger.runtimeExceptionOccurred(ex);
+                    ErrorLogger.runtimeExceptionOccurred(ex, "Tagging folder is not valid");
                 }
                 filePathTextField.setText(chooser.getSelectedFile().getAbsolutePath());
             }
@@ -538,6 +540,17 @@ public class Gui extends JFrame {
 
         filePathRowPanel.add(filePathPanel);
         settingsPanel.add(filePathRowPanel);
+
+        settingsDialog.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                try {
+                    ResourceManager.setTaggingDirectory(Path.of(filePathTextField.getText().replaceAll("\"", "")));
+                } catch (IOException ex) {
+                    ErrorLogger.runtimeExceptionOccurred(ex, "Tagging folder is not valid");
+                }
+            }
+        });
 
         settingsDialog.add(settingsPanel);
         settingsDialog.setLocationRelativeTo(this);
