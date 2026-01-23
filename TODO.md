@@ -1,7 +1,8 @@
 # Noqturne TODO Section
 
 ### To-do
-No to-dos for now
+- [ ] Update tagging folder on settings close
+- [ ] Clean up tag all files function in GUI class
 
 ### Done
 - [x] Make TODO.md

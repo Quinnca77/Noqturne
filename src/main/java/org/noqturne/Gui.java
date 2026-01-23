@@ -48,6 +48,7 @@ public class Gui extends JFrame {
     private JScrollPane filePathScrollPane;
     private JSplitPane splitPane;
     private JButton settingsButton;
+    private JTextField vIdThumbnail2;
     protected JTextField artistNameInput = new JTextField();
     protected JTextField songNameInput = new JTextField();
     protected final Logger logger;
@@ -241,10 +242,27 @@ public class Gui extends JFrame {
             }
         }
         try {
-            if (renameState || arrayOfSongs != null) {
-                this.tagger.tagAllFiles(songs);
+            if (!vIdThumbnail2.getText().isEmpty()) {
+                if (arrayOfSongs != null) {
+                    for (File song : songs) {
+                        this.tagger.tagIndividualFile(song.getAbsolutePath(), vIdThumbnail2.getText());
+                    }
+                } else {
+                    songs = Tagger.getSongsInTaggingDirectory();
+                    if (songs == null) {
+                        this.logger.println("Is your tagging directory a valid directory? Are there any files there?");
+                        throw new IOException("Something wrong with tagging directory");
+                    }
+                    for (File song : songs) {
+                        this.tagger.tagIndividualFile(song.getAbsolutePath(), vIdThumbnail2.getText());
+                    }
+                }
             } else {
-                this.tagger.tagAllFiles(null);
+                if (arrayOfSongs != null) {
+                    this.tagger.tagAllFiles(songs);
+                } else {
+                    this.tagger.tagAllFiles(null);
+                }
             }
             showMD(Gui.this, "Tagging successful!");
         } catch (IOException |

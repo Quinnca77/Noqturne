@@ -61,21 +61,12 @@ public class Tagger {
      * @throws NoSongFoundException if there is no mp3 file in the tagging folder
      */
     public void tagAllFiles(@Nullable File[] arrayOfSongs) throws IOException, InterruptedException, NotSupportedException, NoSongFoundException {
+
         File[] songs;
-        if (arrayOfSongs == null) {
-            File file;
-            try {
-                file = ResourceManager.getTaggingDirectory();
-            } catch (IOException e) {
-                ErrorLogger.runtimeExceptionOccurred(e);
-                throw new RuntimeException(e);
-            } catch (TaggingFolderException e) {
-                ErrorLogger.runtimeExceptionOccurred("Could not find folder to tag mp3 files in");
-                throw new RuntimeException(e);
-            }
-            songs = file.listFiles(filter);
-        } else {
+        if (arrayOfSongs != null) {
             songs = arrayOfSongs;
+        } else {
+            songs = getSongsInTaggingDirectory();
         }
         if (songs != null && songs.length != 0) {
             for (File mp3 : songs) {
@@ -85,6 +76,20 @@ public class Tagger {
             this.logger.println("There are no songs in your tagging folder!");
             throw new NoSongFoundException();
         }
+    }
+
+    public static File @Nullable [] getSongsInTaggingDirectory() {
+        File file;
+        try {
+            file = ResourceManager.getTaggingDirectory();
+        } catch (IOException e) {
+            ErrorLogger.runtimeExceptionOccurred(e);
+            throw new RuntimeException(e);
+        } catch (TaggingFolderException e) {
+            ErrorLogger.runtimeExceptionOccurred("Could not find folder to tag mp3 files in");
+            throw new RuntimeException(e);
+        }
+        return file.listFiles(filter);
     }
 
     /**
