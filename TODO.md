@@ -1,7 +1,7 @@
 # Noqturne TODO Section
 
 ### To-do
-- [ ] Support pasting of full youtube url in vid fields. see [this](https://stackoverflow.com/questions/11733500/getting-url-parameter-in-java-and-extract-a-specific-text-from-that-url)
+No to-dos at this moment
 
 ### Done
 - [x] Make TODO.md
@@ -19,3 +19,4 @@
 - [x] Update README
 - [x] Clean up tag all files function in GUI class
 - [x] Update tagging folder on settings close
+- [x] Support pasting of full youtube url in vid fields
