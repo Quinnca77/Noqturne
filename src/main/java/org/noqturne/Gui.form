@@ -114,7 +114,7 @@
                       <component id="44b16" class="javax.swing.JLabel">
                         <constraints/>
                         <properties>
-                          <text resource-bundle="string" key="video.id.thumbnail"/>
+                          <text resource-bundle="string" key="video.id"/>
                         </properties>
                       </component>
                       <component id="9ce1a" class="javax.swing.JLabel">
@@ -181,7 +181,7 @@
                       <component id="59e9a" class="javax.swing.JLabel">
                         <constraints/>
                         <properties>
-                          <text resource-bundle="string" key="video.id.thumbnail"/>
+                          <text resource-bundle="string" key="video.id"/>
                         </properties>
                       </component>
                       <component id="7ed8c" class="javax.swing.JLabel">

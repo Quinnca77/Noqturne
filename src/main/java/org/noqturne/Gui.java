@@ -206,16 +206,24 @@ public class Gui extends JFrame {
         if (song == null) {
             song = new File(filePathSong.getText().replaceAll("\"", ""));
         }
+
         if (!song.exists()) {
             showMD(Gui.this, "Please choose a valid file");
             return;
         }
-        String vId = vIdThumbnail.getText();
+
         if (renameState) {
             song = renameSong(song);
         }
+
         try {
-            if (vId.isEmpty()) {
+            String vIdThumbnailStr = vIdThumbnail.getText();
+            String vId = Tagger.getVideoId(vIdThumbnailStr);
+            if (vIdThumbnailStr.isEmpty() || vId == null) {
+                if (!vIdThumbnailStr.isEmpty()) {
+                    this.logger.printError("Could not extract video id, " +
+                            "reverting to finding video id automatically");
+                }
                 tagger.genericTagFile(song.getPath());
             } else {
                 tagger.tagIndividualFile(song.getPath(), vId);
@@ -237,11 +245,16 @@ public class Gui extends JFrame {
         try {
             File[] songs = resolveSongs(arrayOfSongs);
             maybeRename(songs);
-            String thumbnailVIdStr = vIdThumbnail2.getText();
-            if (!thumbnailVIdStr.isEmpty()) {
-                tagWithThumbnail(songs, thumbnailVIdStr);
-            } else {
+            String vIdThumbnailStr = vIdThumbnail2.getText();
+            String vId = Tagger.getVideoId(vIdThumbnailStr);
+            if (vIdThumbnailStr.isEmpty() || vId == null) {
+                if (!vIdThumbnailStr.isEmpty()) {
+                    this.logger.printError("Could not extract video id, " +
+                            "reverting to finding video id automatically");
+                }
                 this.tagger.tagAllFiles(songs);
+            } else {
+                tagWithThumbnail(songs, vId);
             }
             showMD(Gui.this, "Tagging successful!");
         } catch (IOException |

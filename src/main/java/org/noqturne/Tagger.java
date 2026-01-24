@@ -11,11 +11,14 @@ import org.jetbrains.annotations.Nullable;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Class for all functionalities associated with tagging an mp3 file in the user's tagging folder.
@@ -284,5 +287,21 @@ public class Tagger {
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
         ImageIO.write(croppedImg, "jpg", byteStream);
         return byteStream.toByteArray();
+    }
+
+    public static String getVideoId(String videoId)  {
+        try {
+            new URL(videoId);
+        } catch (MalformedURLException e) {
+            return videoId;
+        }
+
+        String pattern = ".*v=([a-zA-Z0-9_\\-]+)(?:&.*)*";
+        Pattern p = Pattern.compile(pattern);
+        Matcher m = p.matcher(videoId);
+        if (m.matches()) {
+            return m.group(1);
+        }
+        return null;
     }
 }
