@@ -151,7 +151,7 @@ public class Tagger {
             } else {
                 // Mp3 does not have an ID3v2 tag, let's create one
                 id3v2Tag = new ID3v24Tag();
-                mp3file.setId3v1Tag(id3v2Tag);
+                mp3file.setId3v2Tag(id3v2Tag);
             }
         }
         return id3v2Tag;
