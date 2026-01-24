@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -177,7 +178,7 @@ public class Tagger {
     /**
      * Tags an mp3 file with the artist name and song name in their metadata.
      *
-     * @param splitSong array of 2 elements. First element is the artist, second
+     * @param splitSong array of 2 (or more) elements. First element is the artist, second
      *                  element is the song title
      * @param mp3file Mp3File object of the mp3 file to be tagged
      * @return ID3v2 tag of the associated mp3 file, ready for more tags to be added
@@ -185,7 +186,7 @@ public class Tagger {
      */
     private static ID3v2 addArtistAndSongname(String[] splitSong, Mp3File mp3file) {
         ID3v2 id3v2Tag = null;
-        if (splitSong.length == 2) {
+        if (splitSong.length >= 2) {
             if (mp3file.hasId3v2Tag()) {
                 id3v2Tag = mp3file.getId3v2Tag();
             } else {
@@ -194,7 +195,7 @@ public class Tagger {
                 mp3file.setId3v2Tag(id3v2Tag);
             }
             id3v2Tag.setArtist(splitSong[0]);
-            id3v2Tag.setTitle(splitSong[1]);
+            id3v2Tag.setTitle(String.join("", Arrays.copyOfRange(splitSong, 1, splitSong.length)));
         } else {
             Logger.getLogger().printError("Could not tag artist and song fields of "
                     + mp3file.getFilename()
