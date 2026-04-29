@@ -2,6 +2,7 @@
 
 ### To-do
 - [ ] Make it so you can drop files into the filepath searcher
+- [ ] Make a deployment pipeline that automatically creates a release given the push of a button
 
 ### Done
 - [x] Make TODO.md
